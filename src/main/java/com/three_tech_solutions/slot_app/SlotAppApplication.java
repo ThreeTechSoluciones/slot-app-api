@@ -1,4 +1,4 @@
-package com.three_tech_solutions.SlottApp;
+package com.three_tech_solutions.slot_app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

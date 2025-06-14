@@ -1,0 +1,20 @@
+package com.three_tech_solutions.slot_app.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(
+                        new Info()
+                                .title("SlotApp Backend")
+                                .version("0.0.1-SNAPSHOT")
+                );
+    }
+}
+

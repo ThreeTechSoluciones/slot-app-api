@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: SlotApp
+  profiles:
+    active: ${SPRING_PROFILE:local}
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/slot_app?createDatabaseIfNotExist=true
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+springdoc:
+  swagger-ui:
+    path: /docs
+logging:
+  level:
+    org:
+      zalando:
+        logbook:
+          Logbook: TRACE
+logbook:
+  format.style: json
+  predicate:
+    exclude:
+      - path: "**api-docs**"
+      - path: "**swagger-ui**"
+  strategy: body-only-if-status-at-least
+  minimum-status: 200

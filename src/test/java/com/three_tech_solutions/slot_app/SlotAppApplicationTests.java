@@ -1,4 +1,4 @@
-package com.three_tech_solutions.SlottApp;
+package com.three_tech_solutions.slot_app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
