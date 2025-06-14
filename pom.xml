@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.three-tech-solutions</groupId>
-	<artifactId>SlottApp</artifactId>
+	<artifactId>slot_app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SlotApp</name>
 	<description>SlotApp backend.</description>
@@ -51,7 +51,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-            <scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>org.zalando</groupId>
