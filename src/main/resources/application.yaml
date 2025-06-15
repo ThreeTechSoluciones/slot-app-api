@@ -29,3 +29,7 @@ logbook:
       - path: "**swagger-ui**"
   strategy: body-only-if-status-at-least
   minimum-status: 200
+security:
+  access-token-expiration: 60
+  refresh-token-expiration: 120
+  secret: ${SECURITY_KEY}

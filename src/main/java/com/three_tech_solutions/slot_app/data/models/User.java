@@ -30,7 +30,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "user_id")
     private List<Price> prices;
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
