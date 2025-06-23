@@ -1,10 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,4 +30,10 @@ public class Student {
     private List<Payment> payments;
     @Id
     private UUID id = UUID.randomUUID();
+
+    private LocalDate createdAt = LocalDate.now();
+    private LocalDate updatedAt = LocalDate.now();
+    private int createdBy;
+    private int updatedBy;
+    
 }
