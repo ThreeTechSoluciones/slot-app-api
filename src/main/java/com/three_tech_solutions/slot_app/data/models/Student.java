@@ -32,6 +32,12 @@ public class Student {
     @OneToMany
     @JoinColumn(name = "student_id")
     private List<Payment> payments;
+
     @Id
     private UUID id = UUID.randomUUID();
+
+    public Student(String name) {
+        this.name = name;
+    }
 }
+
