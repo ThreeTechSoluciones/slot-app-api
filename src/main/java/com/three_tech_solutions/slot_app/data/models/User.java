@@ -51,7 +51,4 @@ public class User implements UserDetails {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
-        this.students = students;
-    }
 }
