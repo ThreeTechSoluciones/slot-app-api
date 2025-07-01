@@ -4,9 +4,8 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class MapperStudent {
+public class StudentMapper {
 
         public static StudentResponse toResponse(Student student) {
             return new StudentResponse(
@@ -17,7 +16,7 @@ public class MapperStudent {
 
         public static List<StudentResponse> toResponseList(List<Student> students) {
             return students.stream()
-                    .map(MapperStudent::toResponse)
+                    .map(StudentMapper::toResponse)
                     .toList();
         }
     }

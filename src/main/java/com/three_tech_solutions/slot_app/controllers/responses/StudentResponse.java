@@ -1,24 +1,16 @@
 package com.three_tech_solutions.slot_app.controllers.responses;
 
-public class StudentResponse {
-    private String name;
-    private String lastname;
-    private String status = "En término";
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 
-    public StudentResponse(String name, String lastname) {
-        this.name=name;
-        this.lastname=lastname;
-    }
+import static com.three_tech_solutions.slot_app.data.enums.StudentSituation.EN_TERMINO;
 
-    public String getName() {
-        return name;
-    }
+public record StudentResponse (
+    String name,
+    String lastname,
+    StudentSituation status
 
-    public String getLastname() {
-        return lastname;
-    }
-
-    public String getStatus() {
-        return status;
+)
+    {public StudentResponse(String name, String lastname) {
+        this (name, lastname, EN_TERMINO);
     }
 }

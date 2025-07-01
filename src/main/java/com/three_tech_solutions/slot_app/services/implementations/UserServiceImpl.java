@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.data.mappers.MapperStudent;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<StudentResponse> getUserStudents(UUID userId) {
         return userRepository.findById(userId)
-                .map(user -> MapperStudent.toResponseList(user.getStudents()))
+                .map(user -> StudentMapper.toResponseList(user.getStudents()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no existe"));
     }
 }
