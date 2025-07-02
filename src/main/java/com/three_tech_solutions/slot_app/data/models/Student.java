@@ -26,14 +26,15 @@ public class Student {
     @OneToOne
     private Plan plan;
     @OneToMany
-    @JoinColumn(name = "student_id")
     private List<Payment> payments;
     @Id
     private UUID id = UUID.randomUUID();
+    @ManyToOne
+    private User user; // Relación con el profesional que registró al alumno
 
     private LocalDate createdAt = LocalDate.now();
     private LocalDate updatedAt = LocalDate.now();
     private int createdBy;
     private int updatedBy;
-    
+
 }

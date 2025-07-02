@@ -1,37 +1,97 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.data.models.Plan;
+import com.three_tech_solutions.slot_app.data.models.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
+import com.three_tech_solutions.slot_app.dto.StudentRequestDTO;
+import com.three_tech_solutions.slot_app.dto.StudentResponseDTO;
+import com.three_tech_solutions.slot_app.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanTypeService;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
-import lombok.extern.slf4j.Slf4j;
+import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
+    private final PlanTypeService planTypeService;
+    private final PlanService planService;
+    private final UserService userService;
+    private static final Set<String> ALLOWED_PLAN_TYPES = Set.of("Día específico", "Del 1 al 10");
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    //constructor
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper,
+                              PlanTypeService planTypeService, PlanService planService, UserService userService) {
+
         this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
+        this.planTypeService = planTypeService;
+        this.planService = planService;
+        this.userService = userService;
     }
 
     @Override
-    public Student createStudent(Student student) {
+    public StudentResponseDTO createStudent(StudentRequestDTO studentDTO) {
         // Lógica de negocio: validaciones, cálculos, guardarVALIDACIONES, Existe el alumno?, Tiene todos los datos?
-        //El tipo de pago no puede ser nulo y tiene dos valores posibles:
-        //           -Del 1 al 10
-        //           -Día específico
+
+        //La fecha de admisión en caso de no recibirse, debe ser por defecto la fecha actual
+        if (studentDTO.getAdmissionDate() == null) {
+            studentDTO.setAdmissionDate(LocalDate.now());
+        }
+        // Buscar el tipo de plan por ID
+        PlanType planType = planTypeService.getById(studentDTO.getPlanTypeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PlanType no encontrado"));
+        // Validar que el tipo de plan sea permitido
+        if (!ALLOWED_PLAN_TYPES.contains(planType.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de plan no permitido.");
+        }
+        // Validar día de pago si es "Día específico"
+        if (planType.getName().equalsIgnoreCase("Día específico")) {
+            if (studentDTO.getPaymentDay() <= 0 || studentDTO.getPaymentDay() > 31) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+            }
+        } else {
+        // Si no es "Día específico", el día de pago debe quedar en null
+        studentDTO.setPaymentDay( null);
+    }
         //Las clases extra tiene que ser un valor opcional (obligatorio en caso de que el tipo de pago sea del 1-10 y la fecha actual sea mayor al 10 del mes), pero si se ingresa debe ser mayor a 10 y menor a 20.
         //El día de pago debe ser un dato opcional (obligatorio en caso de que el tipo de pago sea dia específico) y debe ser mayor o igual a 1 y menor o igual a 31
-        //La fecha de admisión en caso de no recibirse, debe ser por defecto la fecha actual
-        //El tipo de HTTP Status a responder debe ser el 201
-        //En caso de que haya un error en los datos de la request se debe responder un status 400 indicando cuál es el error
+        // Crear y guardar el Plan
+        Plan plan = new Plan();
+        plan.setId(UUID.randomUUID());
+        plan.setClassesPerWeek(studentDTO.getClassesPerWeek());
+        plan.setPaymentDay(studentDTO.getPaymentDay());
+        plan.setPaymentType(planType);
+
+        planService.save(plan);
+
+        User user = userService.getById(studentDTO.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario del profesinal no encontrado"));
+
+        // Mapear DTO a entidad Student
+        Student student = studentMapper.toStudent(studentDTO, plan, user);
+
+        student.setEnabled(true);
+
+        // Guardar alumno en la base de datos
+        studentRepository.save(student);
+
+        // Devolver DTO de respuesta al Controller
+        return studentMapper.toStudentDTO(student);
+
+
         // Al registrar el alumno, debe vincularse con el usuario (profesional logueado)
-
-
-
-        //Guardar al alumno.
-        //Retornar el alumno creado.
 
     }
 }

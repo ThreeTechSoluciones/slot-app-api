@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudentControllerImpl implements StudentController {
 
     private final StudentService studentService;
-    private final StudentMapper studentMapper;
 
     public StudentControllerImpl(StudentService studentService, StudentMapper studentMapper) {
         this.studentService = studentService;
@@ -23,12 +22,11 @@ public class StudentControllerImpl implements StudentController {
 
     @Override
     public ResponseEntity<StudentResponseDTO> createStudent(@RequestBody StudentRequestDTO studentDTO) {
-        //conversión studentDTO a student, DTO a entidad.
-        Student student = studentMapper.toStudent(studentDTO);
+
         //Llamamos al servicio con la entidad, student.
-        StudentResponseDTO response =  studentService.createStudent(student);
-        //conversion student a studentDTO, entidad a DTO.
-        StudentResponseDTO responseDTO = studentMapper.toStudentDTO(response); //DTO a entidades
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        StudentResponseDTO response =  studentService.createStudent(studentDTO);
+
+        //El tipo de HTTP Status a responder debe ser el 201
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

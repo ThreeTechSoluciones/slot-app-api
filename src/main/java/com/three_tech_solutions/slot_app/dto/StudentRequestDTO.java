@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -19,20 +18,22 @@ public class StudentRequestDTO {
 
     //El numero de teléfono no puede estar vacío y debe tener un formato de numero de teléfono.
     @NotBlank
-    @Pattern(regexp = "\\d{13}") //13 digitos numéricos, sin espacios
+    @Pattern(regexp = "\\d{9,15}") //minimo 9 digitos numéricos y maximo 15, sin espacios
     private String cellphoneNumber;
 
     //El tipo de pago no puede ser nulo
     @NotNull
-    private UUID paymentType; //porque es el ID de la clase
+    private UUID planTypeId; //porque es el ID de la clase
 
     //Las clases por semana tiene que ser mayor a cero y menor o igual a 7
     @NotNull
     @Min(1)
     @Max(7)
-    private short classesPerWeek;
+    private byte classesPerWeek;
 
-    private short paymentDay;
+    private Byte extraClasses;
+
+    private Byte paymentDay;
 
     @NotNull
     private LocalDate birthday;
