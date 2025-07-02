@@ -1,0 +1,23 @@
+package com.three_tech_solutions.slot_app.services.implementations;
+
+import com.three_tech_solutions.slot_app.data.models.PlanType;
+import com.three_tech_solutions.slot_app.data.repositories.PlanTypeRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanTypeService;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class PlanTypeServiceImpl implements PlanTypeService {
+    private final PlanTypeRepository planTypeRepository;
+
+    //constructor
+    public PlanTypeServiceImpl(PlanTypeRepository planTypeRepository) {
+        this.planTypeRepository = planTypeRepository;
+    }
+    // Buscar un PlanType por su ID, devuelve Optional
+    @Override
+    public Optional<PlanType> getById(UUID id) {
+        return planTypeRepository.findById(id);
+}
