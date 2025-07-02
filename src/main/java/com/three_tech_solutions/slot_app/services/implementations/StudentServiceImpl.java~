@@ -75,7 +75,7 @@ public class StudentServiceImpl implements StudentService {
         plan.setPaymentType(planType);
 
         planService.save(plan);
-
+        
         //Al registrar el alumno, debe vincularse con el usuario (profesional logueado)
         User user = userService.getById(studentDTO.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario del profesinal no encontrado"));
