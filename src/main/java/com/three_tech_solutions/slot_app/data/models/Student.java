@@ -32,6 +32,53 @@ public class Student {
     @OneToMany
     @JoinColumn(name = "student_id")
     private List<Payment> payments;
+
     @Id
     private UUID id = UUID.randomUUID();
+
+    public Student(String name, String lastname) {
+        this.name = name;
+        this.lastname = lastname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public String getPathologies() {
+        return pathologies;
+    }
+
+    public LocalDate getAdmissionDate() {
+        return admissionDate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public Plan getPlan() {
+        return plan;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public UUID getId() {
+        return id;
+    }
 }
+

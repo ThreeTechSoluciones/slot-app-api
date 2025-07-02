@@ -46,4 +46,9 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.username;
     }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
 }

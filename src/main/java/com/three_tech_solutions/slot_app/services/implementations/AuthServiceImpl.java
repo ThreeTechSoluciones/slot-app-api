@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
+
     private final JsonWebTokenService jsonWebTokenService;
 
     @Override
@@ -22,5 +23,4 @@ class AuthServiceImpl implements AuthService {
                 jsonWebTokenService.getRefreshToken(username)
         );
     }
-
 }
