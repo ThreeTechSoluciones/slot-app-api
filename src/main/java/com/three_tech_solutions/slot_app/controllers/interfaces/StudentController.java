@@ -1,15 +1,17 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import com.three_tech_solutions.slot_app.dto.StudentRequestDTO;
-import com.three_tech_solutions.slot_app.dto.StudentResponseDTO;
+import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.dto.StudentResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-//definimos el path y el metodo HTTP en la interfaz.
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 @RequestMapping("/students")
 public interface StudentController {
     @PostMapping
-    ResponseEntity<StudentResponseDTO> createStudent(@Valid @RequestBody StudentRequestDTO studentDTO);
+    @ResponseStatus(HttpStatus.CREATED)
+    StudentResponse createStudent(@Valid @RequestBody CreateStudentRequest studentDTO);
 }

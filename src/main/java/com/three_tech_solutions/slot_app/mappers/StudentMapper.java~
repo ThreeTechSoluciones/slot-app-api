@@ -4,7 +4,7 @@ import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.dto.StudentResponse;
+import com.three_tech_solutions.slot_app.dto.StudentResponseDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,8 +29,8 @@ public class StudentMapper {
         );
     }
 
-    public StudentResponse toStudentResponseDTO(Student student) {
-        StudentResponse studentDTO = new StudentResponse();
+    public StudentResponseDTO toStudentResponseDTO(Student student) {
+        StudentResponseDTO studentDTO = new StudentResponseDTO();
         studentDTO.setName(student.getName());
         studentDTO.setLastName(student.getLastname());
 
