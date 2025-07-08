@@ -36,7 +36,7 @@ public class CreateStudentRequest {
 
     private LocalDate admissionDate = LocalDate.now();;
 
-    @NotBlank
+    @Size(min = 1)
     private String pathologies;
 
     private UUID userId;

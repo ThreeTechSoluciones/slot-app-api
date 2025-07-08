@@ -26,7 +26,7 @@ public class Student {
     @OneToMany
     private List<Payment> payments;
     @ManyToOne
-    private User user; // Relación con el profesional que registró al alumno
+    private User user;
     @Id
     private UUID id = UUID.randomUUID();
 

@@ -15,7 +15,7 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        return studentService.createStudent(studentDTO);
+    public StudentResponse createStudent(CreateStudentRequest createStudentRequest) {
+        return studentService.createStudent(createStudentRequest);
     }
 }

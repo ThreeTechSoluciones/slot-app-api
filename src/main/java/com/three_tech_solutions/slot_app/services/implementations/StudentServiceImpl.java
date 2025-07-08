@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -48,7 +47,7 @@ public class StudentServiceImpl implements StudentService {
 
         studentRepository.save(student);
 
-        return studentMapper.toStudentResponseDTO(student);
+        return studentMapper.toStudentResponse(student);
 
     }
 

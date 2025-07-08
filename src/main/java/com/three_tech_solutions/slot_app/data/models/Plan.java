@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 public class Plan {
     private byte classesPerWeek;
-    private Byte paymentDay; //porque es opcional
+    private Byte paymentDay;
     private PlanType planType;
     @Id
     UUID id;

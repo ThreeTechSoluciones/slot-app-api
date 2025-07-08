@@ -20,6 +20,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByIdOrThrowException(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credenciales ingresadas incorrectas"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
 }

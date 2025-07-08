@@ -15,7 +15,6 @@ public class StudentMapper {
      */
 
     public Student toStudent(CreateStudentRequest studentDTO, Plan plan, User user) {
-        Student student = new Student();
         return new Student(
                 studentDTO.getName(),
                 studentDTO.getLastName(),
@@ -29,7 +28,7 @@ public class StudentMapper {
         );
     }
 
-    public StudentResponse toStudentResponseDTO(Student student) {
+    public StudentResponse toStudentResponse(Student student) {
         StudentResponse studentDTO = new StudentResponse();
         studentDTO.setName(student.getName());
         studentDTO.setLastName(student.getLastname());
