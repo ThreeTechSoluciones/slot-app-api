@@ -12,11 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
-
-
 @Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -34,4 +31,10 @@ public class UserServiceImpl implements UserService {
                 .map(user -> StudentMapper.toResponseList(user.getStudents()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no existe"));
     }
+    @Override
+    public User getUserByIdOrThrowException(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
 }

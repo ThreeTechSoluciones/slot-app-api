@@ -1,11 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +13,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Student {
     private String name;
     private String lastname;
@@ -27,58 +21,31 @@ public class Student {
     private String pathologies;
     private LocalDate admissionDate;
     private boolean enabled;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Plan plan;
     @OneToMany
-    @JoinColumn(name = "student_id")
     private List<Payment> payments;
-
+    @ManyToOne
+    private User user;
     @Id
     private UUID id = UUID.randomUUID();
+
+    public Student(String name, String lastname, String phoneNumber, LocalDate birthday, String pathologies, LocalDate admissionDate, boolean enabled, Plan plan, User user) {
+        this.name = name;
+        this.lastname = lastname;
+        this.phoneNumber = phoneNumber;
+        this.birthday = birthday;
+        this.pathologies = pathologies;
+        this.admissionDate = admissionDate;
+        this.enabled = enabled;
+        this.plan = plan;
+        this.user = user;
+    }
 
     public Student(String name, String lastname) {
         this.name = name;
         this.lastname = lastname;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public String getPathologies() {
-        return pathologies;
-    }
-
-    public LocalDate getAdmissionDate() {
-        return admissionDate;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public List<Payment> getPayments() {
-        return payments;
-    }
-
-    public UUID getId() {
-        return id;
-    }
 }
 
