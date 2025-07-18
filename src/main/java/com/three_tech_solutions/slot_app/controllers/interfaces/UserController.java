@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface UserController {
     @GetMapping("/{userId}/students")
     List<StudentResponse> getUserStudents(@PathVariable UUID userId);
+
 }

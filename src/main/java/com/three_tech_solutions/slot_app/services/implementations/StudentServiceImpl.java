@@ -14,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.boot.autoconfigure.container.ContainerImageMetadata.isPresent;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -72,5 +75,20 @@ public class StudentServiceImpl implements StudentService {
 
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
+    }
+    public void deleteStudent (UUID studentId){
+
+        Optional<Student> studentOptional = studentRepository.findById(studentId); //encuentro el estudiante por su id, si el estudiante existe el optional tiene algo si no devuelve un optional vacio
+
+        if (studentOptional.isPresent()) { //vemos si el estudiante está vacio o no
+            Student student = studentOptional.get(); //acá convierto el optional en student de nuevo
+            if (!student.isEnabled()) { //si enabled es false, el alumno ya esta dado de b aja
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya está eliminado.");
+            }
+            student.setEnabled(false); //si el enabled esta en true, el alumno esta activo y hay que setear el false
+            studentRepository.save(student); //guardamos los cambios en el repositorio
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."); //si el estudiante esta vacio es porque no existe
+        }
     }
 }
