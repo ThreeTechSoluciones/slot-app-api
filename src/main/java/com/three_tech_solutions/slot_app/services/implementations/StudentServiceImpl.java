@@ -78,17 +78,17 @@ public class StudentServiceImpl implements StudentService {
     }
     public void deleteStudent (UUID studentId){
 
-        Optional<Student> studentOptional = studentRepository.findById(studentId); //encuentro el estudiante por su id, si el estudiante existe el optional tiene algo si no devuelve un optional vacio
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
 
-        if (studentOptional.isPresent()) { //vemos si el estudiante está vacio o no
-            Student student = studentOptional.get(); //acá convierto el optional en student de nuevo
-            if (!student.isEnabled()) { //si enabled es false, el alumno ya esta dado de b aja
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya está eliminado.");
+        if (studentOptional.isPresent()) {
+            Student student = studentOptional.get();
+            if (!student.isEnabled()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
             }
-            student.setEnabled(false); //si el enabled esta en true, el alumno esta activo y hay que setear el false
-            studentRepository.save(student); //guardamos los cambios en el repositorio
+            student.setEnabled(false);
+            studentRepository.save(student);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."); //si el estudiante esta vacio es porque no existe
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe.");
         }
     }
 }

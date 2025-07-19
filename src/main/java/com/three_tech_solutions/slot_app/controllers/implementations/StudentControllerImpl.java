@@ -21,6 +21,7 @@ public class StudentControllerImpl implements StudentController {
         return studentService.createStudent(createStudentRequest);
     }
 
+    @Override
     public void deleteStudent (UUID studentId){
         studentService.deleteStudent (studentId);
 

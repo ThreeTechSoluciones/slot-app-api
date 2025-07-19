@@ -10,7 +10,8 @@ public class StudentMapper {
         public static StudentResponse toResponse(Student student) {
             return new StudentResponse(
                     student.getName(),
-                    student.getLastname()
+                    student.getLastname(),
+                    student.getId()
             );
         }
 

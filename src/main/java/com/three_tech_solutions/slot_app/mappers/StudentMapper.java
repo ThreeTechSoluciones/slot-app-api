@@ -32,6 +32,7 @@ public class StudentMapper {
         StudentResponse studentDTO = new StudentResponse();
         studentDTO.setName(student.getName());
         studentDTO.setLastName(student.getLastname());
+        studentDTO.setStudentId(student.getId());
 
         return studentDTO;
     }
