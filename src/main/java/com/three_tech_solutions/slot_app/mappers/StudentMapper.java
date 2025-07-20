@@ -1,18 +1,20 @@
 package com.three_tech_solutions.slot_app.mappers;
 
+import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.dto.PaymentDetailsResponse;
+import com.three_tech_solutions.slot_app.dto.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.dto.StudentResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StudentMapper {
-    /**
-     * Mapea un StudentRequestDTO a la entidad Student.
-     * El Plan y los Payments se reciben como parámetros, ya deben ser buscados o generados en el Service.
-     */
 
     public Student toStudent(CreateStudentRequest studentDTO, Plan plan, User user) {
         return new Student(
@@ -36,5 +38,34 @@ public class StudentMapper {
         return studentDTO;
     }
 
+    public StudentDetailsResponse toStudentDetailsResponse(Student student, List<Payment> payments) {
+        List<PaymentDetailsResponse> paymentsDetailsResponses = payments.stream()
+                .map(this::toPaymentDetailsResponse)
+                .collect(Collectors.toList());
 
+        return new StudentDetailsResponse(
+                student.getId(),
+                student.getName(),
+                student.getLastname(),
+                student.getPhoneNumber(),
+                student.getBirthday(),
+                student.getPathologies(),
+                student.getAdmissionDate(),
+                student.getPlan().getPlanType().name(),
+                student.getPlan().getClassesPerWeek(),
+                student.getPlan().getPaymentDay(),
+                paymentsDetailsResponses
+        );
+    }
+
+    private PaymentDetailsResponse toPaymentDetailsResponse(Payment payment) {
+        return new PaymentDetailsResponse(
+                payment.getId(),
+                payment.getNumber(),
+                payment.getPaymentDate(),
+                payment.getAmount(),
+                payment.getStatus(),
+                payment.getExpirationDate()
+        );
+    }
 }
