@@ -20,7 +20,6 @@ public class Payment {
 
     @Id
     private UUID id;
-
     private int number;
     private LocalDateTime paymentDate;
     private double amount;
