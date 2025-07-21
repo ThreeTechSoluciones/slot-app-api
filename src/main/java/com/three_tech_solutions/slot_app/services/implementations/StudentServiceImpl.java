@@ -73,4 +73,13 @@ public class StudentServiceImpl implements StudentService {
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
+
+    @Override
+    public void activateStudent(UUID studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudiante no encontrado"));
+
+        student.setEnabled(true);
+        studentRepository.save(student);
+    }
 }
