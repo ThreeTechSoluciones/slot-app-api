@@ -15,7 +15,6 @@ public interface StudentController {
     @ResponseStatus(HttpStatus.CREATED)
     StudentResponse createStudent(@Valid @RequestBody CreateStudentRequest studentDTO);
 
-    @RequestMapping("/{studentId}")
-    @GetMapping
+    @GetMapping("/{studentId}")
     StudentDetailsResponse getStudentById(@PathVariable UUID studentId);
 }
