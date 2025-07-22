@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface StudentService {
 
     StudentResponse createStudent(CreateStudentRequest studentDTO);
-    void deleteStudent (UUID studentId);
+    void deleteStudent(UUID studentId);
 }

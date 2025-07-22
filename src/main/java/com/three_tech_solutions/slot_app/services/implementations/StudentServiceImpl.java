@@ -76,19 +76,16 @@ public class StudentServiceImpl implements StudentService {
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
-    public void deleteStudent (UUID studentId){
-
-        Optional<Student> studentOptional = studentRepository.findById(studentId);
-
-        if (studentOptional.isPresent()) {
-            Student student = studentOptional.get();
-            if (!student.isEnabled()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
-            }
-            student.setEnabled(false);
-            studentRepository.save(student);
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe.");
-        }
+    public void deleteStudent(UUID studentId){
+        studentRepository.findById(studentId)
+                .map(student -> {
+                    if (!student.isEnabled()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
+                    }
+                    student.setEnabled(false);
+                    return studentRepository.save(student);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
 }
+
