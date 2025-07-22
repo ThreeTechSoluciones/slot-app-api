@@ -15,6 +15,11 @@ public class CreateStudentRequest {
     @NotBlank
     private String lastName;
 
+    @NotBlank(message = "El DNI es obligatorio")
+    @Size(max = 8, message = "El DNI no puede tener más de 8 números")
+    @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
+    private String dni;
+
     @NotBlank
     @Pattern(regexp = "\\d{9,15}") //minimo 9 digitos numéricos y maximo 15, sin espacios
     private String cellphoneNumber;
@@ -34,7 +39,7 @@ public class CreateStudentRequest {
     @NotNull
     private LocalDate birthday;
 
-    private LocalDate admissionDate = LocalDate.now();;
+    private LocalDate admissionDate = LocalDate.now();
 
     @Size(min = 1)
     private String pathologies;
