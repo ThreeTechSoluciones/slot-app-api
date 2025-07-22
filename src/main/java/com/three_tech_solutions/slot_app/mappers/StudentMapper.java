@@ -38,10 +38,7 @@ public class StudentMapper {
         return studentDTO;
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student, List<Payment> payments) {
-        List<PaymentDetailsResponse> paymentsDetailsResponses = payments.stream()
-                .map(this::toPaymentDetailsResponse)
-                .collect(Collectors.toList());
+    public StudentDetailsResponse toStudentDetailsResponse(Student student) {
 
         return new StudentDetailsResponse(
                 student.getId(),
@@ -54,7 +51,7 @@ public class StudentMapper {
                 student.getPlan().getPlanType().name(),
                 student.getPlan().getClassesPerWeek(),
                 student.getPlan().getPaymentDay(),
-                paymentsDetailsResponses
+                student.getPayments().stream().map(this::toPaymentDetailsResponse).collect(Collectors.toList())
         );
     }
 

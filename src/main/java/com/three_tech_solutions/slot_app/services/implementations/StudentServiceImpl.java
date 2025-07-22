@@ -81,9 +81,6 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alumno no encontrado"));
 
-        List<Payment> payments = student.getPayments();
-
-        return studentMapper.toStudentDetailsResponse(student, payments);
-
+        return studentMapper.toStudentDetailsResponse(student);
     }
 }
