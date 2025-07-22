@@ -9,8 +9,8 @@ import java.util.List;
 public record ApiError(
         int status,
         String errorMessage,
+        List<String> errors,
         String path,
-        LocalDateTime timestamp,
-        List<StackTraceElement> trace
+        LocalDateTime timestamp
 ) {
 }

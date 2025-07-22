@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Student {
     private String name;
     private String lastname;
+    private String dni;
     private String phoneNumber;
     private LocalDate birthday;
     private String pathologies;
@@ -30,9 +31,10 @@ public class Student {
     @Id
     private UUID id = UUID.randomUUID();
 
-    public Student(String name, String lastname, String phoneNumber, LocalDate birthday, String pathologies, LocalDate admissionDate, boolean enabled, Plan plan, User user) {
+    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, LocalDate admissionDate, boolean enabled, Plan plan, User user) {
         this.name = name;
         this.lastname = lastname;
+        this.dni = dni;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
         this.pathologies = pathologies;
