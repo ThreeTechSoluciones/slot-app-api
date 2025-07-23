@@ -43,8 +43,7 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
                 SC_UNAUTHORIZED,
                 getErrorMessage(authException),
                 request.getRequestURI(),
-                LocalDateTime.now(),
-                Arrays.asList(authException.getStackTrace())
+                LocalDateTime.now()
         );
     }
 

@@ -10,7 +10,6 @@ public record ApiError(
         int status,
         String errorMessage,
         String path,
-        LocalDateTime timestamp,
-        List<StackTraceElement> trace
+        LocalDateTime timestamp
 ) {
 }

@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
                         .errorMessage(responseStatusException.getReason())
                         .path(request.getRequestURI())
                         .timestamp(LocalDateTime.now())
-                        .trace(Arrays.asList(responseStatusException.getCause().getStackTrace()))
                         .build()
                 );
     }

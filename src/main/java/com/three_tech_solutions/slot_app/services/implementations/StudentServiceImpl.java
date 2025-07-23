@@ -14,9 +14,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 import java.util.UUID;
+
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -91,5 +90,16 @@ public class StudentServiceImpl implements StudentService {
 
         student.setEnabled(true);
         studentRepository.save(student);
+    }
+    public void deleteStudent(UUID studentId){
+        studentRepository.findById(studentId)
+                .map(student -> {
+                    if (!student.isEnabled()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
+                    }
+                    student.setEnabled(false);
+                    return studentRepository.save(student);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
 }

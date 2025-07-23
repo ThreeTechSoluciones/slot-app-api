@@ -14,6 +14,11 @@ public interface StudentController {
     @ResponseStatus(HttpStatus.CREATED)
     StudentResponse createStudent(@Valid @RequestBody CreateStudentRequest studentDTO);
 
+
+    @DeleteMapping("/{studentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteStudent(@PathVariable UUID studentId);
+
     @GetMapping("/{studentId}")
     StudentDetailsResponse getStudentById(@PathVariable UUID studentId);
 
