@@ -43,7 +43,6 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
         String message = getErrorMessage(authException);
         return new ApiError(
                 SC_UNAUTHORIZED,
-                getErrorMessage(authException),
                 List.of(message),
                 request.getRequestURI(),
                 LocalDateTime.now()

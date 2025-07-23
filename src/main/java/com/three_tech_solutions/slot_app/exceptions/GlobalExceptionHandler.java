@@ -8,9 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @RestControllerAdvice
@@ -22,7 +20,7 @@ public class GlobalExceptionHandler {
                 .status(responseStatusException.getStatusCode())
                 .body(ApiError.builder()
                         .status(responseStatusException.getStatusCode().value())
-                        .errorMessage(responseStatusException.getReason())
+                        .errors(List.of(responseStatusException.getReason()))
                         .path(request.getRequestURI())
                         .timestamp(LocalDateTime.now())
                         .build()
@@ -33,14 +31,13 @@ public class GlobalExceptionHandler {
         List<String> errores = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> error.getDefaultMessage())
                 .toList();
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiError.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
-                        .errorMessage("Error de validación")
                         .errors(errores)
                         .path(request.getRequestURI())
                         .timestamp(LocalDateTime.now())
