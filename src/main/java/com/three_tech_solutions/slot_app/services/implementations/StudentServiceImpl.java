@@ -6,6 +6,7 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.dto.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.dto.StudentResponse;
 import com.three_tech_solutions.slot_app.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -72,6 +74,14 @@ public class StudentServiceImpl implements StudentService {
 
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
+    }
+
+    @Override
+    public StudentDetailsResponse getStudentById(UUID studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alumno no encontrado"));
+
+        return studentMapper.toStudentDetailsResponse(student);
     }
 
     @Override
