@@ -6,7 +6,6 @@ import com.three_tech_solutions.slot_app.controllers.interfaces.StudentControlle
 import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.UUID;
 
 @RestController
@@ -25,5 +24,10 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         return studentService.getStudentById(studentId);
+    }
+
+    @Override
+    public void activateStudent(UUID studentId) {
+        studentService.activateStudent(studentId);
     }
 }

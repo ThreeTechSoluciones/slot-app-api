@@ -12,4 +12,5 @@ public interface StudentService {
 
     StudentDetailsResponse getStudentById(UUID studentId);
 
+    void activateStudent(UUID studentId);
 }

@@ -1,6 +1,5 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -77,10 +76,20 @@ public class StudentServiceImpl implements StudentService {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
 
+    @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alumno no encontrado"));
 
         return studentMapper.toStudentDetailsResponse(student);
+    }
+
+    @Override
+    public void activateStudent(UUID studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudiante no encontrado"));
+
+        student.setEnabled(true);
+        studentRepository.save(student);
     }
 }
