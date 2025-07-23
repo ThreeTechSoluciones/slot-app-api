@@ -7,10 +7,11 @@ import static com.three_tech_solutions.slot_app.data.enums.StudentSituation.EN_T
 public record StudentResponse (
     String name,
     String lastname,
-    StudentSituation status
+    StudentSituation status,
+    Boolean isActive
 
-)
-    {public StudentResponse(String name, String lastname) {
-        this (name, lastname, EN_TERMINO);
+) {
+    public StudentResponse(String name, String lastname, boolean isActive) {
+        this (name, lastname, EN_TERMINO, isActive);
     }
 }
