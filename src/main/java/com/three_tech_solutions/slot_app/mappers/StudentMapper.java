@@ -20,6 +20,7 @@ public class StudentMapper {
         return new Student(
                 studentDTO.getName(),
                 studentDTO.getLastName(),
+                studentDTO.getDni(),
                 studentDTO.getCellphoneNumber(),
                 studentDTO.getBirthday(),
                 studentDTO.getPathologies(),

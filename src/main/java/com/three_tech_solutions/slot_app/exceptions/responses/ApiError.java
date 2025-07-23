@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 public record ApiError(
         int status,
-        String errorMessage,
+        List<String> errors,
         String path,
         LocalDateTime timestamp
 ) {

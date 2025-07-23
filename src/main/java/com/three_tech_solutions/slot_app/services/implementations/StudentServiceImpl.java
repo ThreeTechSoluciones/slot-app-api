@@ -54,7 +54,7 @@ public class StudentServiceImpl implements StudentService {
 
     private void validatePlanDetail(CreateStudentRequest studentDTO) {
         //El día de pago debe ser un dato opcional (obligatorio en caso de que el tipo de pago sea dia específico) y debe ser mayor o igual a 1 y menor o igual a 31
-        if(planTypeIsBeginningOfMonth(studentDTO) & studentDTO.getPaymentDay() != null) {
+        if (planTypeIsBeginningOfMonth(studentDTO) & studentDTO.getPaymentDay() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
         }
 

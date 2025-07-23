@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,9 +40,10 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
     }
 
     private static ApiError buildApiError(HttpServletRequest request, AuthenticationException authException) {
+        String message = getErrorMessage(authException);
         return new ApiError(
                 SC_UNAUTHORIZED,
-                getErrorMessage(authException),
+                List.of(message),
                 request.getRequestURI(),
                 LocalDateTime.now()
         );
