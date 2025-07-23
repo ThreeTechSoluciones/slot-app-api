@@ -14,10 +14,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.UUID;
 
-import static org.springframework.boot.autoconfigure.container.ContainerImageMetadata.isPresent;
 
 @Service
 public class StudentServiceImpl implements StudentService {
