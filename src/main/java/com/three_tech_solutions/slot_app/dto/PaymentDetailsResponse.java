@@ -1,24 +1,15 @@
-package com.three_tech_solutions.slot_app.data.models;
+package com.three_tech_solutions.slot_app.dto;
 
 import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class Payment {
-
-    @Id
+public class PaymentDetailsResponse {
     private UUID id;
     private int number;
     private LocalDateTime paymentDate;
