@@ -1,6 +1,5 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -15,9 +14,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 import java.util.UUID;
+
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -77,10 +75,31 @@ public class StudentServiceImpl implements StudentService {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
 
+    @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alumno no encontrado"));
 
         return studentMapper.toStudentDetailsResponse(student);
+    }
+
+    @Override
+    public void activateStudent(UUID studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudiante no encontrado"));
+
+        student.setEnabled(true);
+        studentRepository.save(student);
+    }
+    public void deleteStudent(UUID studentId){
+        studentRepository.findById(studentId)
+                .map(student -> {
+                    if (!student.isEnabled()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
+                    }
+                    student.setEnabled(false);
+                    return studentRepository.save(student);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
 }

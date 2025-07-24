@@ -9,7 +9,9 @@ import java.util.UUID;
 public interface StudentService {
 
     StudentResponse createStudent(CreateStudentRequest studentDTO);
+    void deleteStudent(UUID studentId);
 
     StudentDetailsResponse getStudentById(UUID studentId);
 
+    void activateStudent(UUID studentId);
 }

@@ -11,7 +11,8 @@ public class StudentMapper {
             return new StudentResponse(
                     student.getName(),
                     student.getLastname(),
-                    student.isEnabled() //se asigna al campo isActive del response
+                    student.isEnabled(),
+                    student.getId()
             );
         }
 
