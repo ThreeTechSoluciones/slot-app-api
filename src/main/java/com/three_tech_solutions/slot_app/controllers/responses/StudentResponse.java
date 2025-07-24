@@ -10,10 +10,11 @@ public record StudentResponse (
     String name,
     String lastname,
     StudentSituation status,
+    Boolean isActive,
     UUID studentId
 
-)
-    {public StudentResponse(String name, String lastname, UUID studentId) {
-        this (name, lastname, EN_TERMINO, studentId);
+) {
+    public StudentResponse(String name, String lastname, boolean isActive,UUID studentId) {
+        this(name, lastname, EN_TERMINO, isActive, studentId);
     }
 }

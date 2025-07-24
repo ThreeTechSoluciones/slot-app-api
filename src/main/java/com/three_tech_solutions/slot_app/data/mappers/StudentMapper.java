@@ -11,6 +11,7 @@ public class StudentMapper {
             return new StudentResponse(
                     student.getName(),
                     student.getLastname(),
+                    student.isEnabled(),
                     student.getId()
             );
         }
