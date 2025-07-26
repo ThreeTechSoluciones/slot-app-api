@@ -1,8 +1,8 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
-import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.dto.StudentDetailsResponse;
-import com.three_tech_solutions.slot_app.dto.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 
 import java.util.UUID;
 
