@@ -34,6 +34,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
         validatePlanDetail(studentDTO);
+        validateUniqueDNI(studentDTO);
 
         Plan plan = new Plan();
         plan.setId(UUID.randomUUID());
@@ -73,6 +74,11 @@ public class StudentServiceImpl implements StudentService {
 
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
+    }
+    private void validateUniqueDNI (CreateStudentRequest studentDTO){
+        if (studentRepository.existsByDni(studentDTO.getDni())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El DNI ya existe.");
+        }
     }
 
     @Override
