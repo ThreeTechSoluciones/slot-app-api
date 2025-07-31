@@ -55,12 +55,12 @@ public class StudentServiceImpl implements StudentService {
         }
 
         if (planTypeIsSpecificDay(studentDTO) && paymentDayIsInvalid(studentDTO)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 11 y 28.");
         }
     }
 
     private boolean paymentDayIsInvalid(CreateStudentRequest studentDTO) {
-        return studentDTO.getPaymentDay() <= 0 || studentDTO.getPaymentDay() > 31;
+        return studentDTO.getPaymentDay() <= 10 || studentDTO.getPaymentDay() > 28;
     }
 
     private boolean planTypeIsSpecificDay(CreateStudentRequest studentDTO) {
