@@ -24,7 +24,7 @@ public interface StudentController {
     StudentDetailsResponse getStudentById(@PathVariable UUID studentId);
 
     @PatchMapping("/{studentId}")
-    StudentResponse updateStudent (@PathVariable UUID studentId, UpdateStudentRequest studentUpdated);
+    StudentResponse updateStudent (@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
 
     @PostMapping("/{studentId}/activate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
