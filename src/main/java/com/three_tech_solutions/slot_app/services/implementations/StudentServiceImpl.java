@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.data.mappers.UpdateStudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -8,9 +9,11 @@ import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.dto.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.dto.StudentResponse;
+import com.three_tech_solutions.slot_app.dto.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -97,6 +100,8 @@ public class StudentServiceImpl implements StudentService {
         student.setEnabled(true);
         studentRepository.save(student);
     }
+
+    @Override
     public void deleteStudent(UUID studentId){
         studentRepository.findById(studentId)
                 .map(student -> {
@@ -108,4 +113,13 @@ public class StudentServiceImpl implements StudentService {
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
-}
+    @Override
+    public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
+        return studentRepository.findById(studentId)
+                .map(student -> {
+                    UpdateStudentMapper.updateStudentFromRequest(student, studentUpdated);
+                    studentRepository.save(student);
+                    return StudentMapper.toResponse(student);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+    }
