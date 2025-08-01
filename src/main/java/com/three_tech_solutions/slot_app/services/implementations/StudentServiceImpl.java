@@ -113,6 +113,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
+        validatePlanDetail(studentUpdated);
         return studentRepository.findById(studentId)
                 .map(student -> {
                     UpdateStudentMapper.updateStudentFromRequest(student, studentUpdated);
@@ -120,5 +121,27 @@ public class StudentServiceImpl implements StudentService {
                     return StudentMapper.toResponse(student);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+    }
+    private void validatePlanDetail(UpdateStudentRequest studentUpdated) {
+
+        if (planTypeIsBeginningOfMonth(studentUpdated) & studentUpdated.getPaymentDay() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
+        }
+
+        if (planTypeIsSpecificDay(studentUpdated) && paymentDayIsInvalid(studentUpdated)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+        }
+    }
+
+    private boolean paymentDayIsInvalid(UpdateStudentRequest studentUpdated) {
+        return studentUpdated.getPaymentDay() <= 0 || studentUpdated.getPaymentDay() > 31;
+    }
+
+    private boolean planTypeIsSpecificDay(UpdateStudentRequest studentUpdated) {
+        return studentUpdated.getPlanType().equals(PlanType.DIA_ESPECIFICO);
+    }
+
+    private boolean planTypeIsBeginningOfMonth(UpdateStudentRequest studentUpdated) {
+        return studentUpdated.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
 }
