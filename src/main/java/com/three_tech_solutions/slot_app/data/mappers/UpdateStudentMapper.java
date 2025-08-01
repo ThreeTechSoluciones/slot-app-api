@@ -1,10 +1,7 @@
 package com.three_tech_solutions.slot_app.data.mappers;
 
-import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.dto.UpdateStudentRequest;
-
-import java.util.List;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 
 public class UpdateStudentMapper {
 
@@ -22,5 +19,5 @@ public class UpdateStudentMapper {
 
         }
 
-        
+
 }

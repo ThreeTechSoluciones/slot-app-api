@@ -1,10 +1,10 @@
-package com.three_tech_solutions.slot_app.dto;
+package com.three_tech_solutions.slot_app.controllers.requests;
 
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID;
+
 @Data
 public class UpdateStudentRequest {
 

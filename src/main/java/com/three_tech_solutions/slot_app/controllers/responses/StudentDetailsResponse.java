@@ -1,5 +1,6 @@
-package com.three_tech_solutions.slot_app.dto;
+package com.three_tech_solutions.slot_app.controllers.responses;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,13 +15,13 @@ public class StudentDetailsResponse {
     private String name;
     private String lastName;
     private String cellphoneNumber;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthday;
     private String pathologies;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate admissionDate;
-
     private String planType;
     private byte classesPerWeek;
     private Byte paymentDay;
-
     private List<PaymentDetailsResponse> payments;
 }

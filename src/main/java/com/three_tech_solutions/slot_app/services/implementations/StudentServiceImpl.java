@@ -1,38 +1,35 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.data.mappers.UpdateStudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
+import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
-import com.three_tech_solutions.slot_app.dto.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.dto.StudentDetailsResponse;
-import com.three_tech_solutions.slot_app.dto.StudentResponse;
-import com.three_tech_solutions.slot_app.dto.UpdateStudentRequest;
-import com.three_tech_solutions.slot_app.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.hibernate.sql.Update;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.UUID;
 
 
 @Service
+@AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserService userService;
-
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, UserService userService) {
-
-        this.studentRepository = studentRepository;
-        this.studentMapper = studentMapper;
-        this.userService = userService;
-    }
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
@@ -78,7 +75,8 @@ public class StudentServiceImpl implements StudentService {
     private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
         return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
     }
-    private void validateUniqueDNI (CreateStudentRequest studentDTO){
+
+    private void validateUniqueDNI(CreateStudentRequest studentDTO) {
         if (studentRepository.existsByDni(studentDTO.getDni())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El DNI ya existe.");
         }
@@ -101,8 +99,9 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
+
     @Override
-    public void deleteStudent(UUID studentId){
+    public void deleteStudent(UUID studentId) {
         studentRepository.findById(studentId)
                 .map(student -> {
                     if (!student.isEnabled()) {
@@ -113,6 +112,7 @@ public class StudentServiceImpl implements StudentService {
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
+
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
         return studentRepository.findById(studentId)
@@ -123,3 +123,4 @@ public class StudentServiceImpl implements StudentService {
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
+}
