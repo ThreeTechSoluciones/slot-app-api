@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.exceptions.responses.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -49,5 +51,11 @@ public interface AuthController {
             )
             @RequestHeader(name = "authorization")
             String authorization
+    );
+
+    @PostMapping("/sign-up")
+    void signUp(
+            @RequestBody
+            CreateUserRequest createUserRequest
     );
 }

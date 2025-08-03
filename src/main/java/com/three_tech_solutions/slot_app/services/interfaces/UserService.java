@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ public interface UserService extends UserDetailsService {
     User loadUserByUsername(String username) throws UsernameNotFoundException;
     List<StudentResponse> getUserStudents(UUID userId);
     User getUserByIdOrThrowException(UUID id) ;
+
+    void createUser(String username, String password);
 }
