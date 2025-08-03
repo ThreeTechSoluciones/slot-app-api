@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,6 +13,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +31,18 @@ public class User implements UserDetails {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Student> students = Collections.emptyList();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private List<Price> prices = Collections.emptyList();
+    private List<Price> prices = new ArrayList<>(
+            List.of(
+                    new Price("1 dia"),
+                    new Price("2 dias"),
+                    new Price("3 dias"),
+                    new Price("4 dias"),
+                    new Price("Clase")
+            )
+    );
+
     @Id
     private UUID id = UUID.randomUUID();
 
