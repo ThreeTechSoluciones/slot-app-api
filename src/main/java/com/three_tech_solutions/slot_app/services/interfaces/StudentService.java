@@ -3,7 +3,9 @@ package com.three_tech_solutions.slot_app.services.interfaces;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.models.Student;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface StudentService {
@@ -14,4 +16,6 @@ public interface StudentService {
     StudentDetailsResponse getStudentById(UUID studentId);
 
     void activateStudent(UUID studentId);
+
+    List<Student> getStudents();
 }

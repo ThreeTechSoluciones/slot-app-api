@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -86,6 +87,11 @@ public class StudentServiceImpl implements StudentService {
 
         student.setEnabled(true);
         studentRepository.save(student);
+    }
+
+    @Override
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
     }
 
     public void deleteStudent(UUID studentId){
