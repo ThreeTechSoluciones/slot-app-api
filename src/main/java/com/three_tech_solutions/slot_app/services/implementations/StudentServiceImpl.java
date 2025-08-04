@@ -11,10 +11,16 @@ import com.three_tech_solutions.slot_app.dto.StudentResponse;
 import com.three_tech_solutions.slot_app.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.management.BadAttributeValueExpException;
 import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Service
@@ -46,20 +52,24 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = studentMapper.toStudent(studentDTO, plan, user);
 
-        studentRepository.save(student);
-
+        try{
+            studentRepository.save(student);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
+        } catch (Exception exception){
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR,"Ocurrió un error al registrar el estudiante. Intente nuevamente");
+        }
         return studentMapper.toStudentResponse(student);
-
     }
 
     private void validatePlanDetail(CreateStudentRequest studentDTO) {
         //El día de pago debe ser un dato opcional (obligatorio en caso de que el tipo de pago sea dia específico) y debe ser mayor o igual a 1 y menor o igual a 31
         if (planTypeIsBeginningOfMonth(studentDTO) & studentDTO.getPaymentDay() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
+            throw new ResponseStatusException(BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
         }
 
         if (planTypeIsSpecificDay(studentDTO) && paymentDayIsInvalid(studentDTO)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+            throw new ResponseStatusException(BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
         }
     }
 
@@ -95,7 +105,7 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.findById(studentId)
                 .map(student -> {
                     if (!student.isEnabled()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya está eliminado.");
+                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya está eliminado.");
                     }
                     student.setEnabled(false);
                     return studentRepository.save(student);

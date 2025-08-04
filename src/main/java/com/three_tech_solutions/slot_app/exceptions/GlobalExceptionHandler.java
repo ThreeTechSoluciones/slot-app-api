@@ -2,7 +2,6 @@ package com.three_tech_solutions.slot_app.exceptions;
 
 import com.three_tech_solutions.slot_app.exceptions.responses.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,23 +44,6 @@ public class GlobalExceptionHandler {
                         .build()
                 );
     }
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    ResponseEntity<ApiError> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
-        String mensaje = "Error de integridad de datos.";
 
-        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("dni")) {
-            mensaje = "El DNI ya está en uso. Por favor, ingrese uno diferente.";
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiError.builder()
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .errors(List.of(mensaje))
-                        .path(request.getRequestURI())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-                );
-    }
 }
 
