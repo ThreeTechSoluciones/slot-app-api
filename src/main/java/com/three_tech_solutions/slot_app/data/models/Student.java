@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Student {
     private String name;
     private String lastname;
+    @Column(unique = true)
     private String dni;
     private String phoneNumber;
     private LocalDate birthday;
