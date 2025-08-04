@@ -18,10 +18,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Payment {
-    private LocalDateTime paymentDate = null;
     private double amount;
     private PaymentStatus status;
     private LocalDateTime expirationDate;
+    private LocalDateTime paymentDate = null;
     @Column(unique = true)
     private int number;
     @Id
