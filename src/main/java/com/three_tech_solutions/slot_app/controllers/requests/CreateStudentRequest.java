@@ -1,7 +1,12 @@
-package com.three_tech_solutions.slot_app.dto;
+package com.three_tech_solutions.slot_app.controllers.requests;
 
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
