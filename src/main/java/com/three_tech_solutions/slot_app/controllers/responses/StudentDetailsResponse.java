@@ -14,6 +14,7 @@ public class StudentDetailsResponse {
     private UUID id;
     private String name;
     private String lastName;
+    private String dni;
     private String cellphoneNumber;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthday;

@@ -53,6 +53,7 @@ public class StudentMapper {
                 student.getId(),
                 student.getName(),
                 student.getLastname(),
+                student.getDni(),
                 student.getPhoneNumber(),
                 student.getBirthday(),
                 student.getPathologies(),
