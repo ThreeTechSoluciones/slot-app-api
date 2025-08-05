@@ -18,5 +18,5 @@ public interface StudentService {
 
     void activateStudent(UUID studentId);
 
-    StudentResponse updateStudent (UUID studentId, UpdateStudentRequest studentUpdated);
+    StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 }

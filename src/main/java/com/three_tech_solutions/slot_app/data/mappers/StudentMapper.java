@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.mappers;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PaymentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -16,14 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class StudentMapper {
 
-        public static StudentResponse toResponse(Student student) {
-            return new StudentResponse(
-                    student.getName(),
-                    student.getLastname(),
-                    student.isEnabled(),
-                    student.getId()
-            );
-        }
+
     public Student toStudent(CreateStudentRequest studentDTO, Plan plan, User user) {
         return new Student(
                 studentDTO.getName(),
@@ -40,7 +34,7 @@ public class StudentMapper {
     }
 
 
-    public StudentResponse toStudentResponse(Student student) {
+    public static StudentResponse toStudentResponse(Student student) {
         return new StudentResponse(
                 student.getName(),
                 student.getLastname(),
@@ -49,9 +43,9 @@ public class StudentMapper {
         );
     }
 
-    public List<StudentResponse> toResponseList(List<Student> students) {
+    public static List<StudentResponse> toResponseList(List<Student> students) {
         return students.stream()
-                .map(this::toStudentResponse)
+                .map(StudentMapper::toStudentResponse)
                 .toList();
     }
 
@@ -81,5 +75,15 @@ public class StudentMapper {
                 payment.getStatus(),
                 payment.getExpirationDate()
         );
+    }
+    public static void updateStudent(Student student, UpdateStudentRequest request) {
+        student.setName(request.getName());
+        student.setLastname(request.getLastName());
+        student.setDni(request.getDni());
+        student.setPhoneNumber(request.getCellphoneNumber());
+        student.getPlan().setPlanType(request.getPlanType());
+        student.getPlan().setPaymentDay(request.getPaymentDay());
+        student.setBirthday(request.getBirthday());
+        student.setPathologies(request.getPathologies());
     }
 }
