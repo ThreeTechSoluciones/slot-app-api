@@ -34,7 +34,7 @@ public class StudentMapper {
     }
 
 
-    public static StudentResponse toStudentResponse(Student student) {
+    public StudentResponse toStudentResponse(Student student) {
         return new StudentResponse(
                 student.getName(),
                 student.getLastname(),
@@ -43,9 +43,9 @@ public class StudentMapper {
         );
     }
 
-    public static List<StudentResponse> toResponseList(List<Student> students) {
+    public List<StudentResponse> toResponseList(List<Student> students) {
         return students.stream()
-                .map(StudentMapper::toStudentResponse)
+                .map(this::toStudentResponse)
                 .toList();
     }
 
@@ -76,7 +76,7 @@ public class StudentMapper {
                 payment.getExpirationDate()
         );
     }
-    public static void updateStudent(Student student, UpdateStudentRequest request) {
+    public void updateStudent(Student student, UpdateStudentRequest request) {
         student.setName(request.getName());
         student.setLastname(request.getLastName());
         student.setDni(request.getDni());

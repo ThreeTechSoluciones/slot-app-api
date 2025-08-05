@@ -49,29 +49,6 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-    private void validatePlanDetail(PlanType planType, Byte paymentDay) {
-
-        if (planTypeIsBeginningOfMonth(planType) & paymentDay!= null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
-        }
-
-        if (planTypeIsSpecificDay(planType) && paymentDayIsInvalid(paymentDay)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
-        }
-    }
-
-    private boolean paymentDayIsInvalid(Byte paymentDay) {
-        return paymentDay <= 0 || paymentDay > 31;
-    }
-
-    private boolean planTypeIsSpecificDay(PlanType planType) {
-        return PlanType.DIA_ESPECIFICO.equals(planType);
-    }
-
-    private boolean planTypeIsBeginningOfMonth(PlanType planType){
-        return PlanType.PRINCIPIO_DE_MES.equals(planType);
-    }
-
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
@@ -108,11 +85,34 @@ public class StudentServiceImpl implements StudentService {
         validatePlanDetail(studentUpdated.getPlanType(), studentUpdated.getPaymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
-                    StudentMapper.updateStudent(student, studentUpdated);
+                    studentMapper.updateStudent(student, studentUpdated);
                     studentRepository.save(student);
-                    return StudentMapper.toStudentResponse(student);
+                    return studentMapper.toStudentResponse(student);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+    }
+
+    private void validatePlanDetail(PlanType planType, Byte paymentDay) {
+
+        if (planTypeIsBeginningOfMonth(planType) & paymentDay!= null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
+        }
+
+        if (planTypeIsSpecificDay(planType) && paymentDayIsInvalid(paymentDay)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+        }
+    }
+
+    private boolean paymentDayIsInvalid(Byte paymentDay) {
+        return paymentDay <= 0 || paymentDay > 31;
+    }
+
+    private boolean planTypeIsSpecificDay(PlanType planType) {
+        return PlanType.DIA_ESPECIFICO.equals(planType);
+    }
+
+    private boolean planTypeIsBeginningOfMonth(PlanType planType){
+        return PlanType.PRINCIPIO_DE_MES.equals(planType);
     }
 
 }
