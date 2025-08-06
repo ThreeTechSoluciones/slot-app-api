@@ -9,12 +9,13 @@ import static com.three_tech_solutions.slot_app.data.enums.StudentSituation.EN_T
 public record StudentResponse (
     String name,
     String lastname,
+    String dni,
     StudentSituation status,
     Boolean isActive,
     UUID id
 
 ) {
-    public StudentResponse(String name, String lastname, boolean isActive, UUID studentId) {
-        this(name, lastname, EN_TERMINO, isActive, studentId);
+    public StudentResponse(String name, String lastname, String dni, boolean isActive, UUID studentId) {
+        this(name, lastname, dni, EN_TERMINO, isActive, studentId);
     }
 }

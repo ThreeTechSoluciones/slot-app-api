@@ -36,6 +36,7 @@ public class StudentMapper {
         return new StudentResponse(
                 student.getName(),
                 student.getLastname(),
+                student.getDni(),
                 student.isEnabled(),
                 student.getId()
         );
