@@ -77,13 +77,14 @@ public class StudentMapper {
         );
     }
     public void updateStudent(Student student, UpdateStudentRequest request) {
-        student.setName(request.getName());
-        student.setLastname(request.getLastName());
-        student.setDni(request.getDni());
-        student.setPhoneNumber(request.getCellphoneNumber());
-        student.getPlan().setPlanType(request.getPlanType());
-        student.getPlan().setPaymentDay(request.getPaymentDay());
-        student.setBirthday(request.getBirthday());
-        student.setPathologies(request.getPathologies());
+        student.setName(request.name());
+        student.setLastname(request.lastName());
+        student.setDni(request.dni());
+        student.setPhoneNumber(request.cellphoneNumber());
+        student.getPlan().setPlanType(request.planType());
+        student.getPlan().setPaymentDay(request.paymentDay());
+        student.getPlan().setClassesPerWeek(request.classesPerWeek());
+        student.setBirthday(request.birthday());
+        student.setPathologies(request.pathologies());
     }
 }

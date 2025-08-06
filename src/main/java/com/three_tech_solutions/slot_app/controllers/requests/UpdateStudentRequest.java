@@ -2,37 +2,40 @@ package com.three_tech_solutions.slot_app.controllers.requests;
 
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import jakarta.validation.constraints.*;
-import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-@Data
-public class UpdateStudentRequest {
+public record UpdateStudentRequest(
     @NotBlank(message = "Nombre es obligatorio")
-    private String name;
+    String name,
 
     @NotBlank(message = "Apellido es obligatorio")
-    private String lastName;
+    String lastName,
 
     @NotBlank(message = "DNI es obligatorio")
     @Size(max = 8, message = "DNI no puede tener más de 8 números")
     @Pattern(regexp = "\\d+", message = "DNI debe contener solo números")
-    private String dni;
+    String dni,
 
     @NotBlank (message = "Teléfono es obligatorio")
     @Pattern(regexp = "\\d{9,15}" , message ="Teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
-    private String cellphoneNumber;
+    String cellphoneNumber,
 
     @NotNull(message = "El tipo de plan es obligatorio")
-    private PlanType planType;
+    PlanType planType,
 
-    private Byte paymentDay;
+    @NotNull
+    @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
+    @Max(value = 7, message = "No puede haber más de 7 clases por semana")
+    Byte classesPerWeek,
+
+    Byte paymentDay,
 
     @NotNull(message = "Cumpleaños es obligatorio")
-    private LocalDate birthday;
+    LocalDate birthday,
 
-    private String pathologies;
-}
+    String pathologies
 
+    )
+{}
 

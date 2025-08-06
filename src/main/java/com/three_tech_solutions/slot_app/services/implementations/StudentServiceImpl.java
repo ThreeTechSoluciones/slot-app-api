@@ -82,7 +82,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-        validatePlanDetail(studentUpdated.getPlanType(), studentUpdated.getPaymentDay());
+        validatePlanDetail(studentUpdated.planType(), studentUpdated.paymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
                     studentMapper.updateStudent(student, studentUpdated);
