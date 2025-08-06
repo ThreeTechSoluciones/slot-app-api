@@ -57,30 +57,6 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-    private void validatePlanDetail(CreateStudentRequest studentDTO) {
-        //El día de pago debe ser un dato opcional (obligatorio en caso de que el tipo de pago sea dia específico) y debe ser mayor o igual a 1 y menor o igual a 31
-        if (planTypeIsBeginningOfMonth(studentDTO) & studentDTO.getPaymentDay() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
-        }
-
-        if (planTypeIsSpecificDay(studentDTO) && paymentDayIsInvalid(studentDTO)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
-        }
-    }
-
-    private boolean paymentDayIsInvalid(CreateStudentRequest studentDTO) {
-        return studentDTO.getPaymentDay() <= 0 || studentDTO.getPaymentDay() > 31;
-    }
-
-    private boolean planTypeIsSpecificDay(CreateStudentRequest studentDTO) {
-        return studentDTO.getPlanType().equals(PlanType.DIA_ESPECIFICO);
-    }
-
-    private boolean planTypeIsBeginningOfMonth(CreateStudentRequest studentDTO) {
-        return studentDTO.getPlanType().equals(PlanType.PRINCIPIO_DE_MES);
-    }
-
-
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
@@ -130,12 +106,12 @@ public class StudentServiceImpl implements StudentService {
         }
 
         if (planTypeIsSpecificDay(planType) && paymentDayIsInvalid(paymentDay)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El día de pago debe ser entre 1 y 31.");
+            throw new ResponseStatusException(BAD_REQUEST, "El día de pago debe ser entre 11 y 28.");
         }
     }
 
     private boolean paymentDayIsInvalid(Byte paymentDay) {
-        return paymentDay <= 0 || paymentDay > 31;
+        return paymentDay <= 10 || paymentDay > 28;
     }
 
     private boolean planTypeIsSpecificDay(PlanType planType) {
