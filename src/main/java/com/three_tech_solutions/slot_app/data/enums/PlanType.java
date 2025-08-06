@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum PlanType {
 
-    DIA_ESPECIFICO("Día específico", "Se vence el mismo día en cada mes."),
+    DIA_ESPECIFICO("Día específico", "Se vence el mismo día en cada mes y el día de pago es del 11 al 28 inclusives."),
     PRINCIPIO_DE_MES("Principio de mes", "Se paga del 1ro al 10 de cada mes.");
 
     final String name;
