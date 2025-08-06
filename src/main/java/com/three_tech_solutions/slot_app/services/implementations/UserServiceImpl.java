@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(BAD_REQUEST, "El usuario ya existe.");
         } catch (Exception e) {
-            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Ocurrio un error al registrar el usuario. Por favor, contacte con el administrador.");
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Ocurrió un error al registrar el usuario. Por favor, contacte con el administrador.");
         }
     }
 }

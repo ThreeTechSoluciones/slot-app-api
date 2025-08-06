@@ -40,7 +40,7 @@ class AuthServiceImpl implements AuthService {
         }
     }
 
-    private static boolean passwordsMatch(CreateUserRequest createUserRequest) {
+    private boolean passwordsMatch(CreateUserRequest createUserRequest) {
         return createUserRequest.password().equals(createUserRequest.repeatedPassword());
     }
 }
