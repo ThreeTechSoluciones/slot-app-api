@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.PriceUpdateRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.PriceUpdateResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
 import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.repositories.PriceRepository;
@@ -20,14 +20,14 @@ public class PriceServiceImpl implements PriceService {
 
     private final PriceRepository priceRepository;
     @Override
-    public PriceUpdateResponse updatePriceAmount(UUID priceId, PriceUpdateRequest request) {
-        Price price = priceRepository.findById(priceId)
+    public PriceResponse updatePriceAmount(UUID priceId, PriceUpdateRequest request) {
+        return priceRepository.findById(priceId)
+                .map(price -> {
+                    price.setAmount(request.amount());
+                    priceRepository.save(price);
+                    return PriceMapper.toPriceUpdateResponse(price);
+                })
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Precio no encontrado"));
-
-        price.setAmount(request.getAmount());
-        priceRepository.save(price);
-
-        return PriceMapper.toPriceUpdateResponse(price);
     }
 
 }

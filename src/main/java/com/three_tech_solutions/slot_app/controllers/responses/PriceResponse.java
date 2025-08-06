@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class PriceUpdateResponse {
+public class PriceResponse {
     private UUID id;
     private String name;
     private double amount;
