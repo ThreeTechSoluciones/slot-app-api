@@ -1,7 +1,9 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.StudentController;
+
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -15,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StudentControllerImpl implements StudentController {
     private final StudentService studentService;
+
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest createStudentRequest) {
@@ -35,5 +38,10 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public void activateStudent(UUID studentId) {
         studentService.activateStudent(studentId);
+    }
+
+    @Override
+    public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated){
+        return studentService.updateStudent(studentId, studentUpdated);
     }
 }

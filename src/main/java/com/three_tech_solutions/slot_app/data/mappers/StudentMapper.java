@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.mappers;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PaymentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentMapper {
+
 
     public Student toStudent(CreateStudentRequest studentDTO, Plan plan, User user) {
         return new Student(
@@ -36,6 +38,7 @@ public class StudentMapper {
         return new StudentResponse(
                 student.getName(),
                 student.getLastname(),
+                student.getDni(),
                 student.isEnabled(),
                 student.getId()
         );
@@ -53,6 +56,7 @@ public class StudentMapper {
                 student.getId(),
                 student.getName(),
                 student.getLastname(),
+                student.getDni(),
                 student.getPhoneNumber(),
                 student.getBirthday(),
                 student.getPathologies(),
@@ -73,5 +77,16 @@ public class StudentMapper {
                 payment.getStatus(),
                 payment.getExpirationDate()
         );
+    }
+    public void updateStudent(Student student, UpdateStudentRequest request) {
+        student.setName(request.name());
+        student.setLastname(request.lastName());
+        student.setDni(request.dni());
+        student.setPhoneNumber(request.cellphoneNumber());
+        student.getPlan().setPlanType(request.planType());
+        student.getPlan().setPaymentDay(request.paymentDay());
+        student.getPlan().setClassesPerWeek(request.classesPerWeek());
+        student.setBirthday(request.birthday());
+        student.setPathologies(request.pathologies());
     }
 }
