@@ -67,12 +67,12 @@ public class PaymentServiceImpl implements PaymentService {
         byte studentClassesPerWeek = student.getPlan().getClassesPerWeek();
         List<Price> professorPrices = student.getUser().getPrices();
 
-        Price selectedPrice = getProfessoPriceByStudentClassesPerWeek(professorPrices, studentClassesPerWeek);
+        Price selectedPrice = getProfessorPriceByStudentClassesPerWeek(professorPrices, studentClassesPerWeek);
 
         return studentClassesPerWeek * selectedPrice.getAmount();
     }
 
-    private Price getProfessoPriceByStudentClassesPerWeek(List<Price> professorPrices, byte studentClassesPerWeek) {
+    private Price getProfessorPriceByStudentClassesPerWeek(List<Price> professorPrices, byte studentClassesPerWeek) {
         return professorPrices.stream().filter(price ->
                         price.getName().equals(getPriceNameByClasses(Integer.valueOf(studentClassesPerWeek)))
                 )
