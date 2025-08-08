@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.models;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class Student {
     private String name;
     private String lastname;
+    @Column(unique = true)
     private String dni;
     private String phoneNumber;
     private LocalDate birthday;
