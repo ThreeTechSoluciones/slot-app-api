@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.AuthController;
+import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.AuthService;
 import com.three_tech_solutions.slot_app.utils.BasicAuthUtils;
@@ -17,5 +18,10 @@ public class AuthControllerImpl implements AuthController {
         return authService.signIn(
                 BasicAuthUtils.extractUsername(authorization)
         );
+    }
+
+    @Override
+    public void signUp(CreateUserRequest createUserRequest) {
+        authService.createUser(createUserRequest);
     }
 }
