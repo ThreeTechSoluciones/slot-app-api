@@ -1,12 +1,12 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
-import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.PlanType;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
@@ -17,6 +17,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -72,6 +74,11 @@ public class StudentServiceImpl implements StudentService {
 
         student.setEnabled(true);
         studentRepository.save(student);
+    }
+
+    @Override
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
     }
 
     @Override

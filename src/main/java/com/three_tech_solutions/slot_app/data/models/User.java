@@ -35,10 +35,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "user_id")
     private List<Price> prices = new ArrayList<>(
             List.of(
-                    new Price("1 dia"),
-                    new Price("2 dias"),
-                    new Price("3 dias"),
-                    new Price("4 dias"),
+                    new Price("1 Día"),
+                    new Price("2 Días"),
+                    new Price("3 Días"),
+                    new Price("4 Días"),
                     new Price("Clase")
             )
     );
