@@ -6,10 +6,10 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public record UpdateStudentRequest(
-    @NotBlank(message = "Nombre es obligatorio")
+    @NotBlank(message = "Nombre no puede estar vacío")
     String name,
 
-    @NotBlank(message = "Apellido es obligatorio")
+    @NotBlank(message = "Apellido no puede estar vacío")
     String lastName,
 
     @NotBlank(message = "DNI es obligatorio")
@@ -17,14 +17,14 @@ public record UpdateStudentRequest(
     @Pattern(regexp = "\\d+", message = "DNI debe contener solo números")
     String dni,
 
-    @NotBlank (message = "Teléfono es obligatorio")
+    @NotBlank (message = "Teléfono no puede estar vacío")
     @Pattern(regexp = "\\d{9,15}" , message ="Teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
     String cellphoneNumber,
 
     @NotNull(message = "El tipo de plan es obligatorio")
     PlanType planType,
 
-    @NotNull
+    @NotNull (message = "Clases por semana es obligatorio")
     @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
     @Max(value = 7, message = "No puede haber más de 7 clases por semana")
     Byte classesPerWeek,
