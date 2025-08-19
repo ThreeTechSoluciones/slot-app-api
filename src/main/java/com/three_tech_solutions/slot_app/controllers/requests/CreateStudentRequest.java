@@ -26,7 +26,7 @@ public class CreateStudentRequest {
     private String dni;
 
     @NotBlank
-    @Pattern(regexp = "\\d{9,15}") //minimo 9 digitos numéricos y maximo 15, sin espacios
+    @Pattern(regexp = "\\d{10,11}") //minimo 10 digitos numéricos y maximo 11, sin espacios
     private String cellphoneNumber;
 
     @NotNull
