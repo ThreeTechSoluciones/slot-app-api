@@ -18,7 +18,7 @@ public record UpdateStudentRequest(
     String dni,
 
     @NotBlank (message = "Teléfono es obligatorio")
-    @Pattern(regexp = "\\d{9,15}" , message ="Teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
+    @Pattern(regexp = "\\d{10,11}" , message ="Teléfono debe tener entre 10 y 11 dígitos" )//minimo 10 digitos numéricos y maximo 11, sin espacios
     String cellphoneNumber,
 
     @NotNull(message = "El tipo de plan es obligatorio")
