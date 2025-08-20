@@ -17,9 +17,15 @@ public class UserControllerImpl implements UserController {
 
     private final UserService userService;
 
+
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId) {
-        return userService.getUserStudents(userId);
+    public List<StudentResponse> getUserStudents(UUID userId, String studentName, String studentLastname, String studentDni) {
+        return userService.getUserStudents(
+                userId,
+                studentName,
+                studentLastname,
+                studentDni
+        );
     }
 
     @Override

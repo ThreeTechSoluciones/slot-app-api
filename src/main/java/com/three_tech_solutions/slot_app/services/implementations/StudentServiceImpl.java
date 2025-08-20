@@ -12,7 +12,7 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,12 +26,17 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Service
-@AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserService userService;
+
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService) {
+        this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
+        this.userService = userService;
+    }
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
@@ -104,6 +109,11 @@ public class StudentServiceImpl implements StudentService {
                     return studentMapper.toStudentResponse(student);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+    }
+
+    @Override
+    public List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String studentName, String studentLastname, String studentDni) {
+        return studentRepository.findAllByUserAndNameContainingAndLastnameContainingAndDniContaining(user, studentName, studentLastname, studentDni);
     }
 
     private void validatePlanDetail(PlanType planType, Byte paymentDay) {
