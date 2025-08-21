@@ -14,25 +14,25 @@ import java.util.UUID;
 
 @Data
 public class CreateStudentRequest {
-    @NotBlank(message="Nombre no puede estar vacío")
+    @NotBlank(message="El nombre no puede estar vacío")
     private String name;
 
-    @NotBlank(message="Apellido no puede estar vacío")
+    @NotBlank(message="El apellido no puede estar vacío")
     private String lastName;
 
-    @NotBlank(message = "DNI no puede estar vacío")
-    @Size(max = 8, message = "DNI no puede tener más de 8 números")
-    @Pattern(regexp = "\\d+", message = "DNI debe contener solo números")
+    @NotBlank(message = "El DNI no puede estar vacío")
+    @Size(max = 8, message = "El DNI no puede tener más de 8 números")
+    @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
     private String dni;
 
-    @NotBlank(message="Teléfono no puede estar vacío")
-    @Pattern(regexp = "\\d{9,15}" , message ="Teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
+    @NotBlank(message="El núemro de teléfono no puede estar vacío")
+    @Pattern(regexp = "\\d{9,15}" , message ="El número de teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
     private String cellphoneNumber;
 
     @NotNull(message = "El tipo de plan es obligatorio")
     private PlanType planType;
 
-    @NotNull(message = "Clases por semana es obligatorio")
+    @NotNull(message = "Las clases por semana son obligatorias")
     @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
     @Max(value = 7, message = "No puede haber más de 7 clases por semana")
     private byte classesPerWeek;
@@ -41,7 +41,7 @@ public class CreateStudentRequest {
 
     private Byte paymentDay;
 
-    @NotNull (message="Cumpleaños es obligatorio")
+    @NotNull (message="La fecha de cumpleaños es obligatoria")
     private LocalDate birthday;
 
     private LocalDate admissionDate = LocalDate.now();
