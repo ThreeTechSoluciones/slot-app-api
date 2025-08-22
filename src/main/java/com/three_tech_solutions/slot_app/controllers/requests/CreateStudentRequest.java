@@ -34,7 +34,7 @@ public class CreateStudentRequest {
 
     @NotNull
     @Min(1)
-    @Max(7)
+    @Max(4)
     private byte classesPerWeek;
 
     private Byte extraClasses;

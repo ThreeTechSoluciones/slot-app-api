@@ -15,10 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @AllArgsConstructor
@@ -30,7 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final StudentService studentService;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "0 * * * * *")
     @Override
     public void createStudentsPayment() {
         log.info("Iniciando proceso de creacion de pagos");
@@ -40,14 +39,25 @@ public class PaymentServiceImpl implements PaymentService {
                 log.info("Creando pago para el estudiante: {}", student);
                 if (studentPlanIsPrincipioDeMes(student)) {
                     log.info("El plan es {}", PlanType.PRINCIPIO_DE_MES.getName());
-
                     paymentRepository.save(new Payment(
                             getPaymentAmount(student),
                             PaymentStatus.EN_TERMINO,
                             LocalDateTime.now().withDayOfMonth(10),
-                            getPaymentNumber()
+                            getPaymentNumber(),
+                            student
+                    ));
+                } else{
+                    log.info("El plan es {}", PlanType.DIA_ESPECIFICO.getName());
+                    paymentRepository.save(new Payment(
+                            getPaymentAmount(student),
+                            PaymentStatus.EN_TERMINO,
+                            LocalDateTime.now().withDayOfMonth(student.getPlan().getPaymentDay()),
+                            getPaymentNumber(),
+                            student
                     ));
                 }
+            } catch (DateTimeException e) {
+                log.error("El día de pago no es válido");
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
             }
@@ -84,3 +94,4 @@ public class PaymentServiceImpl implements PaymentService {
         return PricesUtil.PriceNameByNumberOfDays.get(studentClassesPerWeek);
     }
 }
+

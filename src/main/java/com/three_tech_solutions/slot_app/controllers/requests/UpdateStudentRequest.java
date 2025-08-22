@@ -26,7 +26,7 @@ public record UpdateStudentRequest(
 
     @NotNull
     @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
-    @Max(value = 7, message = "No puede haber más de 7 clases por semana")
+    @Max(value = 4, message = "No puede haber más de 4 clases por semana")
     Byte classesPerWeek,
 
     Byte paymentDay,
