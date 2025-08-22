@@ -17,8 +17,8 @@ public record UpdateStudentRequest(
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
     String dni,
 
-    @NotBlank (message = "El número de teléfono no puede estar vacío")
-    @Pattern(regexp = "\\d{9,15}" , message ="El número de teléfono debe tener entre 9 y 15 dígitos" )//minimo 9 digitos numéricos y maximo 15, sin espacios
+    @NotBlank (message = "El número de teléfono es obligatorio")
+    @Pattern(regexp = "\\d{10,11}" , message ="El número de teléfono debe tener entre 10 y 11 dígitos" )
     String cellphoneNumber,
 
     @NotNull(message = "El tipo de plan es obligatorio")
