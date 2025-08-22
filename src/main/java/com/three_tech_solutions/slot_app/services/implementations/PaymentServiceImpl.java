@@ -29,7 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final StudentService studentService;
 
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 1 * *")
     @Override
     public void createStudentsPayment() {
         log.info("Iniciando proceso de creacion de pagos");
