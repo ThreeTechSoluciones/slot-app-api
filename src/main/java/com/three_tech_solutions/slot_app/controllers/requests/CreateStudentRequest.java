@@ -14,39 +14,38 @@ import java.util.UUID;
 
 @Data
 public class CreateStudentRequest {
-    @NotBlank
+    @NotBlank(message="El nombre no puede estar vacío")
     private String name;
 
-    @NotBlank
+    @NotBlank(message="El apellido no puede estar vacío")
     private String lastName;
 
-    @NotBlank(message = "El DNI es obligatorio")
+    @NotBlank(message = "El DNI no puede estar vacío")
     @Size(max = 8, message = "El DNI no puede tener más de 8 números")
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
     private String dni;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{10,11}") //minimo 10 digitos numéricos y maximo 11, sin espacios
+    @NotBlank (message = "El número de teléfono es obligatorio")
+    @Pattern(regexp = "\\d{10,11}" , message ="El número de teléfono debe tener entre 10 y 11 dígitos" )
     private String cellphoneNumber;
 
-    @NotNull
+    @NotNull(message = "El tipo de plan es obligatorio")
     private PlanType planType;
 
-    @NotNull
-    @Min(1)
-    @Max(7)
+    @NotNull (message = "Las clases por semana son obligatorias")
+    @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
+    @Max(value = 7, message = "No puede haber más de 7 clases por semana")
     private byte classesPerWeek;
 
     private Byte extraClasses;
 
     private Byte paymentDay;
 
-    @NotNull
+    @NotNull(message = "La fecha de cumpleaños es obligatoria")
     private LocalDate birthday;
 
     private LocalDate admissionDate = LocalDate.now();
 
-    @Size(min = 1)
     private String pathologies;
 
     private UUID userId;
