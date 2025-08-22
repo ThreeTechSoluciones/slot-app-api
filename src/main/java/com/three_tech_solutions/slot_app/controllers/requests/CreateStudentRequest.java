@@ -25,14 +25,14 @@ public class CreateStudentRequest {
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
     private String dni;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{10,11}") //minimo 10 digitos numéricos y maximo 11, sin espacios
+    @NotBlank (message = "El número de teléfono es obligatorio")
+    @Pattern(regexp = "\\d{10,11}" , message ="El número de teléfono debe tener entre 10 y 11 dígitos" )
     private String cellphoneNumber;
 
     @NotNull(message = "El tipo de plan es obligatorio")
     private PlanType planType;
 
-    @NotNull
+    @NotNull (message = "Las clases por semana son obligatorias")
     @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
     @Max(value = 7, message = "No puede haber más de 7 clases por semana")
     private byte classesPerWeek;
@@ -41,12 +41,11 @@ public class CreateStudentRequest {
 
     private Byte paymentDay;
 
-    @NotNull
+    @NotNull(message = "La fecha de cumpleaños es obligatoria")
     private LocalDate birthday;
 
     private LocalDate admissionDate = LocalDate.now();
 
-    @Size(min = 1)
     private String pathologies;
 
     private UUID userId;
