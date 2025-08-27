@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StudentRepository extends JpaRepository<Student, UUID> {
-    List<Student> findAllByUserAndNameContainingAndLastnameContainingAndDniContaining(
+    List<Student> findAllByUserAndNameContainingOrLastnameContainingOrDniContaining(
             User user,
             String studentName,
             String studentLastname,

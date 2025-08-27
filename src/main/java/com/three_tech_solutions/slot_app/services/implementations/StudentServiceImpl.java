@@ -112,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String studentName, String studentLastname, String studentDni) {
-        return studentRepository.findAllByUserAndNameContainingAndLastnameContainingAndDniContaining(user, studentName, studentLastname, studentDni);
+        return studentRepository.findAllByUserAndNameContainingOrLastnameContainingOrDniContaining(user, studentName, studentLastname, studentDni);
     }
 
     private void validatePlanDetail(PlanType planType, Byte paymentDay) {
