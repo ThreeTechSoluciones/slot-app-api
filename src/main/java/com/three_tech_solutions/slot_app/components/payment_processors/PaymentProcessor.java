@@ -8,10 +8,8 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.utils.PricesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j

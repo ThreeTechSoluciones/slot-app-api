@@ -22,16 +22,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final StudentService studentService;
+    private final PaymentProcessorFactory paymentProcessorFactory;
 
     @Transactional
-    @Scheduled(cron = "0 1 * * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     @Override
     public void createStudentsPayment() {
         log.info("Iniciando proceso de creacion de pagos");
         List<Student> students = studentService.getStudents();
         students.forEach(student -> {
             try {
-                PaymentProcessor paymentProcessor = new PaymentProcessorFactory().getPaymentProcessor(student.getPlan().getPlanType());
+                PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(student.getPlan().getPlanType());
                 Payment payment = paymentProcessor.createStudentPayment(student, getPaymentNumber());
                 paymentRepository.save(payment);
             } catch (Exception e) {
