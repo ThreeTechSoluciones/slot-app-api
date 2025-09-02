@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 @Component
 public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
 
+    private final int BEGINNING_OF_MONTH_EXPIRATION_DATE=10;
+
     @Override
     public PlanType getCurrentPlan() {
         return PlanType.BEGINNING_OF_MONTH;
     }
-    private final int BEGINNING_OF_MONTH_EXPIRATION_DATE=10;
+
     @Override
     public LocalDateTime getExpirationDate(Student student) {
         return LocalDateTime.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);

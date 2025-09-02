@@ -12,7 +12,7 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,12 +26,17 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Service
-@AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserService userService;
+
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService) {
+        this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
+        this.userService = userService;
+    }
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
@@ -43,7 +48,6 @@ public class StudentServiceImpl implements StudentService {
         plan.setPaymentDay(studentDTO.getPaymentDay());
         plan.setPlanType(studentDTO.getPlanType());
 
-        //Al registrar el alumno, debe vincularse con el usuario (profesional logueado)
         User user = userService.getUserByIdOrThrowException(studentDTO.getUserId());
 
         Student student = studentMapper.toStudent(studentDTO, plan, user);
@@ -62,7 +66,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alumno no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
 
         return studentMapper.toStudentDetailsResponse(student);
     }
@@ -70,7 +74,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void activateStudent(UUID studentId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudiante no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
 
         student.setEnabled(true);
         studentRepository.save(student);
@@ -106,10 +110,15 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
 
+    @Override
+    public List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String studentName, String studentLastname, String studentDni) {
+        return studentRepository.findAllByUserAndNameContainingAndLastnameContainingAndDniContaining(user, studentName, studentLastname, studentDni);
+    }
+
     private void validatePlanDetail(PlanType planType, Byte paymentDay) {
 
         if (planTypeIsBeginningOfMonth(planType) & paymentDay!= null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No debe especificar día de pago para el plan 'Principio de mes'.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se debe especificar día de pago para el plan 'Principio de mes'.");
         }
 
         if (planTypeIsSpecificDay(planType) && paymentDayIsInvalid(paymentDay)) {

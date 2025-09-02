@@ -6,6 +6,7 @@ import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PriceMapper priceMapper;
     private final PasswordEncoder passwordEncoder;
@@ -35,10 +37,16 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Credenciales ingresadas incorrectas"));
     }
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId) {
-        return userRepository.findById(userId)
-                .map(user -> studentMapper.toResponseList(user.getStudents()))
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El usuario no existe"));
+    public List<StudentResponse> getUserStudents(UUID userId, String studentName, String studentLastname, String studentDni) {
+        return studentService.getStudentsByUserAndNameAndLastNameAndDni(
+                getUserByIdOrThrowException(userId),
+                studentName,
+                studentLastname,
+                studentDni
+        )
+                .stream()
+                .map(studentMapper::toStudentResponse)
+                .toList();
     }
     @Override
     public User getUserByIdOrThrowException(UUID id) {

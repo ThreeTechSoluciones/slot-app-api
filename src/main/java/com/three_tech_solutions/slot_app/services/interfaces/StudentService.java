@@ -6,6 +6,7 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.models.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,4 +24,6 @@ public interface StudentService {
     List<Student> getStudents();
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
+
+    List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String studentName, String studentLastname, String studentDni);
 }
