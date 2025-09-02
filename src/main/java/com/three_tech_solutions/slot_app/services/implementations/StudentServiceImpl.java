@@ -122,11 +122,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private boolean planTypeIsSpecificDay(PlanType planType) {
-        return PlanType.DIA_ESPECIFICO.equals(planType);
+        return PlanType.SPECIFIC_DAY.equals(planType);
     }
 
     private boolean planTypeIsBeginningOfMonth(PlanType planType){
-        return PlanType.PRINCIPIO_DE_MES.equals(planType);
+        return PlanType.BEGINNING_OF_MONTH.equals(planType);
     }
 
 }
