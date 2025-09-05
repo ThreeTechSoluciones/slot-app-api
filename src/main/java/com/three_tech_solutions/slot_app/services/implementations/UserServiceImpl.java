@@ -36,18 +36,18 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Credenciales ingresadas incorrectas"));
     }
+
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String studentName, String studentLastname, String studentDni) {
+    public List<StudentResponse> getUserStudents(UUID userId, String filter) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
-                getUserByIdOrThrowException(userId),
-                studentName,
-                studentLastname,
-                studentDni
-        )
+                    getUserByIdOrThrowException(userId),
+                    filter
+            )
                 .stream()
                 .map(studentMapper::toStudentResponse)
                 .toList();
     }
+
     @Override
     public User getUserByIdOrThrowException(UUID id) {
         return userRepository.findById(id)

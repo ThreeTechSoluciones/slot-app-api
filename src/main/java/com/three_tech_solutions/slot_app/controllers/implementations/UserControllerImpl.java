@@ -19,12 +19,10 @@ public class UserControllerImpl implements UserController {
 
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String studentName, String studentLastname, String studentDni) {
+    public List<StudentResponse> getUserStudents(UUID userId, String filter) {
         return userService.getUserStudents(
                 userId,
-                studentName,
-                studentLastname,
-                studentDni
+                filter
         );
     }
 

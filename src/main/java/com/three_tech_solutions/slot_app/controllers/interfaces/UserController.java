@@ -15,9 +15,7 @@ public interface UserController {
     @GetMapping("/{userId}/students")
     List<StudentResponse> getUserStudents(
             @PathVariable UUID userId,
-            @RequestParam(required = false, defaultValue = "") String studentName,
-            @RequestParam(required = false, defaultValue = "") String studentLastname,
-            @RequestParam(required = false, defaultValue = "") String studentDni
+            @RequestParam(required = false, defaultValue = "") String filter
     );
 
     @GetMapping("/{userId}/prices")

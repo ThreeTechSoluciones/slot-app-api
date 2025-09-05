@@ -25,5 +25,5 @@ public interface StudentService {
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 
-    List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String studentName, String studentLastname, String studentDni);
+    List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters);
 }
