@@ -48,4 +48,6 @@ public abstract class PaymentProcessor {
     private String getPriceNameByClasses(Integer studentClassesPerWeek) {
         return PricesUtil.PriceNameByNumberOfDays.get(studentClassesPerWeek);
     }
+
+    public abstract Payment createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses);
 }
