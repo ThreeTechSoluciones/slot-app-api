@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-public class DiaEspecifoPaymentProccesor extends PaymentProcessor {
+
+public class SpecificDayPaymentProcessor extends PaymentProcessor {
     @Override
     public PlanType getCurrentPlan() {
-        return PlanType.DIA_ESPECIFICO;
+        return PlanType.SPECIFIC_DAY;
     }
-
     @Override
     public LocalDateTime getExpirationDate(Student student) {
         return LocalDateTime.now().withDayOfMonth(student.getPlan().getPaymentDay());
