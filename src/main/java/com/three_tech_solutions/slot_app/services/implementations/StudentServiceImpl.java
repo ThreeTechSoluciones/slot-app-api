@@ -35,7 +35,7 @@ public class StudentServiceImpl implements StudentService {
     private final PaymentService paymentService;
 
 
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService, PaymentService paymentService) {
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService, @Lazy PaymentService paymentService) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
