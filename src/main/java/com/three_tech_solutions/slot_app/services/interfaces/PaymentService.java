@@ -8,4 +8,5 @@ public interface PaymentService {
 
     void createStudentsPayment();
     Payment createInitialPayment(Student student, Byte extraClasses);
+
 }
