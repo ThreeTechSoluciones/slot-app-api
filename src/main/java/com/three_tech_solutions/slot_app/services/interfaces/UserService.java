@@ -12,7 +12,9 @@ import java.util.UUID;
 public interface UserService extends UserDetailsService {
     @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
-    List<StudentResponse> getUserStudents(UUID userId, String studentName, String studentLastname, String studentDni);
+
+    List<StudentResponse> getUserStudents(UUID userId, String filter);
+
     User getUserByIdOrThrowException(UUID id) ;
 
     void createUser(String username, String password);
