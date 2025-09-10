@@ -40,9 +40,6 @@ public class PaymentServiceImpl implements PaymentService {
             }
         });
     }
-    private int getPaymentNumber() {
-        return paymentRepository.getLastPaymentNumber().orElse(0) + 1;
-    }
 
     @Override
     public Payment createInitialPayment(Student student, Byte extraClasses) {
@@ -51,5 +48,8 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.save(payment);
     }
 
+    private int getPaymentNumber() {
+        return paymentRepository.getLastPaymentNumber().orElse(0) + 1;
+    }
 }
 

@@ -29,21 +29,21 @@ public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
 
     @Override
     public Payment createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses) {
-        LocalDate today = LocalDate.now();
+        return getTodayDay() <= 10 ?
+                createStudentPayment(student, newPaymentNumber) :
+                createPaymentWithExtraClasses(student, newPaymentNumber, extraClasses);
+    }
 
-        if (today.getDayOfMonth() <= 10) {
-            return createStudentPayment(student, newPaymentNumber);
-        }
-        double amount = calculateExtraClassesAmount(student, extraClasses);
-        return new Payment(amount, PaymentStatus.EN_TERMINO, getExpirationDate(student), newPaymentNumber, student);
+    private static int getTodayDay() {
+        return LocalDate.now().getDayOfMonth();
+    }
+
+    private Payment createPaymentWithExtraClasses(Student student, int newPaymentNumber, Byte extraClasses) {
+        return createPayment(student, newPaymentNumber, calculateExtraClassesAmount(student, extraClasses));
     }
 
     private double calculateExtraClassesAmount(Student student, Byte extraClasses) {
-        if (extraClasses == null || extraClasses <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Debe especificar la cantidad de clases extra si la inscripción es posterior al día 10");
-        }
-
+        validateExtraClassesOrThrowException(extraClasses);
         double pricePerClass = student.getUser().getPrices().stream()
                 .filter(p -> p.getName().equals("Clase"))
                 .findFirst()
@@ -52,5 +52,12 @@ public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
                 .getAmount();
 
         return extraClasses * pricePerClass;
+    }
+
+    private static void validateExtraClassesOrThrowException(Byte extraClasses) {
+        if (extraClasses == null || extraClasses <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Debe especificar la cantidad de clases extra si la inscripción es posterior al día 10");
+        }
     }
 }
