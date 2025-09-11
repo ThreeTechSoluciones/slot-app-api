@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 @Component
 
 public class SpecificDayPaymentProcessor extends PaymentProcessor {
+
     @Override
     public PlanType getCurrentPlan() {
         return PlanType.SPECIFIC_DAY;
     }
+
     @Override
     public LocalDateTime getExpirationDate(Student student) {
         return LocalDateTime.now().withDayOfMonth(student.getPlan().getPaymentDay());

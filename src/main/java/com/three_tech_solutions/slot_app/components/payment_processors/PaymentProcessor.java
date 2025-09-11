@@ -14,20 +14,21 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public abstract class PaymentProcessor {
-    protected Payment createPayment(Student student, int newPaymentNumber, double amount) {
-        return new Payment(
-                amount,
-                PaymentStatus.EN_TERMINO,
-                getExpirationDate(student),
-                newPaymentNumber,
-                student
-        );
-    }
 
     public Payment createStudentPayment(Student student, int newPaymentNumber){
         log.info("Creando pago para el estudiante: {}", student);
         log.info("El plan es {}", getCurrentPlan());
-        return createPayment(student, newPaymentNumber, getPaymentAmount(student));
+        return createPayment(getExpirationDate(student),student, newPaymentNumber, getPaymentAmount(student));
+    }
+
+    protected Payment createPayment( LocalDateTime expirationDate,Student student, int newPaymentNumber, double amount) {
+        return new Payment(
+                amount,
+                PaymentStatus.EN_TERMINO,
+                expirationDate,
+                newPaymentNumber,
+                student
+        );
     }
     public abstract Payment createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses);
     public abstract PlanType getCurrentPlan();

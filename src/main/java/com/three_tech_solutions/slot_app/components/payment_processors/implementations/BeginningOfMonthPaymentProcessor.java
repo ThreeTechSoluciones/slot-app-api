@@ -39,7 +39,7 @@ public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
     }
 
     private Payment createPaymentWithExtraClasses(Student student, int newPaymentNumber, Byte extraClasses) {
-        return createPayment(student, newPaymentNumber, calculateExtraClassesAmount(student, extraClasses));
+        return createPayment(LocalDateTime.now(),student, newPaymentNumber, calculateExtraClassesAmount(student, extraClasses));
     }
 
     private double calculateExtraClassesAmount(Student student, Byte extraClasses) {
