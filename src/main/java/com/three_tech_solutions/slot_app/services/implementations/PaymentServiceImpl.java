@@ -40,6 +40,14 @@ public class PaymentServiceImpl implements PaymentService {
             }
         });
     }
+
+    @Override
+    public Payment createInitialPayment(Student student, Byte extraClasses) {
+        PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(student.getPlan().getPlanType());
+        Payment payment = paymentProcessor.createInitialStudentPayment(student, getPaymentNumber(), extraClasses);
+        return paymentRepository.save(payment);
+    }
+
     private int getPaymentNumber() {
         return paymentRepository.getLastPaymentNumber().orElse(0) + 1;
     }

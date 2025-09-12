@@ -14,17 +14,23 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public abstract class PaymentProcessor {
+
     public Payment createStudentPayment(Student student, int newPaymentNumber){
         log.info("Creando pago para el estudiante: {}", student);
         log.info("El plan es {}", getCurrentPlan());
+        return createPayment(getExpirationDate(student),student, newPaymentNumber, getPaymentAmount(student));
+    }
+
+    protected Payment createPayment( LocalDateTime expirationDate,Student student, int newPaymentNumber, double amount) {
         return new Payment(
-                getPaymentAmount(student),
+                amount,
                 PaymentStatus.EN_TERMINO,
-                getExpirationDate(student),
+                expirationDate,
                 newPaymentNumber,
                 student
         );
     }
+    public abstract Payment createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses);
     public abstract PlanType getCurrentPlan();
 
     public abstract  LocalDateTime getExpirationDate(Student student);
@@ -48,4 +54,5 @@ public abstract class PaymentProcessor {
     private String getPriceNameByClasses(Integer studentClassesPerWeek) {
         return PricesUtil.PriceNameByNumberOfDays.get(studentClassesPerWeek);
     }
+
 }

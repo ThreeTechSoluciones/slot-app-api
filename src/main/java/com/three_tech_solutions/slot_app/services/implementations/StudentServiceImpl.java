@@ -10,6 +10,7 @@ import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.context.annotation.Lazy;
@@ -31,11 +32,14 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserService userService;
+    private final PaymentService paymentService;
 
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService) {
+
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService, @Lazy PaymentService paymentService) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -54,6 +58,7 @@ public class StudentServiceImpl implements StudentService {
 
         try{
             studentRepository.save(student);
+            paymentService.createInitialPayment(student, studentDTO.getExtraClasses());
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (Exception exception){
