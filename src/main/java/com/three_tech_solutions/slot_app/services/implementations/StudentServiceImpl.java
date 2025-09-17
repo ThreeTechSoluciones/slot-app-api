@@ -66,7 +66,6 @@ public class StudentServiceImpl implements StudentService {
 
         try{
             studentRepository.save(student);
-            // TODO: Verificar pago inicial, por qué da error al generar el pago??
             monthlyFeeService.createInitialPayment(student, studentDTO);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");

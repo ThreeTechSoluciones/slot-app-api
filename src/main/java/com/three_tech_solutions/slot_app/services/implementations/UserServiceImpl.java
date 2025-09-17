@@ -3,7 +3,6 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final StudentService studentService;
     private final StudentMapper studentMapper;
-    private final PriceMapper priceMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -69,19 +66,6 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Ocurrió un error al registrar el usuario. Por favor, contacte con el administrador.");
         }
     }
-
-    @Override
-    public List<PriceResponse> getUserPrices(UUID userId) {
-        //TODO: Agregar lógica para obtener los precios vigentes
-        /*
-        return userRepository.findById(userId)
-                .map(user -> priceMapper.toPriceResponseList(user.getPrices()))
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
-
-         */
-        return Collections.emptyList();
-    }
-
     @Override
     public List<PlanResponse> getUserPlans(UUID userId) {
         return userRepository.findById(userId)
