@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -11,10 +12,10 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
-public class Payment {
-        int number;
-        LocalDate paymentDate;
-        double amount;
+public class Notification {
+        LocalDate sendDate;
+        String message;
+        NotificationType type;
         @Id
         UUID id;
 }

@@ -4,13 +4,14 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentReque
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.data.enums.PlanType;
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.context.annotation.Lazy;
@@ -33,32 +34,36 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper studentMapper;
     private final UserService userService;
     private final PaymentService paymentService;
+    private final PlanService planService;
 
-
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, @Lazy UserService userService, @Lazy PaymentService paymentService) {
+    // TODO: Verificar dependencias circulares, ¿por qué tantas?
+    public StudentServiceImpl(
+            StudentRepository studentRepository,
+            StudentMapper studentMapper,
+            @Lazy UserService userService,
+            @Lazy PaymentService paymentService,
+            @Lazy PlanService planService
+    ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
         this.paymentService = paymentService;
+        this.planService = planService;
     }
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        validatePlanDetail(studentDTO.getPlanType(), studentDTO.getPaymentDay());
+        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
 
-        Plan plan = new Plan();
-        plan.setId(UUID.randomUUID());
-        plan.setClassesPerWeek(studentDTO.getClassesPerWeek());
-        plan.setPaymentDay(studentDTO.getPaymentDay());
-        plan.setPlanType(studentDTO.getPlanType());
-
-        User user = userService.getUserByIdOrThrowException(studentDTO.getUserId());
+        Plan plan = getPlanByIdOrThrowException(studentDTO.getPlanId());
+        User user = getUserByIdOrThrowException(studentDTO.getUserId());
 
         Student student = studentMapper.toStudent(studentDTO, plan, user);
 
         try{
             studentRepository.save(student);
-            paymentService.createInitialPayment(student, studentDTO.getExtraClasses());
+            // TODO: Verificar pago inicial, por qué da error al generar el pago??
+            // paymentService.createInitialPayment(student, studentDTO.getExtraClasses());
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (Exception exception){
@@ -66,6 +71,14 @@ public class StudentServiceImpl implements StudentService {
         }
         return studentMapper.toStudentResponse(student);
 
+    }
+
+    private User getUserByIdOrThrowException(UUID userId) {
+        return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private Plan getPlanByIdOrThrowException(UUID planId) {
+        return planService.getPlanByIdOrThrowException(planId);
     }
 
     @Override
@@ -80,6 +93,7 @@ public class StudentServiceImpl implements StudentService {
     public void activateStudent(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+
 
         student.setEnabled(true);
         studentRepository.save(student);
@@ -105,10 +119,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-        validatePlanDetail(studentUpdated.planType(), studentUpdated.paymentDay());
+        validatePlanDetail(studentUpdated.paymentPlanName(), studentUpdated.paymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
-                    studentMapper.updateStudent(student, studentUpdated);
+                    studentMapper.updateStudent(
+                            student,
+                            studentUpdated,
+                            getPlanByIdOrThrowException(studentUpdated.planId())
+                    );
                     studentRepository.save(student);
                     return studentMapper.toStudentResponse(student);
                 })
@@ -120,13 +138,13 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters);
     }
 
-    private void validatePlanDetail(PlanType planType, Byte paymentDay) {
+    private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay) {
 
-        if (planTypeIsBeginningOfMonth(planType) & paymentDay!= null) {
+        if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se debe especificar día de pago para el plan 'Principio de mes'.");
         }
 
-        if (planTypeIsSpecificDay(planType) && paymentDayIsInvalid(paymentDay)) {
+        if (planTypeIsSpecificDay(paymentPlanName) && paymentDayIsInvalid(paymentDay)) {
             throw new ResponseStatusException(BAD_REQUEST, "El día de pago debe ser entre 11 y 28.");
         }
     }
@@ -135,12 +153,12 @@ public class StudentServiceImpl implements StudentService {
         return paymentDay <= 10 || paymentDay > 28;
     }
 
-    private boolean planTypeIsSpecificDay(PlanType planType) {
-        return PlanType.SPECIFIC_DAY.equals(planType);
+    private boolean planTypeIsSpecificDay(PaymentPlanName paymentPlanName) {
+        return PaymentPlanName.SPECIFIC_DAY.equals(paymentPlanName);
     }
 
-    private boolean planTypeIsBeginningOfMonth(PlanType planType){
-        return PlanType.BEGINNING_OF_MONTH.equals(planType);
+    private boolean planTypeIsBeginningOfMonth(PaymentPlanName paymentPlanName){
+        return PaymentPlanName.BEGINNING_OF_MONTH.equals(paymentPlanName);
     }
 
 }

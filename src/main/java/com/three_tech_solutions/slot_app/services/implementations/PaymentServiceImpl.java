@@ -2,7 +2,8 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.payment_processors.PaymentProcessor;
 import com.three_tech_solutions.slot_app.components.payment_processors.factory.PaymentProcessorFactory;
-import com.three_tech_solutions.slot_app.data.models.Payment;
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
+import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
@@ -32,9 +33,10 @@ public class PaymentServiceImpl implements PaymentService {
         List<Student> students = studentService.getStudents();
         students.forEach(student -> {
             try {
-                PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(student.getPlan().getPlanType());
-                Payment payment = paymentProcessor.createStudentPayment(student, getPaymentNumber());
-                paymentRepository.save(payment);
+                // TODO: Obtener el plan del estudiante
+                PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(PaymentPlanName.SPECIFIC_DAY);
+                MonthlyFee monthlyFee = paymentProcessor.createStudentPayment(student, getPaymentNumber());
+                paymentRepository.save(monthlyFee);
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
             }
@@ -42,10 +44,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment createInitialPayment(Student student, Byte extraClasses) {
-        PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(student.getPlan().getPlanType());
-        Payment payment = paymentProcessor.createInitialStudentPayment(student, getPaymentNumber(), extraClasses);
-        return paymentRepository.save(payment);
+    public MonthlyFee createInitialPayment(Student student, Byte extraClasses) {
+        // TODO: Obtener el plan del estudiante
+        PaymentProcessor paymentProcessor = paymentProcessorFactory.getPaymentProcessor(PaymentPlanName.SPECIFIC_DAY);
+        MonthlyFee monthlyFee = paymentProcessor.createInitialStudentPayment(student, getPaymentNumber(), extraClasses);
+        return paymentRepository.save(monthlyFee);
     }
 
     private int getPaymentNumber() {

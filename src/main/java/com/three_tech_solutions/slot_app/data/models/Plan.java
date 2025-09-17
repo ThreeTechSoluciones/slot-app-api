@@ -1,19 +1,32 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import com.three_tech_solutions.slot_app.data.enums.PlanType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Plan {
-    private byte classesPerWeek;
-    private Byte paymentDay;
-    private PlanType planType;
+    @Column(unique = true)
+    String name;
+    byte numberOfDays;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "plan_id")
+    @OrderBy("startDate DESC")
+    List<Price> prices;
+    @ManyToOne
+    User user;
     @Id
-    UUID id;
+    UUID id = UUID.randomUUID();
+
+    public Plan(String name, byte numberOfDays, List<Price> prices, User user) {
+        this.name = name;
+        this.numberOfDays = numberOfDays;
+        this.prices = prices;
+        this.user = user;
+    }
 }

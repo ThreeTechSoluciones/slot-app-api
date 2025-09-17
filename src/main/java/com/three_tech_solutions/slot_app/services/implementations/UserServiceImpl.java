@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,8 +72,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<PriceResponse> getUserPrices(UUID userId) {
+        //TODO: Agregar lógica para obtener los precios vigentes
+        /*
         return userRepository.findById(userId)
                 .map(user -> priceMapper.toPriceResponseList(user.getPrices()))
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+
+         */
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<PlanResponse> getUserPlans(UUID userId) {
+        return userRepository.findById(userId)
+                .map(user ->
+                        user.getPlans()
+                                .stream()
+                                .map(plan -> new PlanResponse(
+                                        plan.getId(),
+                                        plan.getName(),
+                                        plan.getPrices()
+                                                .stream()
+                                                // TODO: Cambiar lógica para obtener el precio vigente, evitar logica duplicada con PlanServiceImpl
+                                                .findFirst()
+                                                .map(price -> new PriceResponse(price.getId(), price.getAmount()))
+                                                .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"))
+                                ))
+                                .toList()
+                )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
 }

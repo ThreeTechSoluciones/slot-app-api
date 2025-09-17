@@ -2,17 +2,16 @@ package com.three_tech_solutions.slot_app.data.mappers;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.PaymentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.data.models.Payment;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.Plan;
+import com.three_tech_solutions.slot_app.data.models.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentMapper {
@@ -26,13 +25,14 @@ public class StudentMapper {
                 studentDTO.getCellphoneNumber(),
                 studentDTO.getBirthday(),
                 studentDTO.getPathologies(),
-                studentDTO.getAdmissionDate(),
-                true,
-                plan,
-                user
+                user,
+                new PlanType(
+                        studentDTO.getPaymentDay(),
+                        studentDTO.getPaymentPlanName(),
+                        plan
+                )
         );
     }
-
 
     public StudentResponse toStudentResponse(Student student) {
         return new StudentResponse(
@@ -61,31 +61,23 @@ public class StudentMapper {
                 student.getBirthday(),
                 student.getPathologies(),
                 student.getAdmissionDate(),
-                student.getPlan().getPlanType().getName(),
-                student.getPlan().getClassesPerWeek(),
-                student.getPlan().getPaymentDay(),
-                student.getPayments().stream().map(this::toPaymentDetailsResponse).collect(Collectors.toList())
+                student.getPlanType().getPaymentPlanName().getName(),
+                student.getPlanType().getPlan().getName(),
+                student.getPlanType().getPaymentDay(),
+                student.isEnabled(),
+                // TODO: Agregar lógica para verificar la situacion segun los pagos
+                StudentSituation.EN_TERMINO
         );
     }
 
-    private PaymentDetailsResponse toPaymentDetailsResponse(Payment payment) {
-        return new PaymentDetailsResponse(
-                payment.getId(),
-                payment.getNumber(),
-                payment.getPaymentDate(),
-                payment.getAmount(),
-                payment.getStatus(),
-                payment.getExpirationDate()
-        );
-    }
-    public void updateStudent(Student student, UpdateStudentRequest request) {
+    public void updateStudent(Student student, UpdateStudentRequest request, Plan plan) {
         student.setName(request.name());
         student.setLastname(request.lastName());
         student.setDni(request.dni());
         student.setPhoneNumber(request.cellphoneNumber());
-        student.getPlan().setPlanType(request.planType());
-        student.getPlan().setPaymentDay(request.paymentDay());
-        student.getPlan().setClassesPerWeek(request.classesPerWeek());
+        student.getPlanType().setPaymentPlanName(request.paymentPlanName());
+        student.getPlanType().setPaymentDay(request.paymentDay());
+        student.getPlanType().setPlan(plan);
         student.setBirthday(request.birthday());
         student.setPathologies(request.pathologies());
     }

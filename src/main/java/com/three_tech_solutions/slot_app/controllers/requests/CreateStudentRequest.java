@@ -1,8 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.requests;
 
-import com.three_tech_solutions.slot_app.data.enums.PlanType;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,37 +14,24 @@ import java.util.UUID;
 public class CreateStudentRequest {
     @NotBlank(message="El nombre no puede estar vacío")
     private String name;
-
     @NotBlank(message="El apellido no puede estar vacío")
     private String lastName;
-
     @NotBlank(message = "El DNI no puede estar vacío")
     @Size(max = 8, message = "El DNI no puede tener más de 8 números")
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
     private String dni;
-
     @NotBlank (message = "El número de teléfono es obligatorio")
     @Pattern(regexp = "\\d{10,11}" , message ="El número de teléfono debe tener entre 10 y 11 dígitos" )
     private String cellphoneNumber;
-
-    @NotNull(message = "El tipo de plan es obligatorio")
-    private PlanType planType;
-
-    @NotNull (message = "Las clases por semana son obligatorias")
-    @Min(value = 1, message = "Debe haber al menos 1 clase por semana")
-    @Max(value = 4, message = "No puede haber más de 4 clases por semana")
-    private byte classesPerWeek;
-
+    @NotNull(message = "El tipo de pago es obligatorio")
+    private PaymentPlanName paymentPlanName;
+    @NotNull(message = "Debe ingresar el plan del alumno")
+    private UUID planId;
     private Byte extraClasses;
-
     private Byte paymentDay;
-
     @NotNull(message = "La fecha de cumpleaños es obligatoria")
     private LocalDate birthday;
-
-    private LocalDate admissionDate = LocalDate.now();
-
     private String pathologies;
-
     private UUID userId;
+    private LocalDate admissionDate = LocalDate.now();
 }

@@ -1,10 +1,11 @@
 package com.three_tech_solutions.slot_app.components.payment_processors.implementations;
 
 import com.three_tech_solutions.slot_app.components.payment_processors.PaymentProcessor;
-import com.three_tech_solutions.slot_app.data.enums.PlanType;
-import com.three_tech_solutions.slot_app.data.models.Payment;
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
+import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
 @Component
@@ -12,17 +13,18 @@ import java.time.LocalDateTime;
 public class SpecificDayPaymentProcessor extends PaymentProcessor {
 
     @Override
-    public PlanType getCurrentPlan() {
-        return PlanType.SPECIFIC_DAY;
+    public PaymentPlanName getCurrentPlan() {
+        return PaymentPlanName.SPECIFIC_DAY;
     }
 
     @Override
     public LocalDateTime getExpirationDate(Student student) {
-        return LocalDateTime.now().withDayOfMonth(student.getPlan().getPaymentDay());
+        // TODO: Obtener la fecha a partir del plan del estudiante
+        return LocalDateTime.now().withDayOfMonth(10);
     }
 
     @Override
-    public Payment createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses) {
+    public MonthlyFee createInitialStudentPayment(Student student, int newPaymentNumber, Byte extraClasses) {
         return createStudentPayment(student, newPaymentNumber);
     }
 }

@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.controllers.requests.PriceUpdateRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdatePriceRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
 import com.three_tech_solutions.slot_app.data.repositories.PriceRepository;
@@ -20,7 +20,7 @@ public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
     private final PriceMapper priceMapper;
     @Override
-    public PriceResponse updatePriceAmount(UUID priceId, PriceUpdateRequest request) {
+    public PriceResponse updatePriceAmount(UUID priceId, UpdatePriceRequest request) {
         return priceRepository.findById(priceId)
                 .map(price -> {
                     price.setAmount(request.amount());

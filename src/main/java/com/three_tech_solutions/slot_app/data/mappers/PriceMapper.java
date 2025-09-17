@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class PriceMapper {
     public PriceResponse toPriceResponse(Price price) {
-        return new PriceResponse(price.getId(), price.getName(), price.getAmount());
+        return new PriceResponse(price.getId(), price.getAmount());
     }
 
     public List<PriceResponse> toPriceResponseList(List<Price> price) {
