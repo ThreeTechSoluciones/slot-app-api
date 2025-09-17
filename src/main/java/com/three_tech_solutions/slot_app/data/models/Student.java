@@ -29,6 +29,9 @@ public class Student {
      @OneToMany
      @JoinColumn(name = "student_id")
      List<MonthlyFee> monthlyFees = Collections.emptyList();
+     @OneToMany
+     @JoinColumn(name = "student_Id")
+     List<Payment> payments = Collections.emptyList();
      @Id
      UUID id = UUID.randomUUID();
 

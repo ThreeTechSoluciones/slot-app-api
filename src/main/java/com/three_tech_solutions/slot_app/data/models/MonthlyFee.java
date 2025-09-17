@@ -1,13 +1,12 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +19,12 @@ public class MonthlyFee {
     int number;
     @ManyToOne
     Student student;
+    @OneToMany
+    @JoinColumn(name = "monthly_fee_id")
+    @OrderBy("startDate DESC")
+    List<MonthlyFeeStatusHistory> statusHistory = Collections.emptyList();
+    @OneToOne
+    Payment payment = null;
     LocalDateTime createdAt = LocalDateTime.now();
     @Id
     UUID id = UUID.randomUUID();
