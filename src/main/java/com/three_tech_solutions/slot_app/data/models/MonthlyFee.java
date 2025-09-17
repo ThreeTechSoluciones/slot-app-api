@@ -23,16 +23,23 @@ public class MonthlyFee {
     @JoinColumn(name = "monthly_fee_id")
     @OrderBy("startDate DESC")
     List<MonthlyFeeStatusHistory> statusHistory = Collections.emptyList();
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     Payment payment = null;
     LocalDateTime createdAt = LocalDateTime.now();
     @Id
     UUID id = UUID.randomUUID();
 
-    public MonthlyFee(double amount, LocalDateTime expirationDate, int number, Student student) {
+    public MonthlyFee(
+            double amount,
+            LocalDateTime expirationDate,
+            int number,
+            Student student,
+            Payment payment
+    ) {
         this.amount = amount;
         this.expirationDate = expirationDate;
         this.number = number;
         this.student = student;
+        this.payment = payment;
     }
 }

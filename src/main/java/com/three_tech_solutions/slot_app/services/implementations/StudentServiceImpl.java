@@ -14,12 +14,14 @@ import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,9 +53,11 @@ public class StudentServiceImpl implements StudentService {
         this.planService = planService;
     }
 
+
+    @Transactional
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
+        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
 
         Plan plan = getPlanByIdOrThrowException(studentDTO.getPlanId());
         User user = getUserByIdOrThrowException(studentDTO.getUserId());
@@ -63,7 +67,7 @@ public class StudentServiceImpl implements StudentService {
         try{
             studentRepository.save(student);
             // TODO: Verificar pago inicial, por qué da error al generar el pago??
-            // paymentService.createInitialPayment(student, studentDTO.getExtraClasses());
+            monthlyFeeService.createInitialPayment(student, studentDTO);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (Exception exception){
@@ -119,7 +123,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-        validatePlanDetail(studentUpdated.paymentPlanName(), studentUpdated.paymentDay());
+        validatePlanDetail(studentUpdated.paymentPlanName(), studentUpdated.paymentDay(), studentUpdated.extraClasses(), studentUpdated.classPrice());
         return studentRepository.findById(studentId)
                 .map(student -> {
                     studentMapper.updateStudent(
@@ -138,10 +142,14 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters);
     }
 
-    private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay) {
+    private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se debe especificar día de pago para el plan 'Principio de mes'.");
+        }
+
+        if (planTypeIsBeginningOfMonth(paymentPlanName) && LocalDate.now().getDayOfMonth() > 17 && extraClasses == null && classPrice == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar las clases extras y el precio por clase.");
         }
 
         if (planTypeIsSpecificDay(paymentPlanName) && paymentDayIsInvalid(paymentDay)) {

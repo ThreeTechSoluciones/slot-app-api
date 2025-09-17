@@ -12,9 +12,15 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class Payment {
-        int number;
-        LocalDate paymentDate;
-        double amount;
-        @Id
-        UUID id;
+    int number;
+    LocalDate paymentDate;
+    double amount;
+    @Id
+    UUID id = UUID.randomUUID();
+
+    public Payment(int number, LocalDate paymentDate, double amount) {
+        this.number = number;
+        this.paymentDate = paymentDate;
+        this.amount = amount;
+    }
 }

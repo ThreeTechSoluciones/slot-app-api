@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
+import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.repositories.MonthlyFeeRepository;
@@ -33,7 +34,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         students.forEach(student -> {
             try {
                 MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPlanType().getPaymentPlanName());
-                MonthlyFee monthlyFee = monthlyFeeProcessor.createStudentPayment(student, getMonthlyFeeNumber());
+                MonthlyFee monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
                 monthlyFeeRepository.save(monthlyFee);
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
@@ -42,10 +43,14 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public MonthlyFee createInitialPayment(Student student, Byte extraClasses) {
+    public void createInitialPayment(Student student, CreateStudentRequest createStudentRequest) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPlanType().getPaymentPlanName());
-        MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(student, getMonthlyFeeNumber(), extraClasses);
-        return monthlyFeeRepository.save(monthlyFee);
+        MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(
+                student,
+                getMonthlyFeeNumber(),
+                createStudentRequest
+        );
+        monthlyFeeRepository.save(monthlyFee);
     }
 
     private int getMonthlyFeeNumber() {

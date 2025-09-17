@@ -28,6 +28,7 @@ public class CreateStudentRequest {
     @NotNull(message = "Debe ingresar el plan del alumno")
     private UUID planId;
     private Byte extraClasses;
+    private Double classPrice;
     private Byte paymentDay;
     @NotNull(message = "La fecha de cumpleaños es obligatoria")
     private LocalDate birthday;
