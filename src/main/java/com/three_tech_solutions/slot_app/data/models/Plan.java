@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ public class Plan {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "plan_id")
     @OrderBy("startDate DESC")
+    @NotEmpty
     List<Price> prices;
     @ManyToOne
     User user;

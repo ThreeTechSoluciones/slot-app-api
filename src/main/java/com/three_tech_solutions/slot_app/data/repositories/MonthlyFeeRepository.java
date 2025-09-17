@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PaymentRepository extends JpaRepository<MonthlyFee, UUID> {
+public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
     @Query("SELECT number FROM Payment ORDER BY number DESC LIMIT 1")
-    Optional<Integer> getLastPaymentNumber();
+    Optional<Integer> getLastMonthlyFeeNumber();
 }

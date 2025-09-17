@@ -10,7 +10,7 @@ import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
+import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
@@ -33,7 +33,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserService userService;
-    private final PaymentService paymentService;
+    private final MonthlyFeeService monthlyFeeService;
     private final PlanService planService;
 
     // TODO: Verificar dependencias circulares, ¿por qué tantas?
@@ -41,13 +41,13 @@ public class StudentServiceImpl implements StudentService {
             StudentRepository studentRepository,
             StudentMapper studentMapper,
             @Lazy UserService userService,
-            @Lazy PaymentService paymentService,
+            @Lazy MonthlyFeeService monthlyFeeService,
             @Lazy PlanService planService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
-        this.paymentService = paymentService;
+        this.monthlyFeeService = monthlyFeeService;
         this.planService = planService;
     }
 
@@ -150,7 +150,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private boolean paymentDayIsInvalid(Byte paymentDay) {
-        return paymentDay <= 10 || paymentDay > 28;
+        return paymentDay == null || paymentDay <= 10 || paymentDay > 28;
     }
 
     private boolean planTypeIsSpecificDay(PaymentPlanName paymentPlanName) {

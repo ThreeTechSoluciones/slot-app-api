@@ -1,20 +1,18 @@
-package com.three_tech_solutions.slot_app.components.payment_processors.implementations;
+package com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations;
 
-import com.three_tech_solutions.slot_app.components.payment_processors.PaymentProcessor;
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
-public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
+public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
-    private final int BEGINNING_OF_MONTH_EXPIRATION_DATE=10;
+    private static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
 
     @Override
     public PaymentPlanName getCurrentPlan() {
@@ -38,7 +36,12 @@ public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
     }
 
     private MonthlyFee createPaymentWithExtraClasses(Student student, int newPaymentNumber, Byte extraClasses) {
-        return createPayment(LocalDateTime.now(),student, newPaymentNumber, calculateExtraClassesAmount(student, extraClasses));
+        return createPayment(
+                LocalDateTime.now(),
+                student,
+                newPaymentNumber,
+                calculateExtraClassesAmount(student, extraClasses)
+        );
     }
 
     private double calculateExtraClassesAmount(Student student, Byte extraClasses) {
@@ -55,12 +58,5 @@ public class BeginningOfMonthPaymentProcessor extends PaymentProcessor {
         return extraClasses * pricePerClass;
          */
         return 0.0;
-    }
-
-    private static void validateExtraClassesOrThrowException(Byte extraClasses) {
-        if (extraClasses == null || extraClasses <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Debe especificar la cantidad de clases extra si la inscripción es posterior al día 10");
-        }
     }
 }
