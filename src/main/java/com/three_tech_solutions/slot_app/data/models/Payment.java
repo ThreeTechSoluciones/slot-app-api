@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.data.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,12 +16,15 @@ public class Payment {
     int number;
     LocalDate paymentDate;
     double amount;
+    @ManyToOne
+    Student student;
     @Id
     UUID id = UUID.randomUUID();
 
-    public Payment(int number, LocalDate paymentDate, double amount) {
+    public Payment(int number, LocalDate paymentDate, double amount, Student student) {
         this.number = number;
         this.paymentDate = paymentDate;
         this.amount = amount;
+        this.student = student;
     }
 }

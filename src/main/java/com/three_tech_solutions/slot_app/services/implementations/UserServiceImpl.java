@@ -1,7 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -75,12 +74,7 @@ public class UserServiceImpl implements UserService {
                                 .map(plan -> new PlanResponse(
                                         plan.getId(),
                                         plan.getName(),
-                                        plan.getPrices()
-                                                .stream()
-                                                // TODO: Cambiar lógica para obtener el precio vigente, evitar logica duplicada con PlanServiceImpl
-                                                .findFirst()
-                                                .map(price -> new PriceResponse(price.getId(), price.getAmount()))
-                                                .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"))
+                                        plan.getCurrentPrice()
                                 ))
                                 .toList()
                 )

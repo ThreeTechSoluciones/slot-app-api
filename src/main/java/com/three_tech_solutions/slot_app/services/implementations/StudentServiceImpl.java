@@ -38,7 +38,6 @@ public class StudentServiceImpl implements StudentService {
     private final MonthlyFeeService monthlyFeeService;
     private final PlanService planService;
 
-    // TODO: Verificar dependencias circulares, ¿por qué tantas?
     public StudentServiceImpl(
             StudentRepository studentRepository,
             StudentMapper studentMapper,

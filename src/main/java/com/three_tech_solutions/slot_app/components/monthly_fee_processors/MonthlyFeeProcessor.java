@@ -56,7 +56,7 @@ public abstract class MonthlyFeeProcessor {
                 student,
                 newPaymentNumber,
                 firstPaymentAmount,
-                buildPayment(firstPaymentAmount)
+                buildPayment(firstPaymentAmount, student)
         );
     }
 
@@ -86,18 +86,15 @@ public abstract class MonthlyFeeProcessor {
         return student
                 .getPlanType()
                 .getPlan()
-                .getPrices()
-                .stream()
-                .findFirst()
-                .get()
-                .getAmount();
+                .getCurrentPrice();
     }
 
-    private Payment buildPayment(double firstPaymentAmount) {
+    private Payment buildPayment(double firstPaymentAmount, Student student) {
         return new Payment(
                 getPaymentNumber(),
                 LocalDate.now(),
-                firstPaymentAmount
+                firstPaymentAmount,
+                student
         );
     }
     private Integer getPaymentNumber() {

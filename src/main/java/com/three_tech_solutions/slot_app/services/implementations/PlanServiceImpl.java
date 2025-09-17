@@ -3,7 +3,6 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdatePriceRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -18,8 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Service
@@ -43,12 +40,7 @@ public class PlanServiceImpl implements PlanService {
         return new PlanResponse(
                 plan.getId(),
                 plan.getName(),
-                plan.getPrices()
-                        .stream()
-                        // TODO: Cambiar lógica para obtener el precio vigente, evitar logica duplicada con UserServiceImpl
-                        .findFirst()
-                        .map(price -> new PriceResponse(price.getId(), price.getAmount()))
-                        .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"))
+                plan.getCurrentPrice()
         );
     }
 

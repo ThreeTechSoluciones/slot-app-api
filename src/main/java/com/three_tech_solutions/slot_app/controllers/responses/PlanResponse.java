@@ -5,5 +5,5 @@ import java.util.UUID;
 public record PlanResponse(
         UUID id,
         String name,
-        PriceResponse price
+        double price
 ) { }
