@@ -5,7 +5,7 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 
 public interface MonthlyFeeService {
 
-    void createStudentsPayment();
-    void createInitialPayment(Student student, CreateStudentRequest createStudentRequest);
+    void createStudentsMonthlyFee();
+    void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest);
 
 }

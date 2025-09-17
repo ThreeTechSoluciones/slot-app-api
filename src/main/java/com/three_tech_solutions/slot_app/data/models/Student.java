@@ -1,5 +1,7 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,6 +46,19 @@ public class Student {
         this.pathologies = pathologies;
         this.user = user;
         this.planType = planType;
+    }
+
+    public StudentSituation getStudentSituation() {
+        return studentHasAnyPaymentExpired() ?
+                StudentSituation.CON_DEUDA :
+                StudentSituation.EN_TERMINO;
+    }
+
+    private boolean studentHasAnyPaymentExpired() {
+        return this
+                .getMonthlyFees()
+                .stream()
+                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == PaymentStatus.EXPIRED);
     }
 }
 

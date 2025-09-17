@@ -2,6 +2,8 @@ package com.three_tech_solutions.slot_app.data.models;
 
 import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,9 +15,15 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class MonthlyFeeStatusHistory {
-       LocalDateTime startDate;
-       LocalDateTime endDate;
-       PaymentStatus status;
-       @Id
-       UUID id;
+    @Enumerated(EnumType.STRING)
+    PaymentStatus status;
+    LocalDateTime startDate;
+    LocalDateTime endDate = null;
+    @Id
+    UUID id = UUID.randomUUID();
+
+    public MonthlyFeeStatusHistory(PaymentStatus status, LocalDateTime startDate) {
+        this.status = status;
+        this.startDate = startDate;
+    }
 }

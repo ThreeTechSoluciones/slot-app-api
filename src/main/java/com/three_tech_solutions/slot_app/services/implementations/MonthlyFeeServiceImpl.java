@@ -28,7 +28,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     @Override
-    public void createStudentsPayment() {
+    public void createStudentsMonthlyFee() {
         log.info("Iniciando proceso de creacion de pagos");
         List<Student> students = studentService.getStudents();
         students.forEach(student -> {
@@ -43,7 +43,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public void createInitialPayment(Student student, CreateStudentRequest createStudentRequest) {
+    public void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPlanType().getPaymentPlanName());
         MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(
                 student,

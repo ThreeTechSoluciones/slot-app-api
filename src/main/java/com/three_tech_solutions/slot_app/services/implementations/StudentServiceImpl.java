@@ -66,7 +66,7 @@ public class StudentServiceImpl implements StudentService {
 
         try{
             studentRepository.save(student);
-            monthlyFeeService.createInitialPayment(student, studentDTO);
+            monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (Exception exception){

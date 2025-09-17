@@ -19,7 +19,7 @@ public record StudentDetailsResponse (
      LocalDate admissionDate,
      String paymentPlan,
      String plan,
-     byte paymentDay,
+     Byte paymentDay,
      boolean status,
      StudentSituation situation
 ) {}

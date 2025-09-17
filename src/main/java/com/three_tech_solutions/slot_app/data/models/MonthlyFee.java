@@ -1,10 +1,12 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -19,10 +21,14 @@ public class MonthlyFee {
     int number;
     @ManyToOne
     Student student;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "monthly_fee_id")
     @OrderBy("startDate DESC")
-    List<MonthlyFeeStatusHistory> statusHistory = Collections.emptyList();
+    List<MonthlyFeeStatusHistory> statusHistory = new ArrayList<>(
+            Collections.singletonList(
+                    new MonthlyFeeStatusHistory(PaymentStatus.ON_TIME, LocalDateTime.now())
+            )
+    );
     @OneToOne(cascade = CascadeType.ALL)
     Payment payment = null;
     LocalDateTime createdAt = LocalDateTime.now();
@@ -41,5 +47,14 @@ public class MonthlyFee {
         this.number = number;
         this.student = student;
         this.payment = payment;
+    }
+
+
+    public MonthlyFeeStatusHistory getCurrentStatus() {
+        return this.statusHistory
+                .stream()
+                .filter(status -> status.endDate == null)
+                .findFirst()
+                .orElse(statusHistory.getFirst());
     }
 }

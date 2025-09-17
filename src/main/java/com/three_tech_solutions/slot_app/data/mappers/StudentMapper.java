@@ -4,7 +4,6 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentReque
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -51,7 +50,6 @@ public class StudentMapper {
     }
 
     public StudentDetailsResponse toStudentDetailsResponse(Student student) {
-
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -65,10 +63,11 @@ public class StudentMapper {
                 student.getPlanType().getPlan().getName(),
                 student.getPlanType().getPaymentDay(),
                 student.isEnabled(),
-                // TODO: Agregar lógica para verificar la situacion segun los pagos
-                StudentSituation.EN_TERMINO
+                student.getStudentSituation()
         );
     }
+
+
 
     public void updateStudent(Student student, UpdateStudentRequest request, Plan plan) {
         student.setName(request.name());
