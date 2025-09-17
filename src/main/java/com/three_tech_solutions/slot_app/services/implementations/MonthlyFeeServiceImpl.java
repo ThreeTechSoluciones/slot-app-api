@@ -25,8 +25,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     private final MonthlyFeeProcessorFactory monthlyFeeProcessorFactory;
 
     @Transactional
-    // @Scheduled(cron = "0 0 1 * * *")
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     @Override
     public void createStudentsPayment() {
         log.info("Iniciando proceso de creacion de pagos");
@@ -50,7 +49,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     private int getMonthlyFeeNumber() {
-        return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(1) + 1;
+        return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
     }
 }
 
