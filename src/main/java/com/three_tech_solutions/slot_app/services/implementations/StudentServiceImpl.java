@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations.BeginningOfMonthMonthlyFeeProcessor.BEGINNING_OF_MONTH_EXPIRATION_DATE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -146,7 +147,11 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se debe especificar día de pago para el plan 'Principio de mes'.");
         }
 
-        if (planTypeIsBeginningOfMonth(paymentPlanName) && LocalDate.now().getDayOfMonth() > 17 && extraClasses == null && classPrice == null) {
+        if (planTypeIsBeginningOfMonth(paymentPlanName) &&
+                LocalDate.now().getDayOfMonth() > BEGINNING_OF_MONTH_EXPIRATION_DATE &&
+                extraClasses == null &&
+                classPrice == null
+        ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar las clases extras y el precio por clase.");
         }
 

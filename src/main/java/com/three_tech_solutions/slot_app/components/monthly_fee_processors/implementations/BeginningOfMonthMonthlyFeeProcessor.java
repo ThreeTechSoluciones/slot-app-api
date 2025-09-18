@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
-    private static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
+    public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
 
     public BeginningOfMonthMonthlyFeeProcessor(PaymentRepository paymentRepository) {
         super(paymentRepository);
@@ -31,7 +31,7 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     @Override
     public double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest) {
-        return getTodayDay() <= 17 ?
+        return getTodayDay() <= BEGINNING_OF_MONTH_EXPIRATION_DATE ?
                     getStudentPlanPrice(student) :
                     calculateExtraClassesAmount(createStudentRequest.getClassPrice(), createStudentRequest.getExtraClasses());
     }
