@@ -58,7 +58,7 @@ public class Student {
         return this
                 .getMonthlyFees()
                 .stream()
-                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == PaymentStatus.EXPIRED);
+                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == PaymentStatus.OUT_OF_TIME);
     }
 }
 
