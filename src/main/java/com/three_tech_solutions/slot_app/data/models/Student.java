@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class Student {
      @ManyToOne
      User user;
      @OneToOne(cascade = CascadeType.ALL)
-     PlanType planType;
+     PaymentPlan paymentPlan;
      boolean enabled = true;
      LocalDate admissionDate = LocalDate.now();
      @OneToMany
@@ -37,7 +37,7 @@ public class Student {
      @Id
      UUID id = UUID.randomUUID();
 
-    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, User user, PlanType planType) {
+    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, User user, PaymentPlan paymentPlan) {
         this.name = name;
         this.lastname = lastname;
         this.dni = dni;
@@ -45,7 +45,7 @@ public class Student {
         this.birthday = birthday;
         this.pathologies = pathologies;
         this.user = user;
-        this.planType = planType;
+        this.paymentPlan = paymentPlan;
     }
 
     public StudentSituation getStudentSituation() {
@@ -58,7 +58,7 @@ public class Student {
         return this
                 .getMonthlyFees()
                 .stream()
-                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == PaymentStatus.EXPIRED);
+                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == MonthlyFeeStatus.EXPIRED);
     }
 }
 

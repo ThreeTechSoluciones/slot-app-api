@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,13 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class MonthlyFeeStatusHistory {
     @Enumerated(EnumType.STRING)
-    PaymentStatus status;
+    MonthlyFeeStatus status;
     LocalDateTime startDate;
     LocalDateTime endDate = null;
     @Id
     UUID id = UUID.randomUUID();
 
-    public MonthlyFeeStatusHistory(PaymentStatus status, LocalDateTime startDate) {
+    public MonthlyFeeStatusHistory(MonthlyFeeStatus status, LocalDateTime startDate) {
         this.status = status;
         this.startDate = startDate;
     }

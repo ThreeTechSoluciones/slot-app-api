@@ -24,7 +24,7 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     @Override
     public LocalDateTime getExpirationDate(Student student) {
         return LocalDateTime.now().withDayOfMonth(
-                student.getPlanType().getPaymentDay()
+                student.getPaymentPlan().getPaymentDay()
         );
     }
 

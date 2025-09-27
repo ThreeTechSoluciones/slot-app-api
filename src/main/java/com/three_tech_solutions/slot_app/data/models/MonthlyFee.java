@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class MonthlyFee {
     @OrderBy("startDate DESC")
     List<MonthlyFeeStatusHistory> statusHistory = new ArrayList<>(
             Collections.singletonList(
-                    new MonthlyFeeStatusHistory(PaymentStatus.ON_TIME, LocalDateTime.now())
+                    new MonthlyFeeStatusHistory(MonthlyFeeStatus.ON_TIME, LocalDateTime.now())
             )
     );
     @OneToOne(cascade = CascadeType.ALL)

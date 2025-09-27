@@ -84,7 +84,7 @@ public abstract class MonthlyFeeProcessor {
 
     protected double getStudentPlanPrice(Student student) {
         return student
-                .getPlanType()
+                .getPaymentPlan()
                 .getPlan()
                 .getCurrentPrice();
     }

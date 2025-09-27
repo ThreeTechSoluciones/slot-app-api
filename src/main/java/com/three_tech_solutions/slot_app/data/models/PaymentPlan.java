@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
-public class PlanType {
+public class PaymentPlan {
     Byte paymentDay;
     PaymentPlanName paymentPlanName;
     @ManyToOne
@@ -20,7 +20,7 @@ public class PlanType {
     @Id
     UUID id = UUID.randomUUID();
 
-    public PlanType(Byte paymentDay, PaymentPlanName paymentPlanName, Plan plan) {
+    public PaymentPlan(Byte paymentDay, PaymentPlanName paymentPlanName, Plan plan) {
         this.paymentDay = paymentDay;
         this.paymentPlanName = paymentPlanName;
         this.plan = plan;
