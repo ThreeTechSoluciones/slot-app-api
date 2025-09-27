@@ -4,7 +4,6 @@ import com.three_tech_solutions.slot_app.components.monthly_fee_processors.Month
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,10 +13,6 @@ import java.time.LocalDateTime;
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
-
-    public BeginningOfMonthMonthlyFeeProcessor(PaymentRepository paymentRepository) {
-        super(paymentRepository);
-    }
 
     @Override
     public PaymentPlanName getCurrentPlan() {

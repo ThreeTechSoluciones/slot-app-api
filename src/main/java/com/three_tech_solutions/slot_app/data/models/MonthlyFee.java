@@ -39,14 +39,12 @@ public class MonthlyFee {
             double amount,
             LocalDateTime expirationDate,
             int number,
-            Student student,
-            Payment payment
+            Student student
     ) {
         this.amount = amount;
         this.expirationDate = expirationDate;
         this.number = number;
         this.student = student;
-        this.payment = payment;
     }
 
 
