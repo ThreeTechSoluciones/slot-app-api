@@ -2,25 +2,24 @@ package com.three_tech_solutions.slot_app.data.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class Price {
-    String name;
-    double amount = 0;
+    double amount;
+    LocalDate startDate;
+    LocalDate endDate = null;
     @Id
     UUID id = UUID.randomUUID();
 
-    public Price(String name) {
-        this.name = name;
+    public Price(double amount, LocalDate startDate) {
+        this.amount = amount;
+        this.startDate = startDate;
     }
 }

@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +18,6 @@ public interface UserController {
             @RequestParam(required = false, defaultValue = "") String filter
     );
 
-    @GetMapping("/{userId}/prices")
-    List<PriceResponse> getUserPrices(@PathVariable UUID userId);
+    @GetMapping("/{userId}/plans")
+    List<PlanResponse> getUserPlans(@PathVariable UUID userId);
 }

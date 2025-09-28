@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,5 +19,5 @@ public interface UserService extends UserDetailsService {
 
     void createUser(String username, String password);
 
-    List<PriceResponse> getUserPrices(UUID userId);
+    List<PlanResponse> getUserPlans(UUID userId);
 }

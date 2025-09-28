@@ -1,62 +1,64 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import lombok.Getter;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
+import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Student {
-    private String name;
-    private String lastname;
-    @Column(unique = true)
-    private String dni;
-    private String phoneNumber;
-    private LocalDate birthday;
-    private String pathologies;
-    private LocalDate admissionDate;
-    private boolean enabled;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Plan plan;
-    @OneToMany
-    @JoinColumn(name = "student_id")
-    private List<Payment> payments;
-    @ManyToOne
-    private User user;
-    @Id
-    private UUID id = UUID.randomUUID();
+     String name;
+     String lastname;
+     @Column(unique = true)
+     String dni;
+     String phoneNumber;
+     LocalDate birthday;
+     String pathologies;
+     @ManyToOne
+     User user;
+     @OneToOne(cascade = CascadeType.ALL)
+     PaymentPlan paymentPlan;
+     boolean enabled = true;
+     LocalDate admissionDate = LocalDate.now();
+     @OneToMany
+     @JoinColumn(name = "student_id")
+     List<MonthlyFee> monthlyFees = Collections.emptyList();
+     @OneToMany
+     @JoinColumn(name = "student_Id")
+     List<Payment> payments = Collections.emptyList();
+     @Id
+     UUID id = UUID.randomUUID();
 
-    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, LocalDate admissionDate, boolean enabled, Plan plan, User user) {
+    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, User user, PaymentPlan paymentPlan) {
         this.name = name;
         this.lastname = lastname;
         this.dni = dni;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
         this.pathologies = pathologies;
-        this.admissionDate = admissionDate;
-        this.enabled = enabled;
-        this.plan = plan;
         this.user = user;
+        this.paymentPlan = paymentPlan;
     }
 
-    public Student(String name, String lastname) {
-        this.name = name;
-        this.lastname = lastname;
+    public StudentSituation getStudentSituation() {
+        return studentHasAnyPaymentExpired() ?
+                StudentSituation.CON_DEUDA :
+                StudentSituation.EN_TERMINO;
     }
 
+    private boolean studentHasAnyPaymentExpired() {
+        return this
+                .getMonthlyFees()
+                .stream()
+                .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == MonthlyFeeStatus.EXPIRED);
+    }
 }
 

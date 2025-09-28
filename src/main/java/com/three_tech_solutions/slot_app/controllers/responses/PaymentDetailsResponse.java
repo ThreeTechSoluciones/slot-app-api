@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.responses;
 
-import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,6 +14,6 @@ public class PaymentDetailsResponse {
     private int number;
     private LocalDateTime paymentDate;
     private double amount;
-    private PaymentStatus status;
+    private MonthlyFeeStatus status;
     private LocalDateTime expirationDate;
 }
