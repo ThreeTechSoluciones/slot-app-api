@@ -3,7 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
 import com.three_tech_solutions.slot_app.data.models.Payment;
@@ -96,9 +96,9 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         MonthlyFeeStatusHistory currentStatus = monthlyFee.getCurrentStatus();
         currentStatus.setEndDate(LocalDateTime.now());
 
-        PaymentStatus newStatus = LocalDateTime.now().isAfter(monthlyFee.getExpirationDate())
-                ? PaymentStatus.PAYED_OUT_OF_TIME
-                : PaymentStatus.PAYED;
+        MonthlyFeeStatus newStatus = LocalDateTime.now().isAfter(monthlyFee.getExpirationDate())
+                ? MonthlyFeeStatus.PAYED_OUT_OF_TIME
+                : MonthlyFeeStatus.PAYED;
 
         MonthlyFeeStatusHistory statusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
         monthlyFee.getStatusHistory().add(statusHistory);
