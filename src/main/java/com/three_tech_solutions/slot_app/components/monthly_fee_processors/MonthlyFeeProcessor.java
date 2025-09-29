@@ -3,22 +3,13 @@ package com.three_tech_solutions.slot_app.components.monthly_fee_processors;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
-import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Slf4j
 public abstract class MonthlyFeeProcessor {
-
-    protected PaymentRepository paymentRepository;
-
-    public MonthlyFeeProcessor(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
 
     /**
      * This method generates the student's monthly fee. The payment is
@@ -35,28 +26,25 @@ public abstract class MonthlyFeeProcessor {
                 getExpirationDate(student),
                 student,
                 newMonthlyFeeNumber,
-                getStudentPlanPrice(student),
-                null
+                getStudentPlanPrice(student)
         );
     }
 
     /**
      * This method generates the first monthly fee when the student enrolls.
-     * Unlike createStudentMonthlyFee(), the monthly fee payment is not null,
-     * as the student must pay it upon starting classes.
+     * Unlike createStudentMonthlyFee(), the amount depends on the payment type
+     * selected by the student and the current date.
      * @param student Student registered
-     * @param newPaymentNumber Number of the new payment
+     * @param newMonthlyFeeNumber Number of the new payment
      * @param createStudentRequest
      * @return The first monthly fee
      */
-    public MonthlyFee createInitialStudentPayment(Student student, int newPaymentNumber, CreateStudentRequest createStudentRequest) {
-        double firstPaymentAmount = getFirstPaymentAmount(student, createStudentRequest);
+    public MonthlyFee createInitialStudentPayment(Student student, int newMonthlyFeeNumber, CreateStudentRequest createStudentRequest) {
         return createMonthlyFee(
                 getExpirationDate(student),
                 student,
-                newPaymentNumber,
-                firstPaymentAmount,
-                buildPayment(firstPaymentAmount, student)
+                newMonthlyFeeNumber,
+                getFirstPaymentAmount(student, createStudentRequest)
         );
     }
 
@@ -64,15 +52,13 @@ public abstract class MonthlyFeeProcessor {
             LocalDateTime expirationDate,
             Student student,
             int newMonthlyFeeNumber,
-            double amount,
-            Payment payment
+            double amount
     ) {
         return new MonthlyFee(
                 amount,
                 expirationDate,
                 newMonthlyFeeNumber,
-                student,
-                payment
+                student
         );
     }
 
@@ -84,24 +70,9 @@ public abstract class MonthlyFeeProcessor {
 
     protected double getStudentPlanPrice(Student student) {
         return student
-                .getPlanType()
+                .getPaymentPlan()
                 .getPlan()
                 .getCurrentPrice();
     }
 
-    private Payment buildPayment(double firstPaymentAmount, Student student) {
-        return new Payment(
-                getPaymentNumber(),
-                LocalDate.now(),
-                firstPaymentAmount,
-                student
-        );
-    }
-    private Integer getPaymentNumber() {
-        return getLastPaymentNumber() + 1;
-    }
-
-    private Integer getLastPaymentNumber() {
-        return paymentRepository.getLastPaymentNumber().orElse(0);
-    }
 }

@@ -42,7 +42,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         List<Student> students = studentService.getStudents();
         students.forEach(student -> {
             try {
-                MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPlanType().getPaymentPlanName());
+                MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
                 MonthlyFee monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
                 monthlyFeeRepository.save(monthlyFee);
             } catch (Exception e) {
@@ -53,7 +53,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
     @Override
     public void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest) {
-        MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPlanType().getPaymentPlanName());
+        MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
         MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(
                 student,
                 getMonthlyFeeNumber(),

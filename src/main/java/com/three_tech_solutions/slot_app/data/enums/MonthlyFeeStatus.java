@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.data.enums;
 
-public enum PaymentStatus {
+public enum MonthlyFeeStatus {
     ON_TIME,
     OUT_OF_TIME,
     PAYED,

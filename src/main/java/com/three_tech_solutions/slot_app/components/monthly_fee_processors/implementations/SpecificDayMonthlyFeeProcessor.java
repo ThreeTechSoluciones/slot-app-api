@@ -4,17 +4,12 @@ import com.three_tech_solutions.slot_app.components.monthly_fee_processors.Month
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
 public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
-
-    public SpecificDayMonthlyFeeProcessor(PaymentRepository paymentRepository) {
-        super(paymentRepository);
-    }
 
     @Override
     public PaymentPlanName getCurrentPlan() {
@@ -24,7 +19,7 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     @Override
     public LocalDateTime getExpirationDate(Student student) {
         return LocalDateTime.now().withDayOfMonth(
-                student.getPlanType().getPaymentDay()
+                student.getPaymentPlan().getPaymentDay()
         );
     }
 

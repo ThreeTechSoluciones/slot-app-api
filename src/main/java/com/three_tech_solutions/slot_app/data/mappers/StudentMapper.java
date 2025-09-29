@@ -4,8 +4,8 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentReque
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.models.PaymentPlan;
 import com.three_tech_solutions.slot_app.data.models.Plan;
-import com.three_tech_solutions.slot_app.data.models.PlanType;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.stereotype.Service;
@@ -25,13 +25,14 @@ public class StudentMapper {
                 studentDTO.getBirthday(),
                 studentDTO.getPathologies(),
                 user,
-                new PlanType(
+                new PaymentPlan(
                         studentDTO.getPaymentDay(),
                         studentDTO.getPaymentPlanName(),
                         plan
                 )
         );
     }
+
 
     public StudentResponse toStudentResponse(Student student) {
         return new StudentResponse(
@@ -59,9 +60,9 @@ public class StudentMapper {
                 student.getBirthday(),
                 student.getPathologies(),
                 student.getAdmissionDate(),
-                student.getPlanType().getPaymentPlanName().getName(),
-                student.getPlanType().getPlan().getName(),
-                student.getPlanType().getPaymentDay(),
+                student.getPaymentPlan().getPaymentPlanName().getName(),
+                student.getPaymentPlan().getPlan().getName(),
+                student.getPaymentPlan().getPaymentDay(),
                 student.isEnabled(),
                 student.getStudentSituation()
         );
@@ -74,9 +75,9 @@ public class StudentMapper {
         student.setLastname(request.lastName());
         student.setDni(request.dni());
         student.setPhoneNumber(request.cellphoneNumber());
-        student.getPlanType().setPaymentPlanName(request.paymentPlanName());
-        student.getPlanType().setPaymentDay(request.paymentDay());
-        student.getPlanType().setPlan(plan);
+        student.getPaymentPlan().setPaymentPlanName(request.paymentPlanName());
+        student.getPaymentPlan().setPaymentDay(request.paymentDay());
+        student.getPaymentPlan().setPlan(plan);
         student.setBirthday(request.birthday());
         student.setPathologies(request.pathologies());
     }
