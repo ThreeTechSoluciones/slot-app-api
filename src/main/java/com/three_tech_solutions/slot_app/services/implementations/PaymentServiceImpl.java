@@ -18,15 +18,12 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Payment createPayment(Student student, double amount) {
-        int newPaymentNumber = getNextPaymentNumber();
-
         Payment payment = new Payment(
-                newPaymentNumber,
+                getNextPaymentNumber(),
                 LocalDate.now(),
                 amount,
                 student
         );
-
         return paymentRepository.save(payment);
     }
 

@@ -9,6 +9,6 @@ import java.util.UUID;
 @RequestMapping("/monthly-fees")
 public interface MonthlyFeeController {
     @PostMapping("/{monthlyFeeId}/pay")
-    @ResponseStatus(HttpStatus.OK)
-    MonthlyFeePaymentResponse payMonthlyFee(@PathVariable UUID monthlyFeeId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void payMonthlyFee(@PathVariable UUID monthlyFeeId);
 }

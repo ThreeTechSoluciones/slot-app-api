@@ -64,9 +64,9 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public MonthlyFeePaymentResponse payMonthlyFee(UUID monthlyFeeId) {
-
+    public void payMonthlyFee(UUID monthlyFeeId) {
         MonthlyFee monthlyFee = getMonthlyFeeById(monthlyFeeId);
+
         validateNotAlreadyPaid(monthlyFee);
 
         Payment payment = paymentService.createPayment(monthlyFee.getStudent(), monthlyFee.getAmount());
@@ -76,15 +76,6 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         MonthlyFeeStatusHistory newStatus = updateStatus(monthlyFee);
 
         monthlyFeeRepository.save(monthlyFee);
-
-        return new MonthlyFeePaymentResponse(
-                payment.getId(),
-                payment.getNumber(),
-                payment.getAmount(),
-                payment.getPaymentDate(),
-                monthlyFee.getStudent().getId(),
-                newStatus.getStatus().name()
-        );
     }
 
     private int getMonthlyFeeNumber() {
@@ -102,7 +93,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         }
     }
 
-    private MonthlyFeeStatusHistory updateStatus(MonthlyFee monthlyFee) {
+    private void updateStatus(MonthlyFee monthlyFee) {
         MonthlyFeeStatusHistory currentStatus = monthlyFee.getCurrentStatus();
         currentStatus.setEndDate(LocalDateTime.now());
 
@@ -112,6 +103,5 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
         MonthlyFeeStatusHistory statusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
         monthlyFee.getStatusHistory().add(statusHistory);
-        return statusHistory;
     }
 }

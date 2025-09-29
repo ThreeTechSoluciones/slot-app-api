@@ -10,6 +10,6 @@ public interface MonthlyFeeService {
 
     void createStudentsMonthlyFee();
     void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest);
-    MonthlyFeePaymentResponse payMonthlyFee(UUID monthlyFeeId);
+    void payMonthlyFee(UUID monthlyFeeId);
 
 }
