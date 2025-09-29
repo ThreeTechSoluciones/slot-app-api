@@ -1,7 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.MonthlyFeePaymentResponse;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.util.UUID;

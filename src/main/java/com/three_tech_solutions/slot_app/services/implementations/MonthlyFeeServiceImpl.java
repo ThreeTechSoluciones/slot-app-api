@@ -3,7 +3,6 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.MonthlyFeePaymentResponse;
 import com.three_tech_solutions.slot_app.data.enums.PaymentStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
@@ -73,7 +72,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
         monthlyFee.setPayment(payment);
 
-        MonthlyFeeStatusHistory newStatus = updateStatus(monthlyFee);
+        updateStatus(monthlyFee);
 
         monthlyFeeRepository.save(monthlyFee);
     }
