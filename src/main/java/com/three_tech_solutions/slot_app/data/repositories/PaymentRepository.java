@@ -11,3 +11,4 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Query("SELECT number FROM Payment ORDER BY number DESC LIMIT 1")
     Optional<Integer> getLastPaymentNumber();
 }
+
