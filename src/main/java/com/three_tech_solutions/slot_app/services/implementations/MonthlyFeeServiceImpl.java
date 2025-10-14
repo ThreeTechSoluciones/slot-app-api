@@ -5,7 +5,6 @@ import com.three_tech_solutions.slot_app.components.monthly_fee_processors.facto
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
-import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
 import com.three_tech_solutions.slot_app.data.models.Payment;
@@ -63,21 +62,6 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
                 getMonthlyFeeNumber(),
                 createStudentRequest
         );
-        monthlyFeeRepository.save(monthlyFee);
-    }
-
-    @Override
-    public void payMonthlyFee(UUID monthlyFeeId) {
-        MonthlyFee monthlyFee = getMonthlyFeeById(monthlyFeeId);
-
-        validateNotAlreadyPaid(monthlyFee);
-
-        Payment payment = paymentService.createPayment(monthlyFee.getStudent(), monthlyFee.getAmount());
-
-        monthlyFee.setPayment(payment);
-
-        updateStatus(monthlyFee);
-
         monthlyFeeRepository.save(monthlyFee);
     }
 
