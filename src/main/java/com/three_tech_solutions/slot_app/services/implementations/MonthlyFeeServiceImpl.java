@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
@@ -20,9 +21,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -77,6 +80,28 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         monthlyFeeRepository.save(monthlyFee);
     }
 
+    @Override
+    public List<StudentMonthlyFeeResponseDto> getMonthlyFeesByStudent(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+        studentService.getStudentById(studentId);
+        return filterAndMapMonthlyFees(monthlyFeeRepository.findByStudentIdOrderByNumberDesc(studentId);, month, expirationDate, status);
+    }
+
+    private List<StudentMonthlyFeeResponseDto> filterAndMapMonthlyFees(
+            List<MonthlyFee> monthlyFees, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+
+        return monthlyFees.stream()
+                .filter(fee -> month == null || fee.getExpirationDate().getMonth().toString().equalsIgnoreCase(month))
+                .filter(fee -> expirationDate == null || fee.getExpirationDate().toLocalDate().equals(expirationDate))
+                .filter(fee -> status == null || fee.getCurrentStatus().getStatus() == status)
+                .map(fee -> new StudentMonthlyFeeResponseDto(
+                        fee.getNumber(),
+                        fee.getExpirationDate().getMonth().toString(),
+                        fee.getExpirationDate().toLocalDate(),
+                        fee.getAmount(),
+                        fee.getCurrentStatus().getStatus()
+                ))
+                .collect(Collectors.toList());
+    }
     private int getMonthlyFeeNumber() {
         return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
     }

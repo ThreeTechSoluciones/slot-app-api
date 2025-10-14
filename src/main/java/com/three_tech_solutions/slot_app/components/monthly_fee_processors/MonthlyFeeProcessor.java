@@ -61,18 +61,17 @@ public abstract class MonthlyFeeProcessor {
                 student
         );
     }
-
-    public abstract PaymentPlanName getCurrentPlan();
-
-    public abstract LocalDateTime getExpirationDate(Student student);
-
-    public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
-
     protected double getStudentPlanPrice(Student student) {
         return student
                 .getPaymentPlan()
                 .getPlan()
                 .getCurrentPrice();
     }
+
+    public abstract PaymentPlanName getCurrentPlan();
+
+    public abstract LocalDateTime getExpirationDate(Student student);
+
+    public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
 
 }
