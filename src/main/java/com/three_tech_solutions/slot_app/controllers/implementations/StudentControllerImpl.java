@@ -7,10 +7,13 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StudentControllerImpl implements StudentController {
     private final StudentService studentService;
+    private final MonthlyFeeService monthlyFeeService;
 
 
     @Override

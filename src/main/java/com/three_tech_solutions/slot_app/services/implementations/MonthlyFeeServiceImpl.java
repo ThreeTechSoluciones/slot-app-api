@@ -83,7 +83,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     @Override
     public List<StudentMonthlyFeeResponseDto> getMonthlyFeesByStudent(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
         studentService.getStudentById(studentId);
-        return filterAndMapMonthlyFees(monthlyFeeRepository.findByStudentIdOrderByNumberDesc(studentId);, month, expirationDate, status);
+        return filterAndMapMonthlyFees(monthlyFeeRepository.findByStudentIdOrderByNumberDesc(studentId), month, expirationDate, status);
     }
 
     private List<StudentMonthlyFeeResponseDto> filterAndMapMonthlyFees(
