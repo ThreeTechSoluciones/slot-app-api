@@ -18,7 +18,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
            OR LOWER(s.lastname) LIKE LOWER(CONCAT('%', :filter, '%'))
            OR LOWER(CONCAT(s.name, ' ', s.lastname)) LIKE LOWER(CONCAT('%', :filter, '%'))
            OR LOWER(CONCAT(s.lastname, ' ', s.name)) LIKE LOWER(CONCAT('%', :filter, '%'))
-           OR s.dni LIKE CONCAT('%', :filter, '%'))
+           OR s.dni LIKE CONCAT(:filter, '%'))
     """)
     List<Student> getStudentsByUserAndNameAndLastnameAndDni(@Param("user") User user, @Param("filter") String filter);
 }
