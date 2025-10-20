@@ -5,5 +5,6 @@ import java.util.UUID;
 public record PlanResponse(
         UUID id,
         String name,
-        double price
+        double price,
+        int numberOfDays
 ) { }

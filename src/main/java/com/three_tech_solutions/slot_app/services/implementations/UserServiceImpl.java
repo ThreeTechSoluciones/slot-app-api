@@ -74,7 +74,8 @@ public class UserServiceImpl implements UserService {
                                 .map(plan -> new PlanResponse(
                                         plan.getId(),
                                         plan.getName(),
-                                        plan.getCurrentPrice()
+                                        plan.getCurrentPrice(),
+                                        plan.getNumberOfDays()
                                 ))
                                 .toList()
                 )
