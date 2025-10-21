@@ -3,7 +3,7 @@ package com.three_tech_solutions.slot_app.controllers.interfaces;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import jakarta.validation.Valid;
@@ -35,7 +35,7 @@ public interface StudentController {
     void activateStudent(@PathVariable UUID studentId);
 
     @GetMapping("/{studentId}/monthly-fees")
-    List<StudentMonthlyFeeResponseDto> getStudentMonthlyFees(
+    List<StudentMonthlyFeeResponse> getStudentMonthlyFees(
             @PathVariable UUID studentId,
             @RequestParam(required = false) String month,
             @RequestParam(required = false) LocalDate expirationDate,

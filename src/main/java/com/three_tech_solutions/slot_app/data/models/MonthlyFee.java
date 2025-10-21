@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class MonthlyFee {
     double amount;
-    LocalDateTime expirationDate;
+    LocalDate expirationDate;
     @Column(unique = true)
     int number;
     @ManyToOne
@@ -34,10 +35,12 @@ public class MonthlyFee {
     LocalDateTime createdAt = LocalDateTime.now();
     @Id
     UUID id = UUID.randomUUID();
+    @Enumerated(EnumType.STRING)
+    MonthlyFeeStatus currentStatus = MonthlyFeeStatus.ON_TIME;
 
     public MonthlyFee(
             double amount,
-            LocalDateTime expirationDate,
+            LocalDate expirationDate,
             int number,
             Student student
     ) {
@@ -47,12 +50,4 @@ public class MonthlyFee {
         this.student = student;
     }
 
-
-    public MonthlyFeeStatusHistory getCurrentStatus() {
-        return this.statusHistory
-                .stream()
-                .filter(status -> status.endDate == null)
-                .findFirst()
-                .orElse(statusHistory.getFirst());
-    }
 }

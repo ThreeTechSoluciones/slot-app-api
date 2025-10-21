@@ -6,7 +6,7 @@ import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Component
 public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
@@ -17,8 +17,8 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     }
 
     @Override
-    public LocalDateTime getExpirationDate(Student student) {
-        return LocalDateTime.now().withDayOfMonth(
+    public LocalDate getExpirationDate(Student student) {
+        return LocalDate.now().withDayOfMonth(
                 student.getPaymentPlan().getPaymentDay()
         );
     }

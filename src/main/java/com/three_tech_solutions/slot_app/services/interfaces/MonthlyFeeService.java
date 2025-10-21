@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
@@ -14,8 +14,8 @@ public interface MonthlyFeeService {
     void createStudentsMonthlyFee();
     void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest);
     void payMonthlyFee(UUID monthlyFeeId);
-    List<StudentMonthlyFeeResponseDto> getMonthlyFeesByStudent(
-            UUID studentId,
+    List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(
+            Student student,
             String month,
             LocalDate expirationDate,
             MonthlyFeeStatus status

@@ -3,7 +3,9 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
@@ -141,6 +143,12 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters);
     }
 
+    public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+        return studentRepository
+                .findById(studentId)
+                .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {

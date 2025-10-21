@@ -6,7 +6,7 @@ import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Slf4j
 public abstract class MonthlyFeeProcessor {
@@ -49,7 +49,7 @@ public abstract class MonthlyFeeProcessor {
     }
 
     protected MonthlyFee createMonthlyFee(
-            LocalDateTime expirationDate,
+            LocalDate expirationDate,
             Student student,
             int newMonthlyFeeNumber,
             double amount
@@ -70,7 +70,7 @@ public abstract class MonthlyFeeProcessor {
 
     public abstract PaymentPlanName getCurrentPlan();
 
-    public abstract LocalDateTime getExpirationDate(Student student);
+    public abstract LocalDate getExpirationDate(Student student);
 
     public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
 

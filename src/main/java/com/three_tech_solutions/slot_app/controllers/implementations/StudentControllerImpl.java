@@ -5,10 +5,9 @@ import com.three_tech_solutions.slot_app.controllers.interfaces.StudentControlle
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponseDto;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
-import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +21,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StudentControllerImpl implements StudentController {
     private final StudentService studentService;
-    private final MonthlyFeeService monthlyFeeService;
 
 
     @Override
@@ -52,7 +50,7 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public List<StudentMonthlyFeeResponseDto> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
-        return monthlyFeeService.getMonthlyFeesByStudent(studentId, month, expirationDate, status);
+    public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+        return studentService.getStudentMonthlyFees(studentId, month, expirationDate, status);
     }
 }
