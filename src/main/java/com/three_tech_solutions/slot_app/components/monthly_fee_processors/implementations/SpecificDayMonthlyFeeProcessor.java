@@ -11,13 +11,6 @@ import java.time.LocalDate;
 @Component
 public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
-    public final int DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE = 2;
-
-    @Override
-    public boolean satisfiesTheConditionsOfThePaymentDate(Student student) {
-        return getDifferenceOfDaysBetweenStudentPaymentDayAndToday(student) <= DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE;
-    }
-
     @Override
     public PaymentPlanName getCurrentPlan() {
         return PaymentPlanName.SPECIFIC_DAY;
@@ -40,10 +33,6 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
         return student.getMonthlyFees().stream().anyMatch(monthlyFee ->
                 monthlyFee.getExpirationDate().getMonth().equals(LocalDate.now().getMonth())
         );
-    }
-
-    private int getDifferenceOfDaysBetweenStudentPaymentDayAndToday(Student student) {
-        return getTodayDay() - getStudentPaymentDay(student);
     }
 
     private Byte getStudentPaymentDay(Student student) {

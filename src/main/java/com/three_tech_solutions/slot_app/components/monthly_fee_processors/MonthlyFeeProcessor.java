@@ -62,8 +62,6 @@ public abstract class MonthlyFeeProcessor {
         );
     }
 
-    public abstract boolean satisfiesTheConditionsOfThePaymentDate(Student student);
-
     public abstract PaymentPlanName getCurrentPlan();
 
     public abstract LocalDate getExpirationDate(Student student);
@@ -88,10 +86,8 @@ public abstract class MonthlyFeeProcessor {
         ));
     }
 
-
-    // TODO: Agregar condicion de fecha de pago
     private boolean shouldCreateStudentMonthlyFee(Student student) {
-        return !studentHasTheCurrentMonthlyFee(student); //&& satisfiesTheConditionsOfThePaymentDate(student);
+        return !studentHasTheCurrentMonthlyFee(student);
     }
 
 

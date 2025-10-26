@@ -14,12 +14,6 @@ import java.time.YearMonth;
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
-    public static final int DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE = 2;
-
-    @Override
-    public boolean satisfiesTheConditionsOfThePaymentDate(Student student) {
-        return getDifferenceBetweenMaxDayOfMonthAndTodayDay() <= DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE;
-    }
 
     @Override
     public PaymentPlanName getCurrentPlan() {
@@ -67,14 +61,6 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     private double calculateExtraClassesAmount(Double classPrice, Byte extraClasses) {
         return classPrice * extraClasses;
-    }
-
-    private int getDifferenceBetweenMaxDayOfMonthAndTodayDay() {
-        return getMaxDayOfMonth() - getTodayDay();
-    }
-
-    private int getMaxDayOfMonth() {
-        return YearMonth.now().atEndOfMonth().getDayOfMonth();
     }
 
 }
