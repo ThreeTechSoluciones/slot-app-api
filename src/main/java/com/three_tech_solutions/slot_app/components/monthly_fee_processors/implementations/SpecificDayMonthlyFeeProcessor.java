@@ -37,8 +37,9 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     @Override
     public boolean studentHasTheCurrentMonthlyFee(Student student) {
-        // TODO: hacer implementación correcta
-        return false;
+        return student.getMonthlyFees().stream().anyMatch(monthlyFee ->
+                monthlyFee.getExpirationDate().getMonth().equals(LocalDate.now().getMonth())
+        );
     }
 
     private int getDifferenceOfDaysBetweenStudentPaymentDayAndToday(Student student) {
