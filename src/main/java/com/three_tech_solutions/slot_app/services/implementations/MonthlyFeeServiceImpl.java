@@ -37,7 +37,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     private final PaymentService paymentService;
 
     @Transactional
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "* * * * * *")
     @Override
     public void createStudentsMonthlyFee() {
         log.info("Iniciando proceso de creacion de pagos");

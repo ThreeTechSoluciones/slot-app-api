@@ -36,7 +36,7 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     }
 
     @Override
-    public boolean studentDoesNotHaveCurrentMonthlyFee(Student student) {
+    public boolean studentHasTheCurrentMonthlyFee(Student student) {
         // TODO: hacer implementación correcta
         return false;
     }

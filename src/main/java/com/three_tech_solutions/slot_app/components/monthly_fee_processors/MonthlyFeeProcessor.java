@@ -70,7 +70,7 @@ public abstract class MonthlyFeeProcessor {
 
     public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
 
-    public abstract boolean studentDoesNotHaveCurrentMonthlyFee(Student student);
+    public abstract boolean studentHasTheCurrentMonthlyFee(Student student);
 
     protected double getStudentPlanPrice(Student student) {
         return student
@@ -89,8 +89,9 @@ public abstract class MonthlyFeeProcessor {
     }
 
 
+    // TODO: Agregar condicion de fecha de pago
     private boolean shouldCreateStudentMonthlyFee(Student student) {
-        return studentDoesNotHaveCurrentMonthlyFee(student) && satisfiesTheConditionsOfThePaymentDate(student);
+        return !studentHasTheCurrentMonthlyFee(student); //&& satisfiesTheConditionsOfThePaymentDate(student);
     }
 
 
