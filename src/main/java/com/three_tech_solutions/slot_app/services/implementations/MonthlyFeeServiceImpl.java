@@ -49,7 +49,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
                 monthlyFee
                         .ifPresentOrElse(
                                 monthlyFeeRepository::save,
-                                () -> log.info("No se creó pago para el estudiante {}", student)
+                                () -> log.info("No se creó pago para el estudiante")
                         );
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +37,7 @@ public class Plan {
     public double getCurrentPrice() {
         return this.getPrices()
                 .stream()
+                .filter(price -> price.startDate.isBefore(LocalDate.now()) && price.endDate == null)
                 .findFirst()
                 .map(Price::getAmount)
                 .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"));
