@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class MonthlyFee {
     double amount;
-    LocalDateTime expirationDate;
+    LocalDate expirationDate;
     @Column(unique = true)
     int number;
     @ManyToOne
@@ -37,7 +38,7 @@ public class MonthlyFee {
 
     public MonthlyFee(
             double amount,
-            LocalDateTime expirationDate,
+            LocalDate expirationDate,
             int number,
             Student student
     ) {

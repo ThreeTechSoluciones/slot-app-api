@@ -7,12 +7,18 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
+    public static final int DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE = 2;
+
+    @Override
+    public boolean satisfiesTheConditionsOfThePaymentDate(Student student) {
+        return getDifferenceBetweenMaxDayOfMonthAndTodayDay() <= DAYS_DIFFERENCE_TO_CREATE_MONTHLY_FEE;
+    }
 
     @Override
     public PaymentPlanName getCurrentPlan() {
@@ -20,8 +26,8 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
     }
 
     @Override
-    public LocalDateTime getExpirationDate(Student student) {
-        return LocalDateTime.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
+    public LocalDate getExpirationDate(Student student) {
+        return LocalDate.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
     }
 
     @Override
@@ -31,11 +37,27 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
                     calculateExtraClassesAmount(createStudentRequest.getClassPrice(), createStudentRequest.getExtraClasses());
     }
 
-    private static int getTodayDay() {
-        return LocalDate.now().getDayOfMonth();
+    @Override
+    public boolean studentDoesNotHaveCurrentMonthlyFee(Student student) {
+//        if (getTodayDay() >= 28 && getTodayDay() <= 31) {
+//            return student.getMonthlyFees().stream().anyMatch(monthlyFee ->
+//                    monthlyFee.getExpirationDate().withMonth(LocalDate.now().getMonthValue())
+//            );
+//        }
+
+        return false;
     }
 
     private double calculateExtraClassesAmount(Double classPrice, Byte extraClasses) {
         return classPrice * extraClasses;
     }
+
+    private int getDifferenceBetweenMaxDayOfMonthAndTodayDay() {
+        return getMaxDayOfMonth() - getTodayDay();
+    }
+
+    private int getMaxDayOfMonth() {
+        return YearMonth.now().atEndOfMonth().getDayOfMonth();
+    }
+
 }

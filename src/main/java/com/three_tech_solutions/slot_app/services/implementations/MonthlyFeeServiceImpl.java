@@ -20,8 +20,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -43,8 +45,12 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         students.forEach(student -> {
             try {
                 MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
-                MonthlyFee monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
-                monthlyFeeRepository.save(monthlyFee);
+                Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
+                monthlyFee
+                        .ifPresentOrElse(
+                                monthlyFeeRepository::save,
+                                () -> log.info("No se creó pago para el estudiante {}", student)
+                        );
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
             }
@@ -77,6 +83,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         monthlyFeeRepository.save(monthlyFee);
     }
 
+
     private int getMonthlyFeeNumber() {
         return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
     }
@@ -96,7 +103,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         MonthlyFeeStatusHistory currentStatus = monthlyFee.getCurrentStatus();
         currentStatus.setEndDate(LocalDateTime.now());
 
-        MonthlyFeeStatus newStatus = LocalDateTime.now().isAfter(monthlyFee.getExpirationDate())
+        MonthlyFeeStatus newStatus = LocalDate.now().isAfter(monthlyFee.getExpirationDate())
                 ? MonthlyFeeStatus.PAYED_OUT_OF_TIME
                 : MonthlyFeeStatus.PAYED;
 

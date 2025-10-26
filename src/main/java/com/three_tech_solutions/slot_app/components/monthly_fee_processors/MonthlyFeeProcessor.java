@@ -6,7 +6,8 @@ import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Slf4j
 public abstract class MonthlyFeeProcessor {
@@ -19,15 +20,10 @@ public abstract class MonthlyFeeProcessor {
      * @param newMonthlyFeeNumber Number of the new monthly fee
      * @return MonthlyFee
      */
-    public MonthlyFee createStudentMonthlyFee(Student student, int newMonthlyFeeNumber){
+    public Optional<MonthlyFee> createStudentMonthlyFee(Student student, int newMonthlyFeeNumber){
         log.info("Creando pago para el estudiante: {}", student);
         log.info("El plan es {}", getCurrentPlan());
-        return createMonthlyFee(
-                getExpirationDate(student),
-                student,
-                newMonthlyFeeNumber,
-                getStudentPlanPrice(student)
-        );
+        return shouldCreateStudentMonthlyFee(student) ? getOptionalOfMonthlyFee(student, newMonthlyFeeNumber) : Optional.empty();
     }
 
     /**
@@ -48,8 +44,12 @@ public abstract class MonthlyFeeProcessor {
         );
     }
 
+    protected int getTodayDay() {
+        return LocalDate.now().getDayOfMonth();
+    }
+
     protected MonthlyFee createMonthlyFee(
-            LocalDateTime expirationDate,
+            LocalDate expirationDate,
             Student student,
             int newMonthlyFeeNumber,
             double amount
@@ -62,11 +62,15 @@ public abstract class MonthlyFeeProcessor {
         );
     }
 
+    public abstract boolean satisfiesTheConditionsOfThePaymentDate(Student student);
+
     public abstract PaymentPlanName getCurrentPlan();
 
-    public abstract LocalDateTime getExpirationDate(Student student);
+    public abstract LocalDate getExpirationDate(Student student);
 
     public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
+
+    public abstract boolean studentDoesNotHaveCurrentMonthlyFee(Student student);
 
     protected double getStudentPlanPrice(Student student) {
         return student
@@ -74,5 +78,20 @@ public abstract class MonthlyFeeProcessor {
                 .getPlan()
                 .getCurrentPrice();
     }
+
+    private Optional<MonthlyFee> getOptionalOfMonthlyFee(Student student, int newMonthlyFeeNumber) {
+        return Optional.of(createMonthlyFee(
+                getExpirationDate(student),
+                student,
+                newMonthlyFeeNumber,
+                getStudentPlanPrice(student)
+        ));
+    }
+
+
+    private boolean shouldCreateStudentMonthlyFee(Student student) {
+        return studentDoesNotHaveCurrentMonthlyFee(student) && satisfiesTheConditionsOfThePaymentDate(student);
+    }
+
 
 }
