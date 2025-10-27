@@ -60,5 +60,14 @@ public class Student {
                 .stream()
                 .anyMatch(monthlyFee -> monthlyFee.getCurrentStatus().getStatus() == MonthlyFeeStatus.OUT_OF_TIME);
     }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", dni='" + dni + '\'' +
+                '}';
+    }
 }
 
