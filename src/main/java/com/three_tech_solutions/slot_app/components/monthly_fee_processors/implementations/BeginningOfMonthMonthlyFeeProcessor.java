@@ -7,7 +7,6 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
@@ -20,8 +19,8 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
     }
 
     @Override
-    public LocalDateTime getExpirationDate(Student student) {
-        return LocalDateTime.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
+    public LocalDate getExpirationDate(Student student) {
+        return LocalDate.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
     }
 
     @Override
