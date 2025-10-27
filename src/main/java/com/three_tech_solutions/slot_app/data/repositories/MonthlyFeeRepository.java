@@ -16,8 +16,6 @@ public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
     @Query("SELECT number FROM MonthlyFee ORDER BY number DESC LIMIT 1")
     Optional<Integer> getLastMonthlyFeeNumber();
 
-    List<MonthlyFee> findByStudentIdOrderByNumberDesc(UUID studentId);
-
     @Query("""
         SELECT mf
         FROM MonthlyFee mf
