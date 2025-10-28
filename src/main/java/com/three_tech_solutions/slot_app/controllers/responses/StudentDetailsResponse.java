@@ -17,9 +17,10 @@ public record StudentDetailsResponse (
      String pathologies,
      @JsonFormat(pattern = "dd/MM/yyyy")
      LocalDate admissionDate,
-     String paymentPlan,
+     String paymentPlanName,
      String plan,
      Byte paymentDay,
      boolean status,
-     StudentSituation situation
+     StudentSituation situation,
+     UUID planId
 ) {}
