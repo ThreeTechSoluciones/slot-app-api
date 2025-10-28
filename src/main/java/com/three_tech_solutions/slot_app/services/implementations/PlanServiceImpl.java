@@ -40,7 +40,8 @@ public class PlanServiceImpl implements PlanService {
         return new PlanResponse(
                 plan.getId(),
                 plan.getName(),
-                plan.getCurrentPrice()
+                plan.getCurrentPrice(),
+                plan.getNumberOfDays()
         );
     }
 

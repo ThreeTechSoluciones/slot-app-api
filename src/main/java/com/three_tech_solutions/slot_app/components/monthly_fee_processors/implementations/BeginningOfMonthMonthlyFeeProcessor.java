@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.YearMonth;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
@@ -62,5 +61,4 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
     private double calculateExtraClassesAmount(Double classPrice, Byte extraClasses) {
         return classPrice * extraClasses;
     }
-
 }

@@ -3,7 +3,9 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.data.mappers.MonthlyFeeMapper;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
 import com.three_tech_solutions.slot_app.data.models.Payment;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -83,6 +86,21 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         monthlyFeeRepository.save(monthlyFee);
     }
 
+    @Override
+    public List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(Student student, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+        return monthlyFeeRepository
+                .findAllByStudentAndMonthAndStatusAndExpirationDate(student, getMonthValue(month), status, expirationDate)
+                .stream()
+                .map(MonthlyFeeMapper::toStudentMonthlyFeeResponse)
+                .toList();
+    }
+
+    private static Integer getMonthValue(String month) {
+        return Optional
+                .ofNullable(month)
+                .map(m -> Month.valueOf(m.toUpperCase()).getValue())
+                .orElse(null);
+    }
 
     private int getMonthlyFeeNumber() {
         return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
@@ -100,14 +118,18 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     private void updateStatus(MonthlyFee monthlyFee) {
-        MonthlyFeeStatusHistory currentStatus = monthlyFee.getCurrentStatus();
-        currentStatus.setEndDate(LocalDateTime.now());
+        monthlyFee.getStatusHistory().stream()
+                .filter(h -> h.getEndDate() == null)
+                .findFirst()
+                .ifPresent(h -> h.setEndDate(LocalDateTime.now()));
 
         MonthlyFeeStatus newStatus = LocalDate.now().isAfter(monthlyFee.getExpirationDate())
                 ? MonthlyFeeStatus.PAYED_OUT_OF_TIME
                 : MonthlyFeeStatus.PAYED;
 
-        MonthlyFeeStatusHistory statusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
-        monthlyFee.getStatusHistory().add(statusHistory);
+        monthlyFee.setCurrentStatus(newStatus);
+
+        MonthlyFeeStatusHistory newStatusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
+        monthlyFee.getStatusHistory().add(newStatusHistory);
     }
 }
