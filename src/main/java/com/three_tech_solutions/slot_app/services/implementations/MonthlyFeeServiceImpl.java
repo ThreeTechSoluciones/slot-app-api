@@ -101,7 +101,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createNextStudentMonthlyFee(student, getMonthlyFeeNumber());
         MonthlyFee savedMonthlyFee = monthlyFee
                 .map(monthlyFeeRepository::save)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se pudo crear la cuota para el estudiante"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo crear la cuota para el estudiante"));
         return MonthlyFeeMapper.toStudentMonthlyFeeResponse(savedMonthlyFee);
     }
 
