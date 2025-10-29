@@ -7,9 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -46,6 +44,13 @@ public class Student {
         this.pathologies = pathologies;
         this.user = user;
         this.paymentPlan = paymentPlan;
+    }
+
+    public Optional<MonthlyFee> getLatestMonthlyFee() {
+        return this
+                .getMonthlyFees()
+                .stream()
+                .max(Comparator.comparingInt(MonthlyFee::getNumber));
     }
 
     public StudentSituation getStudentSituation() {

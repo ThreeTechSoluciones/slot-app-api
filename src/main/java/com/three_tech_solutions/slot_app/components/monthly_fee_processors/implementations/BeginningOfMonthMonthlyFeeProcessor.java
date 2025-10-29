@@ -5,9 +5,12 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentReque
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.Month;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
@@ -17,6 +20,19 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
     @Override
     public PaymentPlanName getCurrentPlan() {
         return PaymentPlanName.BEGINNING_OF_MONTH;
+    }
+
+    @Override
+    public LocalDate getNextExpirationDate(Student student) {
+        return student
+                .getLatestMonthlyFee()
+                .map(monthlyFee ->
+                        monthlyFee
+                                .getExpirationDate()
+                                .plusMonths(1)
+                                .withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE)
+                )
+                .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "El estudiante no tiene pagos previos"));
     }
 
     @Override

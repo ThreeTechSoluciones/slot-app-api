@@ -44,6 +44,16 @@ public abstract class MonthlyFeeProcessor {
         );
     }
 
+
+    public Optional<MonthlyFee> createNextStudentMonthlyFee(Student student, int newMonthlyFeeNumber) {
+        return Optional.of(createMonthlyFee(
+                getNextExpirationDate(student),
+                student,
+                newMonthlyFeeNumber,
+                getStudentPlanPrice(student)
+        ));
+    }
+
     protected int getTodayDay() {
         return LocalDate.now().getDayOfMonth();
     }
@@ -63,6 +73,8 @@ public abstract class MonthlyFeeProcessor {
     }
 
     public abstract PaymentPlanName getCurrentPlan();
+
+    public abstract LocalDate getNextExpirationDate(Student student);
 
     public abstract LocalDate getExpirationDate(Student student);
 
@@ -89,6 +101,4 @@ public abstract class MonthlyFeeProcessor {
     private boolean shouldCreateStudentMonthlyFee(Student student) {
         return !studentHasTheCurrentMonthlyFee(student);
     }
-
-
 }
