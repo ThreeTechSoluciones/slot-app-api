@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.Month;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
@@ -20,7 +21,10 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
 
     @Override
     public LocalDate getExpirationDate(Student student) {
-        return LocalDate.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
+        return itsEndOfMonth() ?
+                LocalDate.now().plusMonths(1).withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE) :
+                LocalDate.now().withDayOfMonth(BEGINNING_OF_MONTH_EXPIRATION_DATE);
+
     }
 
     @Override
@@ -30,8 +34,28 @@ public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
                     calculateExtraClassesAmount(createStudentRequest.getClassPrice(), createStudentRequest.getExtraClasses());
     }
 
-    private static int getTodayDay() {
-        return LocalDate.now().getDayOfMonth();
+    /**
+     * Validate if student already has the monthly fee of the month.
+     * If it's end on month, processor must check the monthly fee of the next month.
+     * If it's not the end of month, processor must check the monthly fee of the current month.
+     */
+    @Override
+    public boolean studentHasTheCurrentMonthlyFee(Student student) {
+        Month monthToValidate = itsEndOfMonth() ?
+                LocalDate.now().plusMonths(1).getMonth() :
+                LocalDate.now().getMonth();
+
+        return student.getMonthlyFees().stream().anyMatch(monthlyFee ->
+                monthlyFee.getExpirationDate().getMonth().equals(monthToValidate)
+        );
+    }
+
+    /**
+     * This method is because BeginningOfMonthMonthlyFeeProcessor behavior
+     * depends on whether the date is the end of the month or not.
+     */
+    private boolean itsEndOfMonth() {
+        return getTodayDay() >= 28 && getTodayDay() <= 31;
     }
 
     private double calculateExtraClassesAmount(Double classPrice, Byte extraClasses) {

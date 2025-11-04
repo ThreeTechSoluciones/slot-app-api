@@ -19,12 +19,23 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     @Override
     public LocalDate getExpirationDate(Student student) {
         return LocalDate.now().withDayOfMonth(
-                student.getPaymentPlan().getPaymentDay()
+                getStudentPaymentDay(student)
         );
     }
 
     @Override
     public double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest) {
         return getStudentPlanPrice(student);
+    }
+
+    @Override
+    public boolean studentHasTheCurrentMonthlyFee(Student student) {
+        return student.getMonthlyFees().stream().anyMatch(monthlyFee ->
+                monthlyFee.getExpirationDate().getMonth().equals(LocalDate.now().getMonth())
+        );
+    }
+
+    private Byte getStudentPaymentDay(Student student) {
+        return student.getPaymentPlan().getPaymentDay();
     }
 }

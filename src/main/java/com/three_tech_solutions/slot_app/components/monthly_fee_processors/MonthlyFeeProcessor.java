@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Slf4j
 public abstract class MonthlyFeeProcessor {
@@ -19,15 +20,10 @@ public abstract class MonthlyFeeProcessor {
      * @param newMonthlyFeeNumber Number of the new monthly fee
      * @return MonthlyFee
      */
-    public MonthlyFee createStudentMonthlyFee(Student student, int newMonthlyFeeNumber){
+    public Optional<MonthlyFee> createStudentMonthlyFee(Student student, int newMonthlyFeeNumber){
         log.info("Creando pago para el estudiante: {}", student);
         log.info("El plan es {}", getCurrentPlan());
-        return createMonthlyFee(
-                getExpirationDate(student),
-                student,
-                newMonthlyFeeNumber,
-                getStudentPlanPrice(student)
-        );
+        return shouldCreateStudentMonthlyFee(student) ? getOptionalOfMonthlyFee(student, newMonthlyFeeNumber) : Optional.empty();
     }
 
     /**
@@ -48,6 +44,10 @@ public abstract class MonthlyFeeProcessor {
         );
     }
 
+    protected int getTodayDay() {
+        return LocalDate.now().getDayOfMonth();
+    }
+
     protected MonthlyFee createMonthlyFee(
             LocalDate expirationDate,
             Student student,
@@ -61,6 +61,15 @@ public abstract class MonthlyFeeProcessor {
                 student
         );
     }
+
+    public abstract PaymentPlanName getCurrentPlan();
+
+    public abstract LocalDate getExpirationDate(Student student);
+
+    public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
+
+    public abstract boolean studentHasTheCurrentMonthlyFee(Student student);
+
     protected double getStudentPlanPrice(Student student) {
         return student
                 .getPaymentPlan()
@@ -68,10 +77,18 @@ public abstract class MonthlyFeeProcessor {
                 .getCurrentPrice();
     }
 
-    public abstract PaymentPlanName getCurrentPlan();
+    private Optional<MonthlyFee> getOptionalOfMonthlyFee(Student student, int newMonthlyFeeNumber) {
+        return Optional.of(createMonthlyFee(
+                getExpirationDate(student),
+                student,
+                newMonthlyFeeNumber,
+                getStudentPlanPrice(student)
+        ));
+    }
 
-    public abstract LocalDate getExpirationDate(Student student);
+    private boolean shouldCreateStudentMonthlyFee(Student student) {
+        return !studentHasTheCurrentMonthlyFee(student);
+    }
 
-    public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
 
 }

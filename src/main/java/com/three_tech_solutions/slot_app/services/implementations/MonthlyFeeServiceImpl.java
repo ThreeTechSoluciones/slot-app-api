@@ -48,8 +48,12 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         students.forEach(student -> {
             try {
                 MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
-                MonthlyFee monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
-                monthlyFeeRepository.save(monthlyFee);
+                Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
+                monthlyFee
+                        .ifPresentOrElse(
+                                monthlyFeeRepository::save,
+                                () -> log.info("No se creó pago para el estudiante {}", student)
+                        );
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
             }
