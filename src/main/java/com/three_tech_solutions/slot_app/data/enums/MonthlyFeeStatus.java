@@ -1,5 +1,7 @@
 package com.three_tech_solutions.slot_app.data.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum MonthlyFeeStatus {
     PENDING("Pendiente"),
     OUT_OF_TIME("Vencido"),
@@ -12,6 +14,7 @@ public enum MonthlyFeeStatus {
         this.value = value;
     }
 
+    @JsonValue
     public String getStatus() {
         return value;
     }
