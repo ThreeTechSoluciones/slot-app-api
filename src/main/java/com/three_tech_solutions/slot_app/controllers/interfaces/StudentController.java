@@ -42,4 +42,8 @@ public interface StudentController {
             @RequestParam(required = false) MonthlyFeeStatus status
     );
 
+    @PostMapping("/{studentId}/monthly-fees")
+    @ResponseStatus(HttpStatus.CREATED)
+    StudentMonthlyFeeResponse createStudentMonthlyFee(@PathVariable UUID studentId);
+
 }

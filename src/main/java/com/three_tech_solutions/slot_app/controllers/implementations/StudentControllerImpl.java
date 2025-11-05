@@ -1,7 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.StudentController;
-
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
@@ -52,5 +51,10 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
         return studentService.getStudentMonthlyFees(studentId, month, expirationDate, status);
+    }
+
+    @Override
+    public StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId) {
+        return studentService.createStudentMonthlyFee(studentId);
     }
 }

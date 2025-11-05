@@ -149,6 +149,15 @@ public class StudentServiceImpl implements StudentService {
                 .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
+
+    @Override
+    public StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId) {
+        return studentRepository
+                .findById(studentId)
+                .map(student -> monthlyFeeService.createMonthlyFeeForStudent(student))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
