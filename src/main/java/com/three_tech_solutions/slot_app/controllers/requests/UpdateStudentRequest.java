@@ -5,31 +5,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.UUID;
+@Data
 
-public record UpdateStudentRequest(
+public class UpdateStudentRequest {
     @NotBlank(message = "El nombre no puede estar vacío")
-    String name,
+    String name;
     @NotBlank(message = "El apellido no puede estar vacío")
-    String lastName,
+    String lastName;
     @NotBlank(message = "El DNI es obligatorio")
     @Size(max = 8, message = "El DNI no puede tener más de 8 números")
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
-    String dni,
+    String dni;
     @NotBlank (message = "El número de teléfono es obligatorio")
     @Pattern(regexp = "\\d{10,11}" , message ="El número de teléfono debe tener entre 10 y 11 dígitos" )
-    String cellphoneNumber,
+    String cellphoneNumber;
     @NotNull(message = "El tipo de plan de pago es obligatorio")
-    PaymentPlanName paymentPlanName,
-    Byte paymentDay,
+    PaymentPlanName paymentPlanName;
+    Byte paymentDay;
     @NotNull(message = "La fecha de cumpleaños es obligatoria")
-    LocalDate birthday,
-    String pathologies,
-    Byte extraClasses,
-    Double classPrice,
+    LocalDate birthday;
+    String pathologies;
+    Byte extraClasses;
+    Double classPrice;
     @NotNull(message = "Debe ingresar un plan")
-    UUID planId
-) {}
+    UUID planId;
 
+}
