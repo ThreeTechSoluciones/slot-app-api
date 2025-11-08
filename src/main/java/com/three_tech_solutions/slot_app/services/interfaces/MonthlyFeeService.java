@@ -21,5 +21,7 @@ public interface MonthlyFeeService {
             LocalDate expirationDate,
             MonthlyFeeStatus status
     );
+
+    StudentMonthlyFeeResponse createMonthlyFeeForStudent(Student student);
     int findAssociatedMonthlyFeeNumber(Payment payment);
 }

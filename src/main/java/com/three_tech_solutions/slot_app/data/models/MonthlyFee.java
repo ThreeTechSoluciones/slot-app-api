@@ -27,7 +27,7 @@ public class MonthlyFee {
     @OrderBy("startDate DESC")
     List<MonthlyFeeStatusHistory> statusHistory = new ArrayList<>(
             Collections.singletonList(
-                    new MonthlyFeeStatusHistory(MonthlyFeeStatus.ON_TIME, LocalDateTime.now())
+                    new MonthlyFeeStatusHistory(MonthlyFeeStatus.PENDING, LocalDateTime.now())
             )
     );
     @OneToOne(cascade = CascadeType.ALL)
@@ -36,7 +36,7 @@ public class MonthlyFee {
     @Id
     UUID id = UUID.randomUUID();
     @Enumerated(EnumType.STRING)
-    MonthlyFeeStatus currentStatus = MonthlyFeeStatus.ON_TIME;
+    MonthlyFeeStatus currentStatus = MonthlyFeeStatus.PENDING;
 
     public MonthlyFee(
             double amount,

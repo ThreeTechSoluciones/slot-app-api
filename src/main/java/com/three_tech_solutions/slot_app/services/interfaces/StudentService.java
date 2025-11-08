@@ -31,4 +31,6 @@ public interface StudentService {
     List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters);
 
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
+
+    StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId);
 }

@@ -97,6 +97,16 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
+    public StudentMonthlyFeeResponse createMonthlyFeeForStudent(Student student) {
+        MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
+        Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createNextStudentMonthlyFee(student, getMonthlyFeeNumber());
+        MonthlyFee savedMonthlyFee = monthlyFee
+                .map(monthlyFeeRepository::save)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo crear la cuota para el estudiante"));
+        return MonthlyFeeMapper.toStudentMonthlyFeeResponse(savedMonthlyFee);
+    }
+
+    @Override
     public int findAssociatedMonthlyFeeNumber(Payment payment) {
         MonthlyFee monthlyFee = monthlyFeeRepository.findByPayment(payment)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la cuota asociada al pago"));
@@ -140,6 +150,4 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         MonthlyFeeStatusHistory newStatusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
         monthlyFee.getStatusHistory().add(newStatusHistory);
     }
-
-
 }
