@@ -18,11 +18,15 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@AllArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
-    private final @Lazy MonthlyFeeService monthlyFeeService;
+    private final MonthlyFeeService monthlyFeeService;
+
+    public PaymentServiceImpl(PaymentRepository paymentRepository, @Lazy MonthlyFeeService monthlyFeeService) {
+        this.paymentRepository = paymentRepository;
+        this.monthlyFeeService = monthlyFeeService;
+    }
 
     @Override
     @Transactional
