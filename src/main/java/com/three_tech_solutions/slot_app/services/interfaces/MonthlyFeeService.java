@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.interfaces;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
@@ -20,4 +21,5 @@ public interface MonthlyFeeService {
             LocalDate expirationDate,
             MonthlyFeeStatus status
     );
+    int findAssociatedMonthlyFeeNumber(Payment payment);
 }
