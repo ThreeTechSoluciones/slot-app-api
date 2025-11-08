@@ -57,4 +57,9 @@ public class StudentControllerImpl implements StudentController {
     public StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId) {
         return studentService.createStudentMonthlyFee(studentId);
     }
+
+    @Override
+    public void validateIfDniExists(String dni) {
+        studentService.validateIfDniExists(dni);
+    }
 }
