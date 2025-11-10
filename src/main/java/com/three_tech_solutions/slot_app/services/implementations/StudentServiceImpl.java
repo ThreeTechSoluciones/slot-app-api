@@ -127,7 +127,7 @@ public class StudentServiceImpl implements StudentService {
 
         return studentRepository.findById(studentId)
                 .map(student -> {
-                    if (studentUpdated.getPaymentPlanName() == PaymentPlanName.BEGINNING_OF_MONTH) {
+                    if (planTypeIsBeginningOfMonth(studentUpdated.getPaymentPlanName())) {
                         studentUpdated.setPaymentDay(null);
                     }
                     validatePlanDetail(studentUpdated.getPaymentPlanName(), studentUpdated.getPaymentDay(), studentUpdated.getExtraClasses(), studentUpdated.getClassPrice());
@@ -178,10 +178,6 @@ public class StudentServiceImpl implements StudentService {
 
         if (planTypeIsSpecificDay(paymentPlanName) && paymentDayIsInvalid(paymentDay)) {
             throw new ResponseStatusException(BAD_REQUEST, "El día de pago debe ser entre 11 y 28.");
-        }
-        if (planTypeIsBeginningOfMonth(paymentPlanName)){
-
-
         }
     }
 
