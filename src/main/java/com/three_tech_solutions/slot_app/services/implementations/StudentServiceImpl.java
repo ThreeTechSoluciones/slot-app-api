@@ -124,13 +124,17 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-        validatePlanDetail(studentUpdated.paymentPlanName(), studentUpdated.paymentDay(), studentUpdated.extraClasses(), studentUpdated.classPrice());
+
         return studentRepository.findById(studentId)
                 .map(student -> {
+                    if (planTypeIsBeginningOfMonth(studentUpdated.getPaymentPlanName())) {
+                        studentUpdated.setPaymentDay(null);
+                    }
+                    validatePlanDetail(studentUpdated.getPaymentPlanName(), studentUpdated.getPaymentDay(), studentUpdated.getExtraClasses(), studentUpdated.getClassPrice());
                     studentMapper.updateStudent(
                             student,
                             studentUpdated,
-                            getPlanByIdOrThrowException(studentUpdated.planId())
+                            getPlanByIdOrThrowException(studentUpdated.getPlanId())
                     );
                     studentRepository.save(student);
                     return studentMapper.toStudentResponse(student);
