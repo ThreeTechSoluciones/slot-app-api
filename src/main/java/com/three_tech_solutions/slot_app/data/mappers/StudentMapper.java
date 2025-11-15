@@ -62,6 +62,7 @@ public class StudentMapper {
                 student.getAdmissionDate(),
                 student.getPaymentPlan().getPaymentPlanName().getName(),
                 student.getPaymentPlan().getPlan().getName(),
+                (int) student.getPaymentPlan().getPlan().getNumberOfDays(),
                 student.getPaymentPlan().getPaymentDay(),
                 student.isEnabled(),
                 student.getStudentSituation(),
