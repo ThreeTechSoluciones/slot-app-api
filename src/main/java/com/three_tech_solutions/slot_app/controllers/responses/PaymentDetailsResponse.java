@@ -1,19 +1,14 @@
 package com.three_tech_solutions.slot_app.controllers.responses;
 
-import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.LocalDate;
 
-@Data
-@AllArgsConstructor
-public class PaymentDetailsResponse {
-    private UUID id;
-    private int number;
-    private LocalDateTime paymentDate;
-    private double amount;
-    private MonthlyFeeStatus status;
-    private LocalDateTime expirationDate;
-}
+public record PaymentDetailsResponse (
+    int monthlyFeeNumber,
+    int paymentNumber,
+    double amount,
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    LocalDate paymentDate
+) {}
+

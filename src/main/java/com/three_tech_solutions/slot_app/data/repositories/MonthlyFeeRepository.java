@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,6 @@ public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
             @Param("status") MonthlyFeeStatus status,
             @Param("expirationDate") LocalDate expirationDate
     );
+
+    Optional<MonthlyFee> findByPayment(Payment payment);
 }

@@ -17,6 +17,7 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -103,6 +104,13 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
                 .map(monthlyFeeRepository::save)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo crear la cuota para el estudiante"));
         return MonthlyFeeMapper.toStudentMonthlyFeeResponse(savedMonthlyFee);
+    }
+
+    @Override
+    public int findAssociatedMonthlyFeeNumber(Payment payment) {
+        MonthlyFee monthlyFee = monthlyFeeRepository.findByPayment(payment)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la cuota asociada al pago"));
+        return monthlyFee.getNumber();
     }
 
     private static Integer getMonthValue(String month) {
