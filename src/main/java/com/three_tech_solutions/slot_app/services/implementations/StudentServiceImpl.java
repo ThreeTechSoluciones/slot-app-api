@@ -162,6 +162,13 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
 
+    @Override
+    public void validateIfDniExists(String dni) {
+        if (!studentRepository.existsByDni(dni)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El DNI no está registrado");
+        }
+    }
+
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
@@ -192,5 +199,4 @@ public class StudentServiceImpl implements StudentService {
     private boolean planTypeIsBeginningOfMonth(PaymentPlanName paymentPlanName){
         return PaymentPlanName.BEGINNING_OF_MONTH.equals(paymentPlanName);
     }
-
 }

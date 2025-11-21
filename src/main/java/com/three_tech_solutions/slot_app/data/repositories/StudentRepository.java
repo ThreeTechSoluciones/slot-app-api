@@ -21,4 +21,6 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
            OR s.dni LIKE CONCAT(:filter, '%'))
     """)
     List<Student> getStudentsByUserAndNameAndLastnameAndDni(@Param("user") User user, @Param("filter") String filter);
+
+    boolean existsByDni(String dni);
 }

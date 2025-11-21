@@ -33,4 +33,6 @@ public interface StudentService {
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
 
     StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId);
+
+    void validateIfDniExists(String dni);
 }
