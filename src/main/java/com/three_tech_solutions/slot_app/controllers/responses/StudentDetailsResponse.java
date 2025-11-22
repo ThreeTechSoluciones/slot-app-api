@@ -19,6 +19,7 @@ public record StudentDetailsResponse (
      LocalDate admissionDate,
      String paymentPlanName,
      String plan,
+     Byte numberOfDays,
      Byte paymentDay,
      boolean status,
      StudentSituation situation,
