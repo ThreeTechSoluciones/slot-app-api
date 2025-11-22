@@ -1,9 +1,7 @@
 package com.three_tech_solutions.slot_app.data.models;
 
 import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +18,7 @@ import java.util.UUID;
 @Setter
 public class Absence {
     private LocalDate slotDate;
+    @Enumerated(EnumType.STRING)
     private AbsenceStatus status;
     private LocalTime startTime;
     private LocalTime endTime;
