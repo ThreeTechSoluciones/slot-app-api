@@ -31,6 +31,8 @@ public class User implements UserDetails {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Slot> slots = Collections.emptyList();
+    @OneToOne(cascade = CascadeType.ALL)
+    private UserPreferences userPreferences = new UserPreferences();
 
     @Id
     private UUID id = UUID.randomUUID();

@@ -23,14 +23,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class SlotServiceImpl implements SlotService {
     private final SlotRepository slotRepository;
     private final UserService userService;
-    private final byte DEFAULT_CAPACITY;
-    private final long SLOT_DURATION_IN_HOURS;
 
     public SlotServiceImpl(SlotRepository slotRepository, UserService userService) {
         this.slotRepository = slotRepository;
         this.userService = userService;
-        this.DEFAULT_CAPACITY = 26;
-        this.SLOT_DURATION_IN_HOURS = 1;
     }
 
     @Override
@@ -46,35 +42,49 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private Slot buildSlot(CreateSlotRequest request) {
+        User user = getUserByIdOrThrowException(request.userId());
         return new Slot(
                 request.dayOfWeek(),
                 request.startTime(),
-                request.startTime().plusHours(SLOT_DURATION_IN_HOURS),
-                DEFAULT_CAPACITY,
-                getUserByIdOrThrowException(request.userId()),
-                createSpecificSlots(request)
+                request.startTime().plusMinutes(user.getUserPreferences().getSlotDurationMinutes()),
+                user.getUserPreferences().getSlotCapacity(),
+                user,
+                createSpecificSlots(
+                        request,
+                        user.getUserPreferences().getSlotDurationMinutes(),
+                        user.getUserPreferences().getSlotCapacity()
+                )
         );
     }
 
-    private List<SpecificSlot> createSpecificSlots(CreateSlotRequest request) {
+    private List<SpecificSlot> createSpecificSlots(
+            CreateSlotRequest request,
+            long slotDurationMinutes,
+            byte slotCapacity
+    ) {
         List<SpecificSlot> specificSlots = new ArrayList<>();
         LocalDate date = getNextDateOfDayOfWeek(request);
         LocalDate endDate = date.plusMonths(2);
 
         while (date.isBefore(endDate) || date.isEqual(endDate)) {
-            specificSlots.add(buildSpecificSlot(request, date));
+            specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes));
             date = date.plusWeeks(1);
         }
 
         return specificSlots;
     }
 
-    private SpecificSlot buildSpecificSlot(CreateSlotRequest request, LocalDate startDate) {
+    private SpecificSlot buildSpecificSlot(
+            CreateSlotRequest request,
+            LocalDate startDate,
+            byte slotCapacity,
+            long slotDurationMinutes
+    ) {
         return new SpecificSlot(
                 startDate,
-                DEFAULT_CAPACITY,
+                slotCapacity,
                 request.startTime(),
-                request.startTime().plusHours(SLOT_DURATION_IN_HOURS),
+                request.startTime().plusMinutes(slotDurationMinutes),
                 SlotStatus.CREATED
         );
     }
