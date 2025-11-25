@@ -19,6 +19,7 @@ public class Student {
      String dni;
      String phoneNumber;
      LocalDate birthday;
+     @Column(length = 300)
      String pathologies;
      @ManyToOne
      User user;
