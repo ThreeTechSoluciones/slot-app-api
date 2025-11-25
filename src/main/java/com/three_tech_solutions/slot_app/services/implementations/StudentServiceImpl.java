@@ -19,6 +19,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -143,8 +145,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters) {
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters);
+    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
+        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
