@@ -29,8 +29,6 @@ public class UpdateStudentRequest {
     @NotNull(message = "La fecha de cumpleaños es obligatoria")
     LocalDate birthday;
     String pathologies;
-    Byte extraClasses;
-    Double classPrice;
     @NotNull(message = "Debe ingresar un plan")
     UUID planId;
 
