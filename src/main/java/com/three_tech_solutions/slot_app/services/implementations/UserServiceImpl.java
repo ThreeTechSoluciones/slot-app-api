@@ -1,10 +1,12 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.responses.ListSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SlotService slotService;
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -80,5 +84,10 @@ public class UserServiceImpl implements UserService {
                                 .toList()
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
+    @Override
+    public ListSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+        return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId).getId(), dayOfWeek);
     }
 }
