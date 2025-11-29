@@ -34,8 +34,8 @@ public class Student {
      @OneToMany
      @JoinColumn(name = "student_id")
      private List<MonthlyFee> monthlyFees = Collections.emptyList();
-    @OneToMany
-    @JoinColumn(name = "student_id")
+     @OneToMany
+     @JoinColumn(name = "student_id")
      private List<Payment> payments = Collections.emptyList();
      @OneToMany
      @JoinColumn(name = "student_id")
