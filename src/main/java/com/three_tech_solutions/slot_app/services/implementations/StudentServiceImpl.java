@@ -60,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
         validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
-
+        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
         Plan plan = getPlanByIdOrThrowException(studentDTO.getPlanId());
         User user = getUserByIdOrThrowException(studentDTO.getUserId());
 
@@ -124,13 +124,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-
+        validatePaymentDay(studentUpdated.getPaymentPlanName(), studentUpdated.getPaymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
                     if (planTypeIsBeginningOfMonth(studentUpdated.getPaymentPlanName())) {
                         studentUpdated.setPaymentDay(null);
                     }
-                    validatePlanDetail(studentUpdated.getPaymentPlanName(), studentUpdated.getPaymentDay(), studentUpdated.getExtraClasses(), studentUpdated.getClassPrice());
                     studentMapper.updateStudent(
                             student,
                             studentUpdated,
@@ -182,7 +181,9 @@ public class StudentServiceImpl implements StudentService {
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar las clases extras y el precio por clase.");
         }
+    }
 
+    private void validatePaymentDay(PaymentPlanName paymentPlanName, Byte paymentDay){
         if (planTypeIsSpecificDay(paymentPlanName) && paymentDayIsInvalid(paymentDay)) {
             throw new ResponseStatusException(BAD_REQUEST, "El día de pago debe ser entre 11 y 28.");
         }

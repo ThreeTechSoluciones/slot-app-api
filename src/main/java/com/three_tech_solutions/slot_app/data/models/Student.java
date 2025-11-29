@@ -20,10 +20,11 @@ public class Student {
      private String name;
      private String lastname;
      @Column(unique = true)
-     private String dni;
-     private String phoneNumber;
-     private LocalDate birthday;
-     private String pathologies;
+     String dni;
+     String phoneNumber;
+     LocalDate birthday;
+     @Column(length = 300)
+     String pathologies;
      @ManyToOne
      private User user;
      @OneToOne(cascade = CascadeType.ALL)
