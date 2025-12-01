@@ -28,6 +28,11 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<Plan> plans = Collections.emptyList();
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Slot> slots = Collections.emptyList();
+    @OneToOne(cascade = CascadeType.ALL)
+    private UserPreferences userPreferences = new UserPreferences();
 
     @Id
     private UUID id = UUID.randomUUID();

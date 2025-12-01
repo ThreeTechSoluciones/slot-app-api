@@ -3,18 +3,22 @@ package com.three_tech_solutions.slot_app.data.models;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Data
+@AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Student {
-     String name;
-     String lastname;
+     private String name;
+     private String lastname;
      @Column(unique = true)
      String dni;
      String phoneNumber;
@@ -22,19 +26,22 @@ public class Student {
      @Column(length = 300)
      String pathologies;
      @ManyToOne
-     User user;
+     private User user;
      @OneToOne(cascade = CascadeType.ALL)
-     PaymentPlan paymentPlan;
-     boolean enabled = true;
-     LocalDate admissionDate = LocalDate.now();
+     private PaymentPlan paymentPlan;
+     private boolean enabled = true;
+     private LocalDate admissionDate = LocalDate.now();
      @OneToMany
      @JoinColumn(name = "student_id")
-     List<MonthlyFee> monthlyFees = Collections.emptyList();
+     private List<MonthlyFee> monthlyFees = Collections.emptyList();
      @OneToMany
-     @JoinColumn(name = "student_Id")
-     List<Payment> payments = Collections.emptyList();
+     @JoinColumn(name = "student_id")
+     private List<Payment> payments = Collections.emptyList();
+     @OneToMany
+     @JoinColumn(name = "student_id")
+     private List<Absence> absences = Collections.emptyList();
      @Id
-     UUID id = UUID.randomUUID();
+     private UUID id = UUID.randomUUID();
 
     public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, User user, PaymentPlan paymentPlan) {
         this.name = name;
