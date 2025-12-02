@@ -15,10 +15,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class SpecificSlotDetail {
-    @Enumerated(EnumType.STRING)
-    private SpecificSlotDetailStatus status;
     @OneToOne
     private Student student;
+    @Enumerated(EnumType.STRING)
+    private SpecificSlotDetailStatus status = SpecificSlotDetailStatus.ATTENDANCE;
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 }
