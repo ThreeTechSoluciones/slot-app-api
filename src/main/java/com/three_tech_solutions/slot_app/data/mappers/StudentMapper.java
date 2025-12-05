@@ -10,6 +10,8 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -51,6 +53,11 @@ public class StudentMapper {
     }
 
     public StudentDetailsResponse toStudentDetailsResponse(Student student) {
+        Integer age = null;
+
+        if (student.getBirthday() != null) {
+            age = Period.between(student.getBirthday(), LocalDate.now()).getYears();
+        }
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -58,6 +65,7 @@ public class StudentMapper {
                 student.getDni(),
                 student.getPhoneNumber(),
                 student.getBirthday(),
+                age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
                 student.getPaymentPlan().getPaymentPlanName().getName(),
