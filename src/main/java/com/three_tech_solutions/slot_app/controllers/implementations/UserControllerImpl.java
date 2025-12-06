@@ -29,7 +29,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId) {
-        return userService.getUserPlans(userId);
+    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
+        return userService.getUserPlans(userId, planName);
     }
 }

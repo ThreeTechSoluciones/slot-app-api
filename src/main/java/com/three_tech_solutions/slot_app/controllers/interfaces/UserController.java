@@ -22,5 +22,8 @@ public interface UserController {
     );
 
     @GetMapping("/{userId}/plans")
-    List<PlanResponse> getUserPlans(@PathVariable UUID userId);
+    List<PlanResponse> getUserPlans(
+            @PathVariable UUID userId,
+            @RequestParam(required = false, defaultValue = "") String planName
+    );
 }
