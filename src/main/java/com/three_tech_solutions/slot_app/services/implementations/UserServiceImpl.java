@@ -88,11 +88,16 @@ public class UserServiceImpl implements UserService {
     public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest) {
         this.userRepository.findById(userId)
                 .ifPresentOrElse(
-                        (user) -> {
-                                user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
-                                userRepository.save(user);
-                            },
-                        () -> { throw new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"); }
+                        (user) -> updateUserCapacityAndSaveIt(updateUserCapacityRequest, user),
+                        () -> {
+                            throw new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario");
+                        }
                 );
     }
+
+    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
+        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
+        userRepository.save(user);
+    }
+
 }
