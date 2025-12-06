@@ -3,7 +3,9 @@ package com.three_tech_solutions.slot_app.data.repositories;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PlanRepository extends JpaRepository<Plan, UUID> {
+    Optional<Plan> findByIdOrderByPrices_createdAtDesc(UUID planId);
 }

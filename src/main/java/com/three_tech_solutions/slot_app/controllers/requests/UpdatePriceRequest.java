@@ -1,7 +1,9 @@
 package com.three_tech_solutions.slot_app.controllers.requests;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.aspectj.lang.annotation.After;
 
 import java.time.LocalDate;
 
@@ -11,5 +13,6 @@ public record UpdatePriceRequest(
     @Min(value = 0, message = "El monto debe ser mayor o igual a 0")
     Double amount,
     @NotNull(message = "Debe ingresar la fecha de vigencia del nuevo precio")
+    @FutureOrPresent(message = "Se debe ingresar una fecha igual o superior a la actual.")
     LocalDate startDate
 ){}
