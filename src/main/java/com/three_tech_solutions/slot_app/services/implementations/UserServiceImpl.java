@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -36,15 +37,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String filter) {
-        return studentService.getStudentsByUserAndNameAndLastNameAndDni(
+    public List<StudentResponse> getUserStudents(UUID userId, String filter, String sortBy, String sortDirection) {
+        List <Student> students =studentService.getStudentsByUserAndNameAndLastNameAndDni(
                     getUserByIdOrThrowException(userId),
                     filter
-            )
+            );
+                students = sortStudents (students, sortBy, sortDirection);
+                        return students
                 .stream()
                 .map(studentMapper::toStudentResponse)
                 .toList();
+
     }
+
+    private List<Student> sortStudents(List<Student> students, String orderBy, String sortDirection){
+
+    };
 
     @Override
     public User getUserByIdOrThrowException(UUID id) {
