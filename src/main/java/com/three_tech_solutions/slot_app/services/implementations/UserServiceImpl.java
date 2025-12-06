@@ -9,6 +9,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,14 +38,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String filter) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                     getUserByIdOrThrowException(userId),
-                    filter
+                    filter,
+                    pageable
             )
-                .stream()
-                .map(studentMapper::toStudentResponse)
-                .toList();
+                .map(studentMapper::toStudentResponse);
     }
 
     @Override
