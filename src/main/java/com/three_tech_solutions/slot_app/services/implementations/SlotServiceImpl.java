@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
-import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
+import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.models.Slot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -35,6 +35,17 @@ public class SlotServiceImpl implements SlotService {
             throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
         
         slotRepository.save(buildSlot(request));
+    }
+
+    @Override
+    public void deleteSlot(UUID slotId) {
+        Slot slot = getSlotByIdOrThrowException(slotId);
+        slotRepository.delete(slot);
+    }
+
+    private Slot getSlotByIdOrThrowException(UUID slotId) {
+        return slotRepository.findById(slotId)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El turno no existe."));
     }
 
     private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {
@@ -85,7 +96,7 @@ public class SlotServiceImpl implements SlotService {
                 slotCapacity,
                 request.startTime(),
                 request.startTime().plusMinutes(slotDurationMinutes),
-                SlotStatus.CREATED
+                SpecificSlotStatus.CREATED
         );
     }
 

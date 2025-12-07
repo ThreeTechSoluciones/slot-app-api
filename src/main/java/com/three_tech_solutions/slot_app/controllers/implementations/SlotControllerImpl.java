@@ -6,6 +6,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @AllArgsConstructor
 public class SlotControllerImpl implements SlotController {
@@ -13,5 +15,10 @@ public class SlotControllerImpl implements SlotController {
     @Override
     public void createSlot(CreateSlotRequest request) {
         slotService.createSlot(request);
+    }
+
+    @Override
+    public void deleteSlot(UUID id) {
+        slotService.deleteSlot(id);
     }
 }
