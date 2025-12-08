@@ -5,11 +5,13 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,7 +46,7 @@ public class UserServiceImpl implements UserService {
                     filter
             );
                 students = sortStudents (students, sortBy, sortDirection);
-                        return students
+                return students
                 .stream()
                 .map(studentMapper::toStudentResponse)
                 .toList();
@@ -51,7 +54,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<Student> sortStudents(List<Student> students, String orderBy, String sortDirection){
-
+        List<Student> orderedStudents = studentRepository.findAll(
+                Sort.by(orderBy)
+        );
     };
 
     @Override
