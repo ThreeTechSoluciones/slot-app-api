@@ -28,7 +28,7 @@ public interface StudentService {
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 
-    List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters);
+    List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, String orderBy, String orderDirection);
 
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
 

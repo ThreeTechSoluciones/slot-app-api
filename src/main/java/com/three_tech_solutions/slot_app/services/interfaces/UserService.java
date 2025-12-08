@@ -13,7 +13,7 @@ public interface UserService extends UserDetailsService {
     @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    List<StudentResponse> getUserStudents(UUID userId, String filter);
+    List<StudentResponse> getUserStudents(UUID userId, String filter, String orderBy, String orderDirection);
 
     User getUserByIdOrThrowException(UUID id) ;
 

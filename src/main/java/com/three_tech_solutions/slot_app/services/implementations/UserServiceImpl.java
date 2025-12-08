@@ -43,21 +43,16 @@ public class UserServiceImpl implements UserService {
     public List<StudentResponse> getUserStudents(UUID userId, String filter, String sortBy, String sortDirection) {
         List <Student> students =studentService.getStudentsByUserAndNameAndLastNameAndDni(
                     getUserByIdOrThrowException(userId),
-                    filter
+                    filter,
+                    sortBy,
+                    sortDirection
             );
-                students = sortStudents (students, sortBy, sortDirection);
                 return students
                 .stream()
                 .map(studentMapper::toStudentResponse)
                 .toList();
 
     }
-
-    private List<Student> sortStudents(List<Student> students, String orderBy, String sortDirection){
-        List<Student> orderedStudents = studentRepository.findAll(
-                Sort.by(orderBy)
-        );
-    };
 
     @Override
     public User getUserByIdOrThrowException(UUID id) {

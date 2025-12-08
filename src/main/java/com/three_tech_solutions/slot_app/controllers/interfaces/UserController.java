@@ -15,7 +15,9 @@ public interface UserController {
     @GetMapping("/{userId}/students")
     List<StudentResponse> getUserStudents(
             @PathVariable UUID userId,
-            @RequestParam(required = false, defaultValue = "") String filter
+            @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required=false, defaultValue="") String orderBy,
+            @RequestParam(required=false, defaultValue="") String orderDirection
     );
 
     @GetMapping("/{userId}/plans")
