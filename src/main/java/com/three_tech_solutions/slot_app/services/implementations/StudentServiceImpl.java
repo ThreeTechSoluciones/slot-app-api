@@ -170,6 +170,12 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+    @Override
+    public Student getStudentByIdOrThrowExcepion(UUID studentId) {
+        return this.studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
