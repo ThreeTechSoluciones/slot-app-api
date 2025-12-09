@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.models.Slot;
+import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,9 +23,9 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
 
     @Query("""
             SELECT s FROM Slot s
-            WHERE s.user.id = :userId
+            WHERE s.user = :user
             AND s.dayOfWeek = :dayOfWeek
             ORDER BY s.startTime ASC
             """)
-    List<Slot> findAllByUserIdAndDayOfWeekOrdered(UUID userId, DayOfWeek dayOfWeek);
+    List<Slot> findAllByUserIdAndDayOfWeekOrdered(User user, DayOfWeek dayOfWeek);
 }

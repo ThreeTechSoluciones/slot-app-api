@@ -88,6 +88,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ListSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
-        return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId).getId(), dayOfWeek);
+        return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
     }
 }

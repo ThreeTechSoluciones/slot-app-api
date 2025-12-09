@@ -21,6 +21,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -45,17 +47,20 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public ListSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public ListSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        return getSlotsByUserAndDayOfWeek(user, dayOfWeek).stream()
+                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
+                .collect(collectListAndBuildListSlotsResponse());
+    }
 
-        List<Slot> slots = slotRepository.findAllByUserIdAndDayOfWeekOrdered(userId, dayOfWeek);
-
-        List<SlotResponse> responses = slots.stream()
-                .map(slot -> {
-                    return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
-                })
-                .toList();
-
-        return new ListSlotsResponse(responses.size(), responses);
+    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
+    }
+    private Collector<SlotResponse, Object, ListSlotsResponse> collectListAndBuildListSlotsResponse() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> new ListSlotsResponse(list.size(), list)
+        );
     }
 
     private int calculateUsedCapacity(Slot slot) {
