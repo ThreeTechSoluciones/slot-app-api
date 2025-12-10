@@ -24,6 +24,13 @@ public class Slot {
     private User user;
     @OneToMany(cascade = CascadeType.ALL)
     private List<SpecificSlot> specificSlots;
+    @ManyToMany
+    @JoinTable(
+            name = "slot_student",
+            joinColumns = @JoinColumn(name = "slot_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<Student> students;
     @Id
     private UUID id = UUID.randomUUID();
 

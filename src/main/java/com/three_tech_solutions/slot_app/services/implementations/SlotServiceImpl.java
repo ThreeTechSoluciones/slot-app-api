@@ -64,19 +64,8 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private int calculateUsedCapacity(Slot slot) {
-        return slot.getSpecificSlots()
-                .stream()
-                .mapToInt(this::getUsedCapacitySpecificSlot)
-                .sum();
-    }
-
-    private int getUsedCapacitySpecificSlot(SpecificSlot specificSlot) {
-        if (specificSlot.getSpecificSlotDetails() == null) return 0;
-
-        return (int) specificSlot.getSpecificSlotDetails()
-                .stream()
-                .filter(detail -> detail.getStudent() != null)
-                .count();
+        if (slot.getStudents() == null) return 0;
+        return slot.getStudents().size();
     }
 
     private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {
