@@ -4,8 +4,10 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacity
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
+    private final PlanService planService;
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -68,18 +71,10 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId) {
+    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
         return userRepository.findById(userId)
                 .map(user ->
-                        user.getPlans()
-                                .stream()
-                                .map(plan -> new PlanResponse(
-                                        plan.getId(),
-                                        plan.getName(),
-                                        plan.getCurrentPrice(),
-                                        plan.getNumberOfDays()
-                                ))
-                                .toList()
+                        planService.getPlansByUserAndName(user, planName)
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }

@@ -21,7 +21,10 @@ public interface UserController {
     );
 
     @GetMapping("/{userId}/plans")
-    List<PlanResponse> getUserPlans(@PathVariable UUID userId);
+    List<PlanResponse> getUserPlans(
+            @PathVariable UUID userId,
+            @RequestParam(required = false, defaultValue = "") String planName
+    );
 
     @PatchMapping("/{userId}/capacity")
     void updateUserCapacityPreference(@PathVariable UUID userId, @Valid @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);

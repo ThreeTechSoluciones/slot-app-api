@@ -11,7 +11,8 @@ public class MonthlyFeeMapper {
                 monthlyFee.getExpirationDate().getMonth().name(),
                 monthlyFee.getExpirationDate(),
                 monthlyFee.getAmount(),
-                monthlyFee.getCurrentStatus()
+                monthlyFee.getCurrentStatus(),
+                monthlyFee.getPayment() != null ? monthlyFee.getPayment().getId() : null
         );
     }
 }
