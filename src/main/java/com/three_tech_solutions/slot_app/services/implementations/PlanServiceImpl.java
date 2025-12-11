@@ -10,6 +10,7 @@ import com.three_tech_solutions.slot_app.data.repositories.PlanRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,15 @@ import java.util.UUID;
 
 
 @Service
-@AllArgsConstructor
 public class PlanServiceImpl implements PlanService {
 
     private final UserService userService;
     private final PlanRepository planRepository;
+
+    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository) {
+        this.userService = userService;
+        this.planRepository = planRepository;
+    }
 
     @Override
     public PlanResponse createPlan(CreatePlanRequest createPlanRequest) {
@@ -53,6 +58,15 @@ public class PlanServiceImpl implements PlanService {
         );
     }
 
+    @Override
+    public List<PlanResponse> getPlansByUserAndName(User user, String planName) {
+        return this.planRepository
+                .findAllByUserAndPlanName(user, planName)
+                .stream()
+                .map(PlanServiceImpl::buildPlanResponse)
+                .toList();
+    }
+
     private static void setEndDateToCurrentPriceIfNecessary(UpdatePriceRequest updatePriceRequest, Plan plan) {
         LocalDate today = LocalDate.now();
         if (updatePriceRequest.startDate().isBefore(today) || updatePriceRequest.startDate().isEqual(today)) {
@@ -75,7 +89,7 @@ public class PlanServiceImpl implements PlanService {
         );
     }
 
-    private PlanResponse buildPlanResponse(Plan plan) {
+    private static PlanResponse buildPlanResponse(Plan plan) {
         return new PlanResponse(
                 plan.getId(),
                 plan.getName(),
