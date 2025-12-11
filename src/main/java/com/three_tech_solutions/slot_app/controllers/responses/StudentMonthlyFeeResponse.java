@@ -13,5 +13,6 @@ public record StudentMonthlyFeeResponse(
         @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate expirationDate,
         double amount,
-        MonthlyFeeStatus status
+        MonthlyFeeStatus status,
+        UUID paymentId
 ) {}

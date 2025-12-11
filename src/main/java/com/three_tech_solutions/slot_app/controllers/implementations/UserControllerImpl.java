@@ -5,6 +5,8 @@ import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,12 +21,13 @@ public class UserControllerImpl implements UserController {
 
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String filter, String orderBy, String orderDirection) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter,String orderBy, String orderDirection, Integer page, Integer size) {
         return userService.getUserStudents(
                 userId,
                 filter,
                 orderBy,
-                orderDirection
+                orderDirection,
+                PageRequest.of(page, size)
         );
     }
 

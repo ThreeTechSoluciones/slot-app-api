@@ -5,13 +5,13 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
-import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
-    private final StudentRepository studentRepository;
+
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,17 +40,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String filter, String sortBy, String sortDirection) {
-        List <Student> students =studentService.getStudentsByUserAndNameAndLastNameAndDni(
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, String sortBy, String sortDirection, Pageable pageable) {
+        Page <Student> students =studentService.getStudentsByUserAndNameAndLastNameAndDni(
                     getUserByIdOrThrowException(userId),
                     filter,
                     sortBy,
-                    sortDirection
+                    sortDirection,
+                    pageable
             );
                 return students
-                .stream()
-                .map(studentMapper::toStudentResponse)
-                .toList();
+                .map(studentMapper::toStudentResponse);
+
 
     }
 
