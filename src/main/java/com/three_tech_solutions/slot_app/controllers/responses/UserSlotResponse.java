@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalTime;
 
-public record SlotResponse(
+public record UserSlotResponse(
         @JsonFormat(pattern = "HH:mm")
         LocalTime startTime,
         @JsonFormat(pattern = "HH:mm")

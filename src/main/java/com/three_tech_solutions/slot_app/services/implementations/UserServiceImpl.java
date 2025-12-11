@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.controllers.responses.ListSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ListSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public ListUserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
     }
 }

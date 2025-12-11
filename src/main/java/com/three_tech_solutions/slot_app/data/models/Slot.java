@@ -5,8 +5,7 @@ import lombok.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -25,12 +24,7 @@ public class Slot {
     @OneToMany(cascade = CascadeType.ALL)
     private List<SpecificSlot> specificSlots;
     @ManyToMany
-    @JoinTable(
-            name = "slot_student",
-            joinColumns = @JoinColumn(name = "slot_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private List<Student> students;
+    private Set<Student> students = new HashSet<>();
     @Id
     private UUID id = UUID.randomUUID();
 

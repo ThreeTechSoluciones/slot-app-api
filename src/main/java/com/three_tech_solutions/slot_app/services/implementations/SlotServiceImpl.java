@@ -1,8 +1,8 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.ListSlotsResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.SlotResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.models.Slot;
@@ -47,7 +47,7 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public ListSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
+    public ListUserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
         return getSlotsByUserAndDayOfWeek(user, dayOfWeek).stream()
                 .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
                 .collect(collectListAndBuildListSlotsResponse());
@@ -56,15 +56,14 @@ public class SlotServiceImpl implements SlotService {
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
         return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
     }
-    private Collector<SlotResponse, Object, ListSlotsResponse> collectListAndBuildListSlotsResponse() {
+    private Collector<UserSlotResponse, Object, ListUserSlotsResponse> collectListAndBuildListSlotsResponse() {
         return Collectors.collectingAndThen(
                 Collectors.toList(),
-                list -> new ListSlotsResponse(list.size(), list)
+                list -> new ListUserSlotsResponse(list.size(), list)
         );
     }
 
     private int calculateUsedCapacity(Slot slot) {
-        if (slot.getStudents() == null) return 0;
         return slot.getStudents().size();
     }
 

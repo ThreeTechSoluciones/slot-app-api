@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.ListSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,5 +24,5 @@ public interface UserController {
     List<PlanResponse> getUserPlans(@PathVariable UUID userId);
 
     @GetMapping("/{userId}/slots")
-    ListSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam DayOfWeek dayOfWeek);
+    ListUserSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam DayOfWeek dayOfWeek);
 }

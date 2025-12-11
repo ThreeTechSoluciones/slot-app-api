@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.ListSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -23,5 +23,5 @@ public interface UserService extends UserDetailsService {
 
     List<PlanResponse> getUserPlans(UUID userId);
 
-    ListSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
+    ListUserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 }

@@ -2,7 +2,7 @@ package com.three_tech_solutions.slot_app.controllers.responses;
 
 import java.util.List;
 
-public record ListSlotsResponse(
+public record ListUserSlotsResponse(
         int numberOfSlots,
-        List<SlotResponse> slots
+        List<UserSlotResponse> slots
 ) {}
