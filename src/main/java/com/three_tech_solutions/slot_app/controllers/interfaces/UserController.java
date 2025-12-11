@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.controllers.interfaces;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,5 +24,5 @@ public interface UserController {
     List<PlanResponse> getUserPlans(@PathVariable UUID userId);
 
     @PatchMapping("/{userId}/capacity")
-    void updateUserCapacityPreference(@PathVariable UUID userId, @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);
+    void updateUserCapacityPreference(@PathVariable UUID userId, @Valid @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);
 }
