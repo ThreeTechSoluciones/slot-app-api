@@ -6,11 +6,14 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
     private final SlotService slotService;
+    private final PlanService planService;
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,14 +44,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<StudentResponse> getUserStudents(UUID userId, String filter) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                     getUserByIdOrThrowException(userId),
-                    filter
+                    filter,
+                    pageable
             )
-                .stream()
-                .map(studentMapper::toStudentResponse)
-                .toList();
+                .map(studentMapper::toStudentResponse);
     }
 
     @Override
@@ -70,18 +73,10 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId) {
+    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
         return userRepository.findById(userId)
                 .map(user ->
-                        user.getPlans()
-                                .stream()
-                                .map(plan -> new PlanResponse(
-                                        plan.getId(),
-                                        plan.getName(),
-                                        plan.getCurrentPrice(),
-                                        plan.getNumberOfDays()
-                                ))
-                                .toList()
+                        planService.getPlansByUserAndName(user, planName)
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
