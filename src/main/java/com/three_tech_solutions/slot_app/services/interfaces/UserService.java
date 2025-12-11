@@ -21,5 +21,5 @@ public interface UserService extends UserDetailsService {
 
     void createUser(String username, String password);
 
-    List<PlanResponse> getUserPlans(UUID userId);
+    List<PlanResponse> getUserPlans(UUID userId, String planName);
 }
