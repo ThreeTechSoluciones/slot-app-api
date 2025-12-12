@@ -52,12 +52,7 @@ public class StudentMapper {
                 .toList();
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student) {
-        Integer age = null;
-
-        if (student.getBirthday() != null) {
-            age = Period.between(student.getBirthday(), LocalDate.now()).getYears();
-        }
+    public StudentDetailsResponse toStudentDetailsResponse(Student student, Integer age) {
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),

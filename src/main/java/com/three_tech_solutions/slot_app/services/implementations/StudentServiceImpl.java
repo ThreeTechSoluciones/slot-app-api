@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,8 +91,8 @@ public class StudentServiceImpl implements StudentService {
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
-
-        return studentMapper.toStudentDetailsResponse(student);
+        Integer age = calculateStudentAge(student.getBirthday());
+        return studentMapper.toStudentDetailsResponse(student, age);
     }
 
     @Override
@@ -167,7 +168,12 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El DNI no está registrado");
         }
     }
-
+    private Integer calculateStudentAge(LocalDate birthday) {
+        if (birthday == null) {
+            return null;
+        }
+        return Period.between(birthday, LocalDate.now()).getYears();
+    }
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
 
         if (planTypeIsBeginningOfMonth(paymentPlanName) & paymentDay!= null) {
