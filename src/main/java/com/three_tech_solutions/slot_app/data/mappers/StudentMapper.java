@@ -10,8 +10,6 @@ import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 
 @Service
