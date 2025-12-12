@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -24,6 +25,8 @@ public interface UserService extends UserDetailsService {
     void createUser(String username, String password);
 
     List<PlanResponse> getUserPlans(UUID userId, String planName);
+
+    void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest);
 
     ListUserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 }

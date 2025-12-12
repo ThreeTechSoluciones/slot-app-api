@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -80,6 +81,23 @@ public class UserServiceImpl implements UserService {
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
+
+    @Override
+    public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest) {
+        this.userRepository.findById(userId)
+                .ifPresentOrElse(
+                        (user) -> updateUserCapacityAndSaveIt(updateUserCapacityRequest, user),
+                        () -> {
+                            throw new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario");
+                        }
+                );
+    }
+
+    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
+        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
+        userRepository.save(user);
+    }
+
 
     @Override
     public ListUserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
