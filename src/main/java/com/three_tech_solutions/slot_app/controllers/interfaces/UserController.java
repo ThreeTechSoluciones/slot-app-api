@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -32,5 +32,5 @@ public interface UserController {
     void updateUserCapacityPreference(@PathVariable UUID userId, @Valid @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);
 
     @GetMapping("/{userId}/slots")
-    ListUserSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam DayOfWeek dayOfWeek);
+    UserSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam DayOfWeek dayOfWeek);
 }
