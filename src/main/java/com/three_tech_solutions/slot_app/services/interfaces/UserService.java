@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.ListUserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -28,5 +28,5 @@ public interface UserService extends UserDetailsService {
 
     void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest);
 
-    ListUserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
+    UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 }
