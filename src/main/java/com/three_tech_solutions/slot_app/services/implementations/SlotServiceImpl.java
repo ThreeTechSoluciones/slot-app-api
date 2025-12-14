@@ -78,6 +78,7 @@ public class SlotServiceImpl implements SlotService {
         Student student = getStudent(studentId);
         slotRepository.findById(slotId)
                 .ifPresentOrElse(slot -> {
+                    slot.getStudents().add(student);
                     slot.getSpecificSlots()
                             .stream()
                             .filter(SlotServiceImpl::startDateIsTodayOrAfter)
