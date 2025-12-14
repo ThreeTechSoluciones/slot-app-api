@@ -86,7 +86,8 @@ public abstract class MonthlyFeeProcessor {
         return student
                 .getPaymentPlan()
                 .getPlan()
-                .getCurrentPrice();
+                .getCurrentPrice()
+                .getAmount();
     }
 
     private Optional<MonthlyFee> getOptionalOfMonthlyFee(Student student, int newMonthlyFeeNumber) {
