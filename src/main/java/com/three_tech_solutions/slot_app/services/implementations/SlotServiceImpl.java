@@ -4,13 +4,16 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.models.Slot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
+import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,16 +28,19 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Service
 public class SlotServiceImpl implements SlotService {
     private final SlotRepository slotRepository;
     private final UserService userService;
+    private final StudentService studentService;
     private final SlotMapper slotMapper;
 
-    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, SlotMapper slotMapper) {
+    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, StudentService studentService, SlotMapper slotMapper) {
         this.slotRepository = slotRepository;
         this.userService = userService;
+        this.studentService = studentService;
         this.slotMapper = slotMapper;
     }
 
@@ -65,6 +71,40 @@ public class SlotServiceImpl implements SlotService {
 
     private int calculateUsedCapacity(Slot slot) {
         return slot.getStudents().size();
+    }
+
+    @Override
+    public void addStudentToSlot(UUID slotId, UUID studentId) {
+        Student student = getStudent(studentId);
+        slotRepository.findById(slotId)
+                .ifPresentOrElse(slot -> {
+                    slot.getStudents().add(student);
+                    slot.getSpecificSlots()
+                            .stream()
+                            .filter(SlotServiceImpl::startDateIsTodayOrAfter)
+                            .forEach(specificSlot -> {
+                                List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
+                                slotDetails.add(new SpecificSlotDetail(student));
+                            });
+                    try {
+                        slotRepository.save(slot);
+                    } catch (DataIntegrityViolationException e) {
+                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
+                    }
+                }, () -> {
+                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
+                });
+
+    }
+
+    private Student getStudent(UUID studentId) {
+        return studentService.getStudentByIdOrThrowExcepion(studentId);
+    }
+
+    private static boolean startDateIsTodayOrAfter(SpecificSlot specificSlot) {
+        return specificSlot.getSlotDate().isEqual(LocalDate.now()) || specificSlot.getSlotDate().isAfter(LocalDate.now());
     }
 
     private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {

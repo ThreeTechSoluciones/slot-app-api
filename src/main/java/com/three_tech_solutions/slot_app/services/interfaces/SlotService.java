@@ -6,8 +6,12 @@ import com.three_tech_solutions.slot_app.data.models.User;
 
 import java.time.DayOfWeek;
 
+import java.util.UUID;
+
 public interface SlotService {
     void createSlot(CreateSlotRequest request);
+
+    void addStudentToSlot(UUID slotId, UUID studentId);
 
     UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek);
 }
