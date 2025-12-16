@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
@@ -59,20 +60,6 @@ public class SlotServiceImpl implements SlotService {
                 .collect(collectListAndBuildListSlotsResponse());
     }
 
-    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
-    }
-    private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
-        return Collectors.collectingAndThen(
-                Collectors.toList(),
-                list -> new UserSlotsResponse(list.size(), list)
-        );
-    }
-
-    private int calculateUsedCapacity(Slot slot) {
-        return slot.getStudents().size();
-    }
-
     @Override
     public void addStudentToSlot(UUID slotId, UUID studentId) {
         Student student = getStudent(studentId);
@@ -97,6 +84,25 @@ public class SlotServiceImpl implements SlotService {
                     throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
                 });
 
+    }
+
+    @Override
+    public List<Slot> getSlotsByStudent(Student student) {
+        return slotRepository.findAllByStudentOrderByDayAndTime(student);
+    }
+
+    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
+    }
+    private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> new UserSlotsResponse(list.size(), list)
+        );
+    }
+
+    private int calculateUsedCapacity(Slot slot) {
+        return slot.getStudents().size();
     }
 
     private Student getStudent(UUID studentId) {

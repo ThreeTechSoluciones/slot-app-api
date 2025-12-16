@@ -5,17 +5,16 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
+import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
-import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
-import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
-import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -42,19 +41,25 @@ public class StudentServiceImpl implements StudentService {
     private final UserService userService;
     private final MonthlyFeeService monthlyFeeService;
     private final PlanService planService;
+    private final SlotService slotService;
+    private final SlotMapper slotMapper;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
             StudentMapper studentMapper,
             @Lazy UserService userService,
             @Lazy MonthlyFeeService monthlyFeeService,
-            @Lazy PlanService planService
+            @Lazy PlanService planService,
+            @Lazy SlotService slotService,
+            SlotMapper slotMapper
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
         this.monthlyFeeService = monthlyFeeService;
         this.planService = planService;
+        this.slotService = slotService;
+        this.slotMapper = slotMapper;
     }
 
 
@@ -174,6 +179,14 @@ public class StudentServiceImpl implements StudentService {
     public Student getStudentByIdOrThrowExcepion(UUID studentId) {
         return this.studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
+    @Override
+    public List<StudentSlotResponse> getStudentSlots(UUID studentId) {
+        return slotService.getSlotsByStudent(getStudentByIdOrThrowExcepion(studentId))
+                .stream()
+                .map(slotMapper::toStudentSlotResponse)
+                .toList();
     }
 
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
