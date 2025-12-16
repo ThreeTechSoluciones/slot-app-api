@@ -65,8 +65,9 @@ public class SlotServiceImpl implements SlotService {
         slotMapper.updateSlot(slot, updateSlotRequest);
         slot.setEndTime(calculateEndTime(slot.getUser(), slot.getStartTime()));
         slotRepository.save(slot);
-        int usedCapacity = 0;
-        return slotMapper.toSlotResponse(slot, usedCapacity);
+        return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
+
+        
     }
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
@@ -82,10 +83,6 @@ public class SlotServiceImpl implements SlotService {
     private int calculateUsedCapacity(Slot slot) {
         return slot.getStudents().size();
     }
-
-    private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {
-        return slotRepository.existsWithinRange(request.startTime(), request.dayOfWeek());
-
 
     private Slot getSlotByIdOrThrowException(UUID slotId) {
         return slotRepository.findById(slotId)
