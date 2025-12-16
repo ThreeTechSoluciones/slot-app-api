@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.models.Slot;
@@ -11,6 +12,7 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,6 +23,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -30,7 +34,7 @@ public class SlotServiceImpl implements SlotService {
     private final UserService userService;
     private final SlotMapper slotMapper;
 
-    public SlotServiceImpl(SlotRepository slotRepository, UserService userService, SlotMapper slotMapper) {
+    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, SlotMapper slotMapper) {
         this.slotRepository = slotRepository;
         this.userService = userService;
         this.slotMapper = slotMapper;
@@ -40,6 +44,13 @@ public class SlotServiceImpl implements SlotService {
     public void createSlot(CreateSlotRequest request) {
         validateNoConflictingSlot(request.dayOfWeek(), request.startTime(), null);
         slotRepository.save(buildSlot(request));
+    }
+
+    @Override
+    public UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        return getSlotsByUserAndDayOfWeek(user, dayOfWeek).stream()
+                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
+                .collect(collectListAndBuildListSlotsResponse());
     }
 
     @Override
@@ -57,6 +68,24 @@ public class SlotServiceImpl implements SlotService {
         int usedCapacity = 0;
         return slotMapper.toSlotResponse(slot, usedCapacity);
     }
+
+    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
+    }
+    private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> new UserSlotsResponse(list.size(), list)
+        );
+    }
+
+    private int calculateUsedCapacity(Slot slot) {
+        return slot.getStudents().size();
+    }
+
+    private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {
+        return slotRepository.existsWithinRange(request.startTime(), request.dayOfWeek());
+
 
     private Slot getSlotByIdOrThrowException(UUID slotId) {
         return slotRepository.findById(slotId)

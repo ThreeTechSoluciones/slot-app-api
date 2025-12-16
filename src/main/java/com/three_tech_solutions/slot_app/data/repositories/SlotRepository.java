@@ -1,12 +1,14 @@
 package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.models.Slot;
+import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface SlotRepository extends JpaRepository<Slot, UUID> {
@@ -32,4 +34,12 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
             @Param("dayOfWeek") DayOfWeek dayOfWeek,
             @Param("excludedSlotId") UUID excludedSlotId
     );
+
+    @Query("""
+            SELECT s FROM Slot s
+            WHERE s.user = :user
+            AND s.dayOfWeek = :dayOfWeek
+            ORDER BY s.startTime ASC
+            """)
+    List<Slot> findAllByUserIdAndDayOfWeekOrdered(User user, DayOfWeek dayOfWeek);
 }

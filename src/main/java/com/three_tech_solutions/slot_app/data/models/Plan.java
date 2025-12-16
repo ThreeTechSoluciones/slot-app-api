@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Plan {
     byte numberOfDays;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "plan_id")
-    @OrderBy("startDate DESC")
+    @OrderBy("createdAt DESC")
     List<Price> prices;
     @ManyToOne
     User user;
@@ -34,12 +35,15 @@ public class Plan {
         this.user = user;
     }
 
-    public double getCurrentPrice() {
+    public Price getCurrentPrice() {
         return this.getPrices()
                 .stream()
-                .filter(price -> price.startDate.isBefore(LocalDate.now()) && price.endDate == null)
+                .filter(price -> priceStartDateIsBeforeOrEqualThanToday(price, LocalDate.now()) && price.endDate == null)
                 .findFirst()
-                .map(Price::getAmount)
                 .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"));
+    }
+
+    private static boolean priceStartDateIsBeforeOrEqualThanToday(Price price, LocalDate today) {
+        return price.startDate.isBefore(today) || price.startDate.isEqual(today);
     }
 }
