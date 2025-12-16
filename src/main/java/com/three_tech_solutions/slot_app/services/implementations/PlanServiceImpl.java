@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,15 +42,6 @@ public class PlanServiceImpl implements PlanService {
         }
     }
 
-    private PlanResponse buildPlanResponse(Plan plan) {
-        return new PlanResponse(
-                plan.getId(),
-                plan.getName(),
-                plan.getCurrentPrice(),
-                plan.getNumberOfDays()
-        );
-    }
-
     @Override
     public Plan getPlanByIdOrThrowException(UUID planId) {
         return this.planRepository.findById(planId)
@@ -59,7 +51,8 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public PlanResponse updatePrice(UUID planId, UpdatePriceRequest updatePriceRequest) {
         Plan plan = this.getPlanByIdOrThrowException(planId);
-        plan.getPrices().add(new Price(updatePriceRequest.amount(), updatePriceRequest.startDate()));
+        setEndDateToCurrentPriceIfNecessary(updatePriceRequest, plan);
+        plan.getPrices().addFirst(new Price(updatePriceRequest.amount(), updatePriceRequest.startDate()));
         return buildPlanResponse(
                 this.planRepository.save(plan)
         );
@@ -70,8 +63,15 @@ public class PlanServiceImpl implements PlanService {
         return this.planRepository
                 .findAllByUserAndPlanName(user, planName)
                 .stream()
-                .map(this::buildPlanResponse)
+                .map(PlanServiceImpl::buildPlanResponse)
                 .toList();
+    }
+
+    private static void setEndDateToCurrentPriceIfNecessary(UpdatePriceRequest updatePriceRequest, Plan plan) {
+        LocalDate today = LocalDate.now();
+        if (updatePriceRequest.startDate().isBefore(today) || updatePriceRequest.startDate().isEqual(today)) {
+            plan.getCurrentPrice().setEndDate(today);
+        }
     }
 
     private Plan createAndSavePlan(CreatePlanRequest createPlanRequest) {
@@ -89,11 +89,20 @@ public class PlanServiceImpl implements PlanService {
         );
     }
 
+    private static PlanResponse buildPlanResponse(Plan plan) {
+        return new PlanResponse(
+                plan.getId(),
+                plan.getName(),
+                plan.getCurrentPrice().getAmount(),
+                plan.getNumberOfDays()
+        );
+    }
+
     private static List<Price> createListOfPrices(CreatePlanRequest createPlanRequest) {
         return List.of(
                 new Price(
                         createPlanRequest.amount(),
-                        createPlanRequest.startDate()
+                        LocalDate.now()
                 )
         );
     }
