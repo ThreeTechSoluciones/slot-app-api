@@ -37,11 +37,12 @@ public class SlotServiceImpl implements SlotService {
     private final StudentService studentService;
     private final SlotMapper slotMapper;
 
+
     public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, StudentService studentService, SlotMapper slotMapper) {
         this.slotRepository = slotRepository;
         this.userService = userService;
-        this.studentService = studentService;
         this.slotMapper = slotMapper;
+        this.studentService = studentService;
     }
 
     @Override
