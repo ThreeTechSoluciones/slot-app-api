@@ -21,7 +21,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
            OR LOWER(CONCAT(s.lastname, ' ', s.name)) LIKE LOWER(CONCAT('%', :filter, '%'))
            OR s.dni LIKE CONCAT(:filter, '%'))
     """)
-    Page<Student> getStudentsByUserAndNameAndLastnameAndDni(@Param("user") User user, @Param("filter") String filter, Pageable pageableWithSort );
+    Page<Student> getStudentsByUserAndNameAndLastnameAndDni(@Param("user") User user, @Param("filter") String filter, Pageable pageable);
 
     boolean existsByDni(String dni);
 }

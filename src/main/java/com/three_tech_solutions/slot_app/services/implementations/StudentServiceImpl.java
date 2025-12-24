@@ -19,8 +19,6 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -146,14 +144,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters,String orderBy, String orderDirection,Pageable pageable) {
-        orderDirection = verifyOrderParams(orderBy, orderDirection);
-
-        Sort sort = createSortIfIsValid(orderBy, orderDirection);
-
-        Pageable pageableWithSort = createPageableWithSort(pageable, sort);
-
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageableWithSort);
+    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
+        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
@@ -209,42 +201,5 @@ public class StudentServiceImpl implements StudentService {
 
     private boolean planTypeIsBeginningOfMonth(PaymentPlanName paymentPlanName){
         return PaymentPlanName.BEGINNING_OF_MONTH.equals(paymentPlanName);
-    }
-
-    private String verifyOrderParams(String orderBy, String orderDirection) {
-        if (!hasOrderBy(orderBy) && hasOrderDirection(orderDirection)) {
-            throw new ResponseStatusException(BAD_REQUEST, "Se debe especificar orderBy");
-        }
-        if (hasOrderBy(orderBy) && !hasOrderDirection(orderDirection)) {
-            return "ASC";
-        }
-        return orderDirection;
-    }
-
-    private Sort createSortIfIsValid(String orderBy, String orderDirection){
-        if (hasOrderBy(orderBy) && hasOrderDirection(orderDirection)) {
-            Sort.Direction direction = Sort.Direction.fromString(orderDirection);
-            return Sort.by(direction, orderBy);
-        }
-        return null;
-    };
-
-    private boolean hasOrderBy(String orderBy){
-        return !orderBy.isEmpty();
-    }
-
-    private boolean hasOrderDirection(String orderDirection){
-        return !orderDirection.isEmpty();
-    }
-
-    private Pageable createPageableWithSort(Pageable pageable, Sort sort) {
-        if (sort != null) {
-            return PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    sort
-            );
-        }
-        return pageable;
     }
 }

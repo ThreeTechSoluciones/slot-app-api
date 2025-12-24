@@ -16,7 +16,7 @@ public interface UserService extends UserDetailsService {
     @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    Page<StudentResponse> getUserStudents(UUID userId, String filter, String orderBy, String orderDirection, Pageable pageable);
+    Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable);
 
     User getUserByIdOrThrowException(UUID id) ;
 
