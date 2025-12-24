@@ -10,21 +10,27 @@ import com.three_tech_solutions.slot_app.data.repositories.PlanRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 
 @Service
-@AllArgsConstructor
 public class PlanServiceImpl implements PlanService {
 
     private final UserService userService;
     private final PlanRepository planRepository;
+
+    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository) {
+        this.userService = userService;
+        this.planRepository = planRepository;
+    }
 
     @Override
     public PlanResponse createPlan(CreatePlanRequest createPlanRequest) {
@@ -36,15 +42,6 @@ public class PlanServiceImpl implements PlanService {
         }
     }
 
-    private PlanResponse buildPlanResponse(Plan plan) {
-        return new PlanResponse(
-                plan.getId(),
-                plan.getName(),
-                plan.getCurrentPrice(),
-                plan.getNumberOfDays()
-        );
-    }
-
     @Override
     public Plan getPlanByIdOrThrowException(UUID planId) {
         return this.planRepository.findById(planId)
@@ -54,10 +51,27 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public PlanResponse updatePrice(UUID planId, UpdatePriceRequest updatePriceRequest) {
         Plan plan = this.getPlanByIdOrThrowException(planId);
-        plan.getPrices().add(new Price(updatePriceRequest.amount(), updatePriceRequest.startDate()));
+        setEndDateToCurrentPriceIfNecessary(updatePriceRequest, plan);
+        plan.getPrices().addFirst(new Price(updatePriceRequest.amount(), updatePriceRequest.startDate()));
         return buildPlanResponse(
                 this.planRepository.save(plan)
         );
+    }
+
+    @Override
+    public List<PlanResponse> getPlansByUserAndName(User user, String planName) {
+        return this.planRepository
+                .findAllByUserAndPlanName(user, planName)
+                .stream()
+                .map(PlanServiceImpl::buildPlanResponse)
+                .toList();
+    }
+
+    private static void setEndDateToCurrentPriceIfNecessary(UpdatePriceRequest updatePriceRequest, Plan plan) {
+        LocalDate today = LocalDate.now();
+        if (updatePriceRequest.startDate().isBefore(today) || updatePriceRequest.startDate().isEqual(today)) {
+            plan.getCurrentPrice().setEndDate(today);
+        }
     }
 
     private Plan createAndSavePlan(CreatePlanRequest createPlanRequest) {
@@ -75,11 +89,20 @@ public class PlanServiceImpl implements PlanService {
         );
     }
 
+    private static PlanResponse buildPlanResponse(Plan plan) {
+        return new PlanResponse(
+                plan.getId(),
+                plan.getName(),
+                plan.getCurrentPrice().getAmount(),
+                plan.getNumberOfDays()
+        );
+    }
+
     private static List<Price> createListOfPrices(CreatePlanRequest createPlanRequest) {
         return List.of(
                 new Price(
                         createPlanRequest.amount(),
-                        createPlanRequest.startDate()
+                        LocalDate.now()
                 )
         );
     }

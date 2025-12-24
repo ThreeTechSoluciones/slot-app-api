@@ -1,11 +1,15 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
+import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
@@ -17,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SlotService slotService;
+    private final PlanService planService;
 
 
     @Override
@@ -69,19 +76,33 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId) {
+    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
         return userRepository.findById(userId)
                 .map(user ->
-                        user.getPlans()
-                                .stream()
-                                .map(plan -> new PlanResponse(
-                                        plan.getId(),
-                                        plan.getName(),
-                                        plan.getCurrentPrice(),
-                                        plan.getNumberOfDays()
-                                ))
-                                .toList()
+                        planService.getPlansByUserAndName(user, planName)
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
+    @Override
+    public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest) {
+        this.userRepository.findById(userId)
+                .ifPresentOrElse(
+                        (user) -> updateUserCapacityAndSaveIt(updateUserCapacityRequest, user),
+                        () -> {
+                            throw new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario");
+                        }
+                );
+    }
+
+    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
+        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
+        userRepository.save(user);
+    }
+
+
+    @Override
+    public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+        return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
     }
 }
