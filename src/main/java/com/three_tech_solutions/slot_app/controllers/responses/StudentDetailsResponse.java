@@ -14,6 +14,7 @@ public record StudentDetailsResponse (
      String cellphoneNumber,
      @JsonFormat(pattern = "dd/MM/yyyy")
      LocalDate birthday,
+     Integer age,
      String pathologies,
      @JsonFormat(pattern = "dd/MM/yyyy")
      LocalDate admissionDate,
