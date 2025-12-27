@@ -50,7 +50,7 @@ public class StudentMapper {
                 .toList();
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student) {
+    public StudentDetailsResponse toStudentDetailsResponse(Student student, Integer age) {
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -58,6 +58,7 @@ public class StudentMapper {
                 student.getDni(),
                 student.getPhoneNumber(),
                 student.getBirthday(),
+                age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
                 student.getPaymentPlan().getPaymentPlanName().getName(),

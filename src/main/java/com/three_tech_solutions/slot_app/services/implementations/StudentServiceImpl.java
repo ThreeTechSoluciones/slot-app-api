@@ -19,12 +19,16 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations.BeginningOfMonthMonthlyFeeProcessor.BEGINNING_OF_MONTH_EXPIRATION_DATE;
@@ -90,8 +94,8 @@ public class StudentServiceImpl implements StudentService {
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
-
-        return studentMapper.toStudentDetailsResponse(student);
+        Integer age = calculateStudentAge(student.getBirthday());
+        return studentMapper.toStudentDetailsResponse(student, age);
     }
 
     @Override
@@ -142,8 +146,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters) {
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters);
+    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
+        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
@@ -166,6 +170,11 @@ public class StudentServiceImpl implements StudentService {
         if (!studentRepository.existsByDni(dni)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El DNI no está registrado");
         }
+    }
+    private Integer calculateStudentAge(LocalDate birthday) {
+        return Optional.ofNullable(birthday)
+                .map(date -> Period.between(date, LocalDate.now()).getYears())
+                .orElse(null);
     }
 
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {
