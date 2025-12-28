@@ -37,4 +37,6 @@ public interface StudentService {
     StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId);
 
     void validateIfDniExists(String dni);
+
+    Student getStudentByIdOrThrowExcepion(UUID studentId);
 }

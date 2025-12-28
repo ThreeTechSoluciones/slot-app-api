@@ -22,6 +22,7 @@ public class Slot {
     @ManyToOne
     private User user;
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "slot_id")
     private List<SpecificSlot> specificSlots;
     @ManyToMany
     private Set<Student> students = new HashSet<>();
