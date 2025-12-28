@@ -20,7 +20,7 @@ public interface UserController {
     Page<StudentResponse> getUserStudents(
             @PathVariable UUID userId,
             @RequestParam(required = false, defaultValue = "") String filter,
-            @PageableDefault(size = 20, sort = "nombre", direction = Sort.Direction.ASC) Pageable pageable
+            @PageableDefault(size = 20) Pageable pageable
     );
 
     @GetMapping("/{userId}/plans")
