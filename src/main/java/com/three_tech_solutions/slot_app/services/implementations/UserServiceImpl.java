@@ -5,6 +5,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
+import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final SlotService slotService;
     private final PlanService planService;
 
+
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
@@ -47,10 +49,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
-                    getUserByIdOrThrowException(userId),
-                    filter,
-                    pageable
-            )
+                        getUserByIdOrThrowException(userId),
+                        filter,
+                        pageable
+                )
                 .map(studentMapper::toStudentResponse);
     }
 

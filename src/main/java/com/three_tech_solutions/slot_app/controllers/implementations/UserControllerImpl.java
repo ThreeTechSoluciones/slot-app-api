@@ -8,7 +8,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.DayOfWeek;
@@ -23,11 +23,11 @@ public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Integer page, Integer size) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
         return userService.getUserStudents(
                 userId,
                 filter,
-                PageRequest.of(page, size)
+                pageable
         );
     }
 
