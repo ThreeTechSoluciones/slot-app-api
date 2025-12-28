@@ -56,19 +56,14 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-        if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
-            throw new ResponseStatusException(
-                    BAD_REQUEST, "La hora ingresada es igual a la actual"
-            );
-        }
+        validateStartTimeIsDifferent(slot, updateSlotRequest);
         validateNoConflictingSlot(slot.getDayOfWeek(), updateSlotRequest.startTime(), slot.getId());
         slotMapper.updateSlot(slot, updateSlotRequest);
         slot.setEndTime(calculateEndTime(slot.getUser(), slot.getStartTime()));
         slotRepository.save(slot);
         return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
-
-        
     }
+
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
         return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
@@ -146,16 +141,18 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
-        boolean existsConflict = (excludedSlotId == null)
-                ? slotRepository.existsWithinRange(startTime, dayOfWeek)
-                : slotRepository.existsWithinRangeExcludingSlot(startTime, dayOfWeek, excludedSlotId);
-
-        if (existsConflict) {
+        if (slotRepository.existsWithinRange(startTime, dayOfWeek, excludedSlotId)) {
             throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
         }
     }
 
     private LocalTime calculateEndTime(User user, LocalTime startTime) {
         return startTime.plusMinutes(user.getUserPreferences().getSlotDurationMinutes());
+    }
+
+    private void validateStartTimeIsDifferent(Slot slot, UpdateSlotRequest updateSlotRequest) {
+        if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
+            throw new ResponseStatusException(BAD_REQUEST, "La hora ingresada es igual a la actual");
+        }
     }
 }
