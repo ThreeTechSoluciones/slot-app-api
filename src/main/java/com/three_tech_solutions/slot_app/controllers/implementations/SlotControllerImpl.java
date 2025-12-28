@@ -20,6 +20,11 @@ public class SlotControllerImpl implements SlotController {
     }
 
     @Override
+    public void addStudentToSlot(UUID slotId, UUID studentId) {
+        slotService.addStudentToSlot(slotId, studentId);
+    }
+
+    @Override
     public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
         return slotService.updateSlot(slotId, updateSlotRequest);
     }

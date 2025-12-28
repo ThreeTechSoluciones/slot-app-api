@@ -110,4 +110,10 @@ public class PlanServiceImpl implements PlanService {
     private User getUser(CreatePlanRequest createPlanRequest) {
         return userService.getUserByIdOrThrowException(createPlanRequest.userId());
     }
+    @Override
+    public void deletePlan(UUID planId) {
+        Plan plan = this.getPlanByIdOrThrowException(planId);
+        planRepository.delete(plan);
+    }
+
 }

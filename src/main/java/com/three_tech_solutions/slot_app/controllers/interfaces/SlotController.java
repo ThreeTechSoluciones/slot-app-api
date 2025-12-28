@@ -15,6 +15,9 @@ public interface SlotController {
     @ResponseStatus(HttpStatus.CREATED)
     void createSlot(@RequestBody CreateSlotRequest request);
 
+    @PostMapping("/{slotId}/students/{studentId}")
+    void addStudentToSlot(@PathVariable UUID slotId, @PathVariable UUID studentId);
+
     @PatchMapping("/{slotId}")
     UserSlotResponse updateSlot(@PathVariable UUID slotId, @RequestBody @Valid UpdateSlotRequest updateSlotRequest);
 
