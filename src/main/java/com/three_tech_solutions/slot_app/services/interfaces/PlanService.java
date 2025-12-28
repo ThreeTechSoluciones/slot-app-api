@@ -17,4 +17,7 @@ public interface PlanService {
     PlanResponse updatePrice(UUID planId, UpdatePriceRequest updatePriceRequest);
 
     List<PlanResponse> getPlansByUserAndName(User user, String planName);
+
+    void deletePlan(UUID planId);
+
 }

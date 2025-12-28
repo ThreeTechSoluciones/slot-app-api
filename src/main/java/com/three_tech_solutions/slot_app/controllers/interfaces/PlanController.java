@@ -15,4 +15,9 @@ public interface PlanController {
 
     @PatchMapping("/{planId}/prices")
     PlanResponse updatePrice(@RequestBody @Valid UpdatePriceRequest updatePriceRequest, @PathVariable UUID planId);
+
+    @DeleteMapping("/{planId}")
+    void deletePlan(@PathVariable UUID planId);
+
 }
+
