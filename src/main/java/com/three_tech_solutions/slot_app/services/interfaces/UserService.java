@@ -1,15 +1,16 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface UserService extends UserDetailsService {
     void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest);
 
     UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
+
+    UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
 }
