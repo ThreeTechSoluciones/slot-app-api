@@ -18,7 +18,7 @@ public class SlotControllerImpl implements SlotController {
     }
 
     @Override
-    public void deleteSlot(UUID id) {
-        slotService.deleteSlot(id);
+    public void deleteSlot(UUID slotId) {
+        slotService.deleteSlot(slotId);
     }
 }

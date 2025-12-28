@@ -13,5 +13,6 @@ public interface SlotController {
     void createSlot(@RequestBody CreateSlotRequest request);
 
     @DeleteMapping("/{slotId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteSlot(@PathVariable UUID slotId);
 }

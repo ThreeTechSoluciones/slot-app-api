@@ -56,7 +56,11 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-        slotRepository.delete(slot);
+        validateSlotIsActive(slot);
+        validateSlotHasNoStudents(slot);
+        logicallyDeleteSpecificSlots(slot);
+        slot.setActive(false);
+        slotRepository.save(slot);
     }
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
@@ -136,5 +140,21 @@ public class SlotServiceImpl implements SlotService {
 
     private User getUserByIdOrThrowException(UUID userId) {
         return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private void validateSlotIsActive(Slot slot) {
+        if (!slot.isActive()) {throw new ResponseStatusException(BAD_REQUEST, "El turno ya fue eliminado");
+        }
+    }
+
+    private void validateSlotHasNoStudents(Slot slot) {
+        if (!slot.getStudents().isEmpty()) {
+            throw new ResponseStatusException(BAD_REQUEST, "No se puede eliminar el turno ya que tiene alumnos asociados");
+        }
+    }
+
+    private void logicallyDeleteSpecificSlots(Slot slot) {
+        slot.getSpecificSlots()
+                .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
     }
 }

@@ -22,9 +22,10 @@ public class Slot {
     @ManyToOne
     private User user;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<SpecificSlot> specificSlots;
+    private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
     private Set<Student> students = new HashSet<>();
+    private boolean active = true;
     @Id
     private UUID id = UUID.randomUUID();
 
