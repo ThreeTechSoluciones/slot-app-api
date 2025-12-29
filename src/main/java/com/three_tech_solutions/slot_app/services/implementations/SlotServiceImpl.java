@@ -63,27 +63,12 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void addStudentToSlot(UUID slotId, UUID studentId) {
         Student student = getStudent(studentId);
-        slotRepository.findById(slotId)
-                .ifPresentOrElse(slot -> {
-                    slot.getStudents().add(student);
-                    slot.getSpecificSlots()
-                            .stream()
-                            .filter(SlotServiceImpl::startDateIsTodayOrAfter)
-                            .forEach(specificSlot -> {
-                                List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
-                                slotDetails.add(new SpecificSlotDetail(student));
-                            });
-                    try {
-                        slotRepository.save(slot);
-                    } catch (DataIntegrityViolationException e) {
-                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
-                    } catch (Exception e) {
-                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
-                    }
-                }, () -> {
-                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
-                });
+        registerStudentInSlot(slotId, student);
+    }
 
+    @Override
+    public void addStudentToSlot(UUID slotId, Student student) {
+        registerStudentInSlot(slotId, student);
     }
 
     @Override
@@ -96,7 +81,6 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.save(slot);
         return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
     }
-
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
         return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
@@ -195,5 +179,36 @@ public class SlotServiceImpl implements SlotService {
         if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
             throw new ResponseStatusException(BAD_REQUEST, "La hora ingresada es igual a la actual");
         }
+    }
+
+    private void registerStudentInSlot(UUID slotId, Student student) {
+        slotRepository.findById(slotId)
+                .ifPresentOrElse(slot -> {
+                    try {
+                        addStudentToSlot(student, slot);
+                        createSpecificSlotWithStudent(student, slot);
+                        slotRepository.save(slot);
+                    } catch (DataIntegrityViolationException e) {
+                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
+                    }
+                }, () -> {
+                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
+                });
+    }
+
+    private static void addStudentToSlot(Student student, Slot slot) {
+        slot.getStudents().add(student);
+    }
+
+    private static void createSpecificSlotWithStudent(Student student, Slot slot) {
+        slot.getSpecificSlots()
+                .stream()
+                .filter(SlotServiceImpl::startDateIsTodayOrAfter)
+                .forEach(specificSlot -> {
+                    List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
+                    slotDetails.add(new SpecificSlotDetail(student));
+                });
     }
 }

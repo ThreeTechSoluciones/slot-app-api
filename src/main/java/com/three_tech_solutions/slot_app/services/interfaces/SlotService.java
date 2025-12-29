@@ -6,11 +6,10 @@ import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 
 import java.util.UUID;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 
 import java.time.DayOfWeek;
-
-import java.util.UUID;
 
 public interface SlotService {
     void createSlot(CreateSlotRequest request);
@@ -20,4 +19,6 @@ public interface SlotService {
     UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek);
 
     UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest);
+
+    void addStudentToSlot(UUID slotId, Student student);
 }

@@ -12,10 +12,7 @@ import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
-import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
-import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
-import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -43,6 +40,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper studentMapper;
     private final UserService userService;
     private final MonthlyFeeService monthlyFeeService;
+    private final SlotService slotService;
     private final PlanService planService;
 
     public StudentServiceImpl(
@@ -50,13 +48,15 @@ public class StudentServiceImpl implements StudentService {
             StudentMapper studentMapper,
             @Lazy UserService userService,
             @Lazy MonthlyFeeService monthlyFeeService,
-            @Lazy PlanService planService
+            @Lazy PlanService planService,
+            @Lazy SlotService slotService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.userService = userService;
         this.monthlyFeeService = monthlyFeeService;
         this.planService = planService;
+        this.slotService = slotService;
     }
 
 
@@ -72,14 +72,24 @@ public class StudentServiceImpl implements StudentService {
 
         try{
             studentRepository.save(student);
-            monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
+            createInitialMonthlyFee(studentDTO, student);
+            addStudentToSlots(studentDTO, student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (Exception exception){
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR,"Ocurrió un error al registrar el estudiante. Intente nuevamente");
         }
+
         return studentMapper.toStudentResponse(student);
 
+    }
+
+    private void createInitialMonthlyFee(CreateStudentRequest studentDTO, Student student) {
+        monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
+    }
+
+    private void addStudentToSlots(CreateStudentRequest studentDTO, Student student) {
+        studentDTO.getSlotIds().forEach(slotId -> slotService.addStudentToSlot(slotId, student));
     }
 
     private User getUserByIdOrThrowException(UUID userId) {
