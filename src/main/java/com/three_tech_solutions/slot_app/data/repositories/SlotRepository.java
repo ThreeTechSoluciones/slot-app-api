@@ -27,5 +27,5 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
             AND s.dayOfWeek = :dayOfWeek
             ORDER BY s.startTime ASC
             """)
-    List<Slot> findAllByUserIdAndDayOfWeekOrdered(User user, DayOfWeek dayOfWeek);
+    List<Slot> findAllByUserIdAndDayOfWeekAndActiveTrueOrdered(User user, DayOfWeek dayOfWeek);
 }

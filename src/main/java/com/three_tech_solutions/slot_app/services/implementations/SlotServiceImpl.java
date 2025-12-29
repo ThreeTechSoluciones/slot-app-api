@@ -64,7 +64,7 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
+        return slotRepository.findAllByUserIdAndDayOfWeekAndActiveTrueOrdered(user, dayOfWeek);
     }
     private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
         return Collectors.collectingAndThen(
