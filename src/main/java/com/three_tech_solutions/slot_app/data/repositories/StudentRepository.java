@@ -2,12 +2,12 @@ package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.UUID;
 
 public interface StudentRepository extends JpaRepository<Student, UUID> {

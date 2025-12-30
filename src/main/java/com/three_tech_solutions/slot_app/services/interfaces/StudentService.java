@@ -30,11 +30,13 @@ public interface StudentService {
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 
-    Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable);
+    Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters,Pageable pageable);
 
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
 
     StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId);
 
     void validateIfDniExists(String dni);
+
+    Student getStudentByIdOrThrowExcepion(UUID studentId);
 }

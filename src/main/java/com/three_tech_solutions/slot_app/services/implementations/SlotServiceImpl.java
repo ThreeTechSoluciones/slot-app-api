@@ -1,8 +1,10 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.models.Slot;
@@ -10,7 +12,9 @@ import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
+import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -27,24 +31,26 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Service
 public class SlotServiceImpl implements SlotService {
     private final SlotRepository slotRepository;
     private final UserService userService;
+    private final StudentService studentService;
     private final SlotMapper slotMapper;
 
-    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, SlotMapper slotMapper) {
+
+    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, StudentService studentService, SlotMapper slotMapper) {
         this.slotRepository = slotRepository;
         this.userService = userService;
         this.slotMapper = slotMapper;
+        this.studentService = studentService;
     }
 
     @Override
     public void createSlot(CreateSlotRequest request) {
-        if(timeSlotIsAlreadyUsed(request))
-            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
-        
+        validateNoConflictingSlot(request.dayOfWeek(), request.startTime(), null);
         slotRepository.save(buildSlot(request));
     }
 
@@ -54,6 +60,44 @@ public class SlotServiceImpl implements SlotService {
                 .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
                 .collect(collectListAndBuildListSlotsResponse());
     }
+
+    @Override
+    public void addStudentToSlot(UUID slotId, UUID studentId) {
+        Student student = getStudent(studentId);
+        slotRepository.findById(slotId)
+                .ifPresentOrElse(slot -> {
+                    slot.getStudents().add(student);
+                    slot.getSpecificSlots()
+                            .stream()
+                            .filter(SlotServiceImpl::startDateIsTodayOrAfter)
+                            .forEach(specificSlot -> {
+                                List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
+                                slotDetails.add(new SpecificSlotDetail(student));
+                            });
+                    try {
+                        slotRepository.save(slot);
+                    } catch (DataIntegrityViolationException e) {
+                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
+                    }
+                }, () -> {
+                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
+                });
+
+    }
+
+    @Override
+    public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
+        Slot slot = getSlotByIdOrThrowException(slotId);
+        validateStartTimeIsDifferent(slot, updateSlotRequest);
+        validateNoConflictingSlot(slot.getDayOfWeek(), updateSlotRequest.startTime(), slot.getId());
+        slotMapper.updateSlot(slot, updateSlotRequest);
+        slot.setEndTime(calculateEndTime(slot.getUser(), slot.getStartTime()));
+        slotRepository.save(slot);
+        return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
+    }
+
 
     @Override
     @Transactional
@@ -82,13 +126,17 @@ public class SlotServiceImpl implements SlotService {
         return slot.getStudents().size();
     }
 
-    private Slot getSlotByIdOrThrowException(UUID slotId) {
-        return slotRepository.findById(slotId)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El turno no existe."));
+    private Student getStudent(UUID studentId) {
+        return studentService.getStudentByIdOrThrowExcepion(studentId);
     }
 
-    private boolean timeSlotIsAlreadyUsed(CreateSlotRequest request) {
-        return slotRepository.existsWithinRange(request.startTime(), request.dayOfWeek());
+    private static boolean startDateIsTodayOrAfter(SpecificSlot specificSlot) {
+        return specificSlot.getSlotDate().isEqual(LocalDate.now()) || specificSlot.getSlotDate().isAfter(LocalDate.now());
+    }
+
+    private Slot getSlotByIdOrThrowException(UUID slotId) {
+        return slotRepository.findById(slotId)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "No se encontró el turno"));
     }
 
     private Slot buildSlot(CreateSlotRequest request) {
@@ -96,7 +144,7 @@ public class SlotServiceImpl implements SlotService {
         return new Slot(
                 request.dayOfWeek(),
                 request.startTime(),
-                request.startTime().plusMinutes(user.getUserPreferences().getSlotDurationMinutes()),
+                calculateEndTime(user, request.startTime()),
                 user.getUserPreferences().getSlotCapacity(),
                 user,
                 createSpecificSlots(
@@ -145,6 +193,22 @@ public class SlotServiceImpl implements SlotService {
 
     private User getUserByIdOrThrowException(UUID userId) {
         return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
+        if (slotRepository.existsWithinRange(startTime, dayOfWeek, excludedSlotId)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
+        }
+    }
+
+    private LocalTime calculateEndTime(User user, LocalTime startTime) {
+        return startTime.plusMinutes(user.getUserPreferences().getSlotDurationMinutes());
+    }
+
+    private void validateStartTimeIsDifferent(Slot slot, UpdateSlotRequest updateSlotRequest) {
+        if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
+            throw new ResponseStatusException(BAD_REQUEST, "La hora ingresada es igual a la actual");
+        }
     }
 
     private void validateSlotIsActive(Slot slot) {

@@ -11,5 +11,4 @@ public record UserSlotResponse(
         LocalTime endTime,
         int maxCapacity,
         int usedCapacity
-) {
-}
+){}

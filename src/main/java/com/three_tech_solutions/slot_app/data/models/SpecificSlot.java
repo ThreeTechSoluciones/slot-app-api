@@ -24,7 +24,7 @@ public class SpecificSlot {
     private LocalTime endTime;
     @Enumerated(EnumType.STRING)
     private SpecificSlotStatus status;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "specific_slot_id")
     private List<SpecificSlotDetail> specificSlotDetails;
     @Id

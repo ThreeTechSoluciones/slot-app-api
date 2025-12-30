@@ -14,11 +14,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "specificSlot_id"}, name = "student_already_registered_in_specific_slot" )
+)
 public class SpecificSlotDetail {
-    @OneToOne
+    @ManyToOne
     private Student student;
+    @ManyToOne
+    private SpecificSlot specificSlot;
     @Enumerated(EnumType.STRING)
     private SpecificSlotDetailStatus status = SpecificSlotDetailStatus.ATTENDANCE;
     @Id
     private UUID id = UUID.randomUUID();
+
+    public SpecificSlotDetail(Student student) {
+        this.student = student;
+    }
 }
