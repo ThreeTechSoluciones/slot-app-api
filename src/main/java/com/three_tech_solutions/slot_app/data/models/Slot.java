@@ -21,7 +21,7 @@ public class Slot {
     private byte capacity;
     @ManyToOne
     private User user;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
     private Set<Student> students = new HashSet<>();

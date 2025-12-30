@@ -11,6 +11,7 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,6 +56,7 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
+    @Transactional
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
 
