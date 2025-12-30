@@ -21,11 +21,5 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
     """)
     boolean existsWithinRange(@Param("time") LocalTime time, @Param("dayOfWeek") DayOfWeek dayOfWeek);
 
-    @Query("""
-            SELECT s FROM Slot s
-            WHERE s.user = :user
-            AND s.dayOfWeek = :dayOfWeek
-            ORDER BY s.startTime ASC
-            """)
-    List<Slot> findAllByUserIdAndDayOfWeekAndActiveTrueOrdered(User user, DayOfWeek dayOfWeek);
+    List<Slot> findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(User user, DayOfWeek dayOfWeek);
 }

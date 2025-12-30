@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,15 +57,17 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
+
         validateSlotIsActive(slot);
         validateSlotHasNoStudents(slot);
+        deleteFutureSpecificSlotsPhysically(slot);
         logicallyDeleteSpecificSlots(slot);
         slot.setActive(false);
         slotRepository.save(slot);
     }
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserIdAndDayOfWeekAndActiveTrueOrdered(user, dayOfWeek);
+        return slotRepository.findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
     }
     private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
         return Collectors.collectingAndThen(
@@ -151,6 +154,14 @@ public class SlotServiceImpl implements SlotService {
         if (!slot.getStudents().isEmpty()) {
             throw new ResponseStatusException(BAD_REQUEST, "No se puede eliminar el turno ya que tiene alumnos asociados");
         }
+    }
+
+    private void deleteFutureSpecificSlotsPhysically(Slot slot) {
+        LocalDate today = LocalDate.now();
+
+        slot.getSpecificSlots().removeIf(specificSlot ->
+                specificSlot.getSlotDate().isAfter(today) ||
+                        (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(LocalTime.now())));
     }
 
     private void logicallyDeleteSpecificSlots(Slot slot) {
