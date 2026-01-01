@@ -5,12 +5,12 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
+import com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
-import com.three_tech_solutions.slot_app.data.models.Plan;
-import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
@@ -42,6 +42,7 @@ public class StudentServiceImpl implements StudentService {
     private final MonthlyFeeService monthlyFeeService;
     private final SlotService slotService;
     private final PlanService planService;
+    private final SpecificSlotDetailServiceImpl specificSlotDetailService;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
@@ -49,7 +50,8 @@ public class StudentServiceImpl implements StudentService {
             @Lazy UserService userService,
             @Lazy MonthlyFeeService monthlyFeeService,
             @Lazy PlanService planService,
-            @Lazy SlotService slotService
+            @Lazy SlotService slotService,
+            SpecificSlotDetailServiceImpl specificSlotDetailService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
@@ -57,6 +59,7 @@ public class StudentServiceImpl implements StudentService {
         this.monthlyFeeService = monthlyFeeService;
         this.planService = planService;
         this.slotService = slotService;
+        this.specificSlotDetailService = specificSlotDetailService;
     }
 
 
@@ -191,6 +194,52 @@ public class StudentServiceImpl implements StudentService {
     public Student getStudentByIdOrThrowExcepion(UUID studentId) {
         return this.studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
+    @Override
+    @Transactional
+    public void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId) {
+        this.specificSlotDetailService.getSpecificSlotDetailBySpecificSlotIdAndStudentId(specificSlotId, studentId)
+                .ifPresentOrElse(
+                        specificSlotDetail -> {
+                            validateIfStudentIsNotAlreadyRegisteredAsAbsent(specificSlotDetail);
+                            changeStatusToAbsence(specificSlotDetail);
+                            registerNewStudentAbsence(studentId, specificSlotDetail);
+                        },
+                        () -> {
+                            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no está registrado en el turno especificado.");
+                        }
+                );
+
+    }
+
+    private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
+        Student student = getStudentByIdOrThrowExcepion(studentId);
+        buildStudentAbsence(specificSlotDetail, student);
+        studentRepository.save(student);
+    }
+
+    private static void buildStudentAbsence(SpecificSlotDetail specificSlotDetail, Student student) {
+        student.getAbsences().add(new Absence(
+                specificSlotDetail.getSpecificSlot().getSlotDate(),
+                AbsenceStatus.PENDING,
+                specificSlotDetail.getSpecificSlot().getStartTime(),
+                specificSlotDetail.getSpecificSlot().getEndTime()
+        ));
+    }
+
+    private void changeStatusToAbsence(SpecificSlotDetail specificSlotDetail) {
+        specificSlotDetailService.registerAbsence(specificSlotDetail);
+    }
+
+    private static void validateIfStudentIsNotAlreadyRegisteredAsAbsent(SpecificSlotDetail specificSlotDetail) {
+        if(specificSlotDetailStatusIsAbsence(specificSlotDetail)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El alumno ya se encuentra registrado como ausente en el turno.");
+        }
+    }
+
+    private static boolean specificSlotDetailStatusIsAbsence(SpecificSlotDetail specificSlotDetail) {
+        return specificSlotDetail.getStatus().equals(SpecificSlotDetailStatus.ABSENCE);
     }
 
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {

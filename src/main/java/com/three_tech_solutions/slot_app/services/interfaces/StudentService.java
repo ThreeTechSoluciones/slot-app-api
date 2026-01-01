@@ -39,4 +39,6 @@ public interface StudentService {
     void validateIfDniExists(String dni);
 
     Student getStudentByIdOrThrowExcepion(UUID studentId);
+
+    void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId);
 }

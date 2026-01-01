@@ -48,4 +48,10 @@ public interface StudentController {
 
     @PostMapping("/dni/{dni}/validate")
     void validateIfDniExists(@PathVariable String dni);
+
+    @PostMapping("/{studentId}/slots/specific-slot/{specificSlotId}/absence")
+    void registerStudentAbsenceForSpecificSlot(
+            @PathVariable UUID studentId,
+            @PathVariable UUID specificSlotId
+    );
 }

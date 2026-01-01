@@ -37,7 +37,7 @@ public class Student {
      @OneToMany
      @JoinColumn(name = "student_id")
      private List<Payment> payments = Collections.emptyList();
-     @OneToMany
+     @OneToMany(cascade = CascadeType.ALL)
      @JoinColumn(name = "student_id")
      private List<Absence> absences = Collections.emptyList();
      @Id
