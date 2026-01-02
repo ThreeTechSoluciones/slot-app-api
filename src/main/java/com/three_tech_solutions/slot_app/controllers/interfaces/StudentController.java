@@ -54,4 +54,10 @@ public interface StudentController {
             @PathVariable UUID studentId,
             @PathVariable UUID specificSlotId
     );
+
+    @PostMapping("/{studentId}/slots/specific-slot/{specificSlotId}/recover")
+    void recoverSlot(
+            @PathVariable UUID studentId,
+            @PathVariable UUID specificSlotId
+    );
 }

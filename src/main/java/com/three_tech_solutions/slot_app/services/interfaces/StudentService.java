@@ -41,4 +41,6 @@ public interface StudentService {
     Student getStudentByIdOrThrowExcepion(UUID studentId);
 
     void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId);
+
+    void recoverSlot(UUID studentId, UUID specificSlotId);
 }
