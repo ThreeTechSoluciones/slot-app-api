@@ -162,8 +162,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
+    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, Pageable pageable) {
+        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, filterByAbsences, pageable);
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
