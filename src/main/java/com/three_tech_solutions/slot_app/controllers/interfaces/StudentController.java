@@ -26,7 +26,7 @@ public interface StudentController {
     void deleteStudent(@PathVariable UUID studentId);
 
     @GetMapping("/{studentId}")
-    StudentDetailsResponse getStudentById(@PathVariable UUID studentId);
+    StudentDetailsResponse getStudentDetails(@PathVariable UUID studentId);
 
     @PatchMapping("/{studentId}")
     StudentResponse updateStudent (@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
@@ -49,7 +49,4 @@ public interface StudentController {
 
     @PostMapping("/dni/{dni}/validate")
     void validateIfDniExists(@PathVariable String dni);
-
-    @GetMapping("/{studentId}/slots")
-    List<StudentSlotResponse> getStudentSlots(@PathVariable UUID studentId);
 }

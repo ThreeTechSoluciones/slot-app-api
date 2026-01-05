@@ -23,7 +23,7 @@ public interface StudentService {
 
     void deleteStudent(UUID studentId);
 
-    StudentDetailsResponse getStudentById(UUID studentId);
+    StudentDetailsResponse getStudentDetails(UUID studentId);
 
     void activateStudent(UUID studentId);
 
@@ -40,6 +40,4 @@ public interface StudentService {
     void validateIfDniExists(String dni);
 
     Student getStudentByIdOrThrowExcepion(UUID studentId);
-
-    List<StudentSlotResponse> getStudentSlots(UUID studentId);
 }

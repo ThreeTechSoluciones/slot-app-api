@@ -85,20 +85,11 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-    private User getUserByIdOrThrowException(UUID userId) {
-        return userService.getUserByIdOrThrowException(userId);
-    }
-
-    private Plan getPlanByIdOrThrowException(UUID planId) {
-        return planService.getPlanByIdOrThrowException(planId);
-    }
-
     @Override
-    public StudentDetailsResponse getStudentById(UUID studentId) {
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
-
-        return studentMapper.toStudentDetailsResponse(student);
+    public StudentDetailsResponse getStudentDetails(UUID studentId) {
+        Student student = getStudentByIdOrThrowExcepion(studentId);
+        List<StudentSlotResponse> slots = getStudentSlots(student);
+        return studentMapper.toStudentDetailsResponse(student, slots);
     }
 
     @Override
@@ -181,9 +172,16 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
 
-    @Override
-    public List<StudentSlotResponse> getStudentSlots(UUID studentId) {
-        return slotService.getSlotsByStudent(getStudentByIdOrThrowExcepion(studentId))
+    private User getUserByIdOrThrowException(UUID userId) {
+        return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private Plan getPlanByIdOrThrowException(UUID planId) {
+        return planService.getPlanByIdOrThrowException(planId);
+    }
+
+    private List<StudentSlotResponse> getStudentSlots(Student student) {
+        return slotService.getSlotsByStudent(student)
                 .stream()
                 .map(slotMapper::toStudentSlotResponse)
                 .toList();

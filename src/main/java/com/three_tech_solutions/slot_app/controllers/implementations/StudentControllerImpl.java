@@ -6,7 +6,6 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
@@ -35,8 +34,8 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public StudentDetailsResponse getStudentById(UUID studentId) {
-        return studentService.getStudentById(studentId);
+    public StudentDetailsResponse getStudentDetails(UUID studentId) {
+        return studentService.getStudentDetails(studentId);
     }
 
     @Override
@@ -62,10 +61,5 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public void validateIfDniExists(String dni) {
         studentService.validateIfDniExists(dni);
-    }
-
-    @Override
-    public List<StudentSlotResponse> getStudentSlots(UUID studentId) {
-        return studentService.getStudentSlots(studentId);
     }
 }
