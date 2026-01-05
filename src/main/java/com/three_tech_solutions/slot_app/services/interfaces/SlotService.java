@@ -20,4 +20,6 @@ public interface SlotService {
     UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek);
 
     UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest);
+
+    void deleteSlot(UUID slotId);
 }
