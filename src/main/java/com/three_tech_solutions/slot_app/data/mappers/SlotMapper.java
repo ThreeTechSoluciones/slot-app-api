@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 public class SlotMapper {
     public UserSlotResponse toSlotResponse(Slot slot, int usedCapacity) {
         return new UserSlotResponse(
+                slot.getId(),
                 slot.getStartTime(),
                 slot.getEndTime(),
                 slot.getCapacity(),
