@@ -82,14 +82,6 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-    private User getUserByIdOrThrowException(UUID userId) {
-        return userService.getUserByIdOrThrowException(userId);
-    }
-
-    private Plan getPlanByIdOrThrowException(UUID planId) {
-        return planService.getPlanByIdOrThrowException(planId);
-    }
-
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
@@ -181,6 +173,14 @@ public class StudentServiceImpl implements StudentService {
     public Student getStudentByIdOrThrowExcepion(UUID studentId) {
         return this.studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
+    private User getUserByIdOrThrowException(UUID userId) {
+        return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private Plan getPlanByIdOrThrowException(UUID planId) {
+        return planService.getPlanByIdOrThrowException(planId);
     }
 
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {

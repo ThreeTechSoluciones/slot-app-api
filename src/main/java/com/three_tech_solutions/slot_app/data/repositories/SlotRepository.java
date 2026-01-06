@@ -27,4 +27,6 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
     );
 
     List<Slot> findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(User user, DayOfWeek dayOfWeek);
+
+    List<Slot> findAllByUserAndActiveTrueOrderByDayOfWeekAscStartTimeAsc(User user);
 }

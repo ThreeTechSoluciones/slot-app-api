@@ -95,14 +95,13 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
-        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
-        userRepository.save(user);
-    }
-
-
     @Override
     public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
+    }
+
+    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
+        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
+        userRepository.save(user);
     }
 }

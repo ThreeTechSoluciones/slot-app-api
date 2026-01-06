@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
@@ -26,6 +27,7 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -56,9 +58,9 @@ public class SlotServiceImpl implements SlotService {
 
     @Override
     public UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return getSlotsByUserAndDayOfWeek(user, dayOfWeek).stream()
-                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
-                .collect(collectListAndBuildListSlotsResponse());
+        List<Slot> slots = getSlots(user, dayOfWeek);
+        List<UserSlotsByDayResponse> days = groupSlotsByDay(slots);
+        return new UserSlotsResponse(days);
     }
 
     @Override
@@ -98,7 +100,6 @@ public class SlotServiceImpl implements SlotService {
         return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
     }
 
-
     @Override
     @Transactional
     public void deleteSlot(UUID slotId) {
@@ -112,13 +113,43 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.save(slot);
     }
 
+    private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {
+        return dayOfWeek != null
+                ? getSlotsByUserAndDayOfWeek(user, dayOfWeek)
+                : getSlotsByUser(user);
+    }
+
+
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
         return slotRepository.findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
     }
-    private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
-        return Collectors.collectingAndThen(
-                Collectors.toList(),
-                list -> new UserSlotsResponse(list.size(), list)
+
+    private List<Slot> getSlotsByUser(User user) {
+        return slotRepository
+                .findAllByUserAndActiveTrueOrderByDayOfWeekAscStartTimeAsc(user);
+    }
+
+    private List<UserSlotsByDayResponse> groupSlotsByDay(List<Slot> slots) {
+        Map<DayOfWeek, List<Slot>> slotsByDay = slots.stream()
+                .collect(Collectors.groupingBy(Slot::getDayOfWeek));
+
+        return slotsByDay.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(this::toUserSlotsByDayResponse)
+                .toList();
+    }
+
+    private UserSlotsByDayResponse toUserSlotsByDayResponse(
+            Map.Entry<DayOfWeek, List<Slot>> entry
+    ) {
+        List<UserSlotResponse> slotResponses = entry.getValue().stream()
+                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
+                .toList();
+
+        return new UserSlotsByDayResponse(
+                entry.getKey(),
+                slotResponses.size(),
+                slotResponses
         );
     }
 
