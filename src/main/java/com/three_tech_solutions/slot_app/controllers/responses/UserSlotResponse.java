@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public record UserSlotResponse(
-        UUID slotId,
+        UUID id,
         @JsonFormat(pattern = "HH:mm")
         LocalTime startTime,
         @JsonFormat(pattern = "HH:mm")
