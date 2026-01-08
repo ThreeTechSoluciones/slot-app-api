@@ -26,11 +26,5 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
             @Param("excludedSlotId") UUID excludedSlotId
     );
 
-    @Query("""
-            SELECT s FROM Slot s
-            WHERE s.user = :user
-            AND s.dayOfWeek = :dayOfWeek
-            ORDER BY s.startTime ASC
-            """)
-    List<Slot> findAllByUserIdAndDayOfWeekOrdered(User user, DayOfWeek dayOfWeek);
+    List<Slot> findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(User user, DayOfWeek dayOfWeek);
 }

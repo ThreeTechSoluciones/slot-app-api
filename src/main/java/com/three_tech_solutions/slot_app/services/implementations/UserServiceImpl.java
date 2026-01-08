@@ -1,11 +1,12 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
-import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final SlotService slotService;
     private final PlanService planService;
+    private final UserPreferencesMapper userPreferencesMapper;
 
 
     @Override
@@ -95,14 +98,20 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
-        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
-        userRepository.save(user);
-    }
-
-
     @Override
     public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
+    }
+
+    @Override
+    public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId) {
+        return this.userRepository.findById(userId)
+                .map(userPreferencesMapper::toUserPreferencesResponse)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
+    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
+        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
+        userRepository.save(user);
     }
 }

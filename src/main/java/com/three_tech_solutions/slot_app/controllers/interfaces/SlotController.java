@@ -21,4 +21,8 @@ public interface SlotController {
     @PatchMapping("/{slotId}")
     UserSlotResponse updateSlot(@PathVariable UUID slotId, @RequestBody @Valid UpdateSlotRequest updateSlotRequest);
 
+
+    @DeleteMapping("/{slotId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteSlot(@PathVariable UUID slotId);
 }

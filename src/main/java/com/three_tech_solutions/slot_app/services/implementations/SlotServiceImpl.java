@@ -4,18 +4,16 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
-import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
-import com.three_tech_solutions.slot_app.data.models.*;
+import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
-import com.three_tech_solutions.slot_app.data.models.Slot;
-import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -82,8 +80,21 @@ public class SlotServiceImpl implements SlotService {
         return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
     }
 
+    @Override
+    @Transactional
+    public void deleteSlot(UUID slotId) {
+        Slot slot = getSlotByIdOrThrowException(slotId);
+
+        validateSlotIsActive(slot);
+        validateSlotHasNoStudents(slot);
+        deleteFutureSpecificSlotsPhysically(slot);
+        logicallyDeleteSpecificSlots(slot);
+        slot.setActive(false);
+        slotRepository.save(slot);
+    }
+
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserIdAndDayOfWeekOrdered(user, dayOfWeek);
+        return slotRepository.findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
     }
     private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
         return Collectors.collectingAndThen(
@@ -153,7 +164,7 @@ public class SlotServiceImpl implements SlotService {
                 slotCapacity,
                 request.startTime(),
                 request.startTime().plusMinutes(slotDurationMinutes),
-                SlotStatus.CREATED
+                SpecificSlotStatus.CREATED
         );
     }
 
@@ -210,5 +221,29 @@ public class SlotServiceImpl implements SlotService {
                     List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
                     slotDetails.add(new SpecificSlotDetail(student));
                 });
+    }
+
+    private void validateSlotIsActive(Slot slot) {
+        if (!slot.isActive()) {throw new ResponseStatusException(BAD_REQUEST, "El turno ya fue eliminado");
+        }
+    }
+
+    private void validateSlotHasNoStudents(Slot slot) {
+        if (!slot.getStudents().isEmpty()) {
+            throw new ResponseStatusException(BAD_REQUEST, "No se puede eliminar el turno ya que tiene alumnos asociados");
+        }
+    }
+
+    private void deleteFutureSpecificSlotsPhysically(Slot slot) {
+        LocalDate today = LocalDate.now();
+
+        slot.getSpecificSlots().removeIf(specificSlot ->
+                specificSlot.getSlotDate().isAfter(today) ||
+                        (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(LocalTime.now())));
+    }
+
+    private void logicallyDeleteSpecificSlots(Slot slot) {
+        slot.getSpecificSlots()
+                .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
     }
 }
