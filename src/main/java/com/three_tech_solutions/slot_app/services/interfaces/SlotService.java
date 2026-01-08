@@ -20,4 +20,6 @@ public interface SlotService {
     UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest);
 
     void addStudentToSlot(UUID slotId, Student student);
+
+    void deleteSlot(UUID slotId);
 }

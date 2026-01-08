@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import com.three_tech_solutions.slot_app.data.enums.SlotStatus;
+import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,16 +23,16 @@ public class SpecificSlot {
     private LocalTime startTime;
     private LocalTime endTime;
     @Enumerated(EnumType.STRING)
-    private SlotStatus status;
     @ManyToOne
     private Slot slot;
+    private SpecificSlotStatus status;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "specific_slot_id")
     private List<SpecificSlotDetail> specificSlotDetails;
     @Id
     private UUID id = UUID.randomUUID();
 
-    public SpecificSlot(LocalDate slotDate, byte capacity, LocalTime startTime, LocalTime endTime, SlotStatus status) {
+    public SpecificSlot(LocalDate slotDate, byte capacity, LocalTime startTime, LocalTime endTime, SpecificSlotStatus status) {
         this.slotDate = slotDate;
         this.capacity = capacity;
         this.startTime = startTime;
