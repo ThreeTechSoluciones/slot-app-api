@@ -5,11 +5,8 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.data.models.*;
-import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
-import com.three_tech_solutions.slot_app.data.models.Slot;
-import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -28,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -64,28 +60,12 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void addStudentToSlot(UUID slotId, UUID studentId) {
         Student student = getStudent(studentId);
-        slotRepository.findById(slotId)
+        registerStudentInSlot(slotId, student);
+    }
 
-                .ifPresentOrElse(slot -> {
-                    slot.getStudents().add(student);
-                    slot.getSpecificSlots()
-                            .stream()
-                            .filter(SlotServiceImpl::startDateIsTodayOrAfter)
-                            .forEach(specificSlot -> {
-                                List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
-                                slotDetails.add(new SpecificSlotDetail(student));
-                            });
-                    try {
-                        slotRepository.save(slot);
-                    } catch (DataIntegrityViolationException e) {
-                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
-                    } catch (Exception e) {
-                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
-                    }
-                }, () -> {
-                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
-                });
-
+    @Override
+    public void addStudentToSlot(UUID slotId, Student student) {
+        registerStudentInSlot(slotId, student);
     }
 
     @Override
@@ -228,6 +208,37 @@ public class SlotServiceImpl implements SlotService {
         if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
             throw new ResponseStatusException(BAD_REQUEST, "La hora ingresada es igual a la actual");
         }
+    }
+
+    private void registerStudentInSlot(UUID slotId, Student student) {
+        slotRepository.findById(slotId)
+                .ifPresentOrElse(slot -> {
+                    try {
+                        addStudentToSlot(student, slot);
+                        createSpecificSlotWithStudent(student, slot);
+                        slotRepository.save(slot);
+                    } catch (DataIntegrityViolationException e) {
+                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
+                    }
+                }, () -> {
+                    throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
+                });
+    }
+
+    private static void addStudentToSlot(Student student, Slot slot) {
+        slot.getStudents().add(student);
+    }
+
+    private static void createSpecificSlotWithStudent(Student student, Slot slot) {
+        slot.getSpecificSlots()
+                .stream()
+                .filter(SlotServiceImpl::startDateIsTodayOrAfter)
+                .forEach(specificSlot -> {
+                    List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
+                    slotDetails.add(new SpecificSlotDetail(student));
+                });
     }
 
     private void validateSlotIsActive(Slot slot) {
