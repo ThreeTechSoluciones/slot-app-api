@@ -87,8 +87,11 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public List<Slot> getSlotsByStudent(Student student) {
-        return slotRepository.findAllByStudentOrderByDayAndTime(student);
+    public List<StudentSlotResponse> getSlotsByStudent(Student student) {
+        return slotRepository.findAllByStudentOrderByDayAndTime(student)
+                .stream()
+                .map(slotMapper::toStudentSlotResponse)
+                .toList();
     }
 
     private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {

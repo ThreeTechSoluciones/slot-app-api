@@ -181,10 +181,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private List<StudentSlotResponse> getStudentSlots(Student student) {
-        return slotService.getSlotsByStudent(student)
-                .stream()
-                .map(slotMapper::toStudentSlotResponse)
-                .toList();
+        return slotService.getSlotsByStudent(student);
     }
 
     private void validatePlanDetail(PaymentPlanName paymentPlanName, Byte paymentDay, Byte extraClasses, Double classPrice) {

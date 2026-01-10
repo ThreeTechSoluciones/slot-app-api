@@ -1,8 +1,8 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
-import com.three_tech_solutions.slot_app.data.models.Slot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 
@@ -18,5 +18,5 @@ public interface SlotService {
 
     UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek);
 
-    List<Slot> getSlotsByStudent(Student student);
+    List<StudentSlotResponse> getSlotsByStudent(Student student);
 }

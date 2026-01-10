@@ -6,7 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.UUID;
 
-public record StudentSlotResponse (
+public record StudentSlotResponse(
     UUID slotId,
     DayOfWeek dayOfWeek,
     @JsonFormat(pattern = "HH:mm")

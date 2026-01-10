@@ -25,5 +25,5 @@ public record StudentDetailsResponse (
      boolean status,
      StudentSituation situation,
      UUID planId,
-     List<StudentSlotResponse>slots
+     List<StudentSlotResponse> slots
 ) {}
