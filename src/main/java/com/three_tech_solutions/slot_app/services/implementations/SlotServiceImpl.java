@@ -4,7 +4,6 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
@@ -57,16 +56,16 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
         List<Slot> slots = getSlots(user, dayOfWeek);
-        List<UserSlotsByDayResponse> days = groupSlotsByDay(slots);
-        return new UserSlotsResponse(days);
+        return groupSlotsByDay(slots);
     }
 
     @Override
     public void addStudentToSlot(UUID slotId, UUID studentId) {
         Student student = getStudent(studentId);
         slotRepository.findById(slotId)
+
                 .ifPresentOrElse(slot -> {
                     slot.getStudents().add(student);
                     slot.getSpecificSlots()
@@ -114,26 +113,15 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {
-        return dayOfWeek != null
-                ? getSlotsByUserAndDayOfWeek(user, dayOfWeek)
-                : getSlotsByUser(user);
-    }
-
-
-    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
-    }
-
-    private List<Slot> getSlotsByUser(User user) {
-        return slotRepository
-                .findAllByUserAndActiveTrueOrderByDayOfWeekAscStartTimeAsc(user);
+        return slotRepository.findAllByUserAndOptionalDayOfWeek(user, dayOfWeek);
     }
 
     private List<UserSlotsByDayResponse> groupSlotsByDay(List<Slot> slots) {
-        Map<DayOfWeek, List<Slot>> slotsByDay = slots.stream()
-                .collect(Collectors.groupingBy(Slot::getDayOfWeek));
-
-        return slotsByDay.entrySet().stream()
+        return slots
+                .stream()
+                .collect(Collectors.groupingBy(Slot::getDayOfWeek))
+                .entrySet()
+                .stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(this::toUserSlotsByDayResponse)
                 .toList();

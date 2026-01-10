@@ -1,11 +1,10 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
-import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
@@ -96,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
     }
 

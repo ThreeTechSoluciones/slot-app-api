@@ -1,13 +1,12 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
@@ -33,5 +32,5 @@ public interface UserController {
     void updateUserCapacityPreference(@PathVariable UUID userId, @Valid @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);
 
     @GetMapping("/{userId}/slots")
-    UserSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam(required = false) DayOfWeek dayOfWeek);
+    List<UserSlotsByDayResponse> getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam(required = false) DayOfWeek dayOfWeek);
 }

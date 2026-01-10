@@ -13,20 +13,29 @@ import java.util.UUID;
 
 public interface SlotRepository extends JpaRepository<Slot, UUID> {
     @Query("""
-        SELECT COUNT(s) > 0
-        FROM Slot s
-        WHERE :dayOfWeek = s.dayOfWeek
-          AND :time >= s.startTime
-          AND :time <  s.endTime
-          AND (:excludedSlotId IS NULL OR s.id <> :excludedSlotId)
-    """)
+                SELECT COUNT(s) > 0
+                FROM Slot s
+                WHERE :dayOfWeek = s.dayOfWeek
+                  AND :time >= s.startTime
+                  AND :time <  s.endTime
+                  AND (:excludedSlotId IS NULL OR s.id <> :excludedSlotId)
+            """)
     boolean existsWithinRange(
             @Param("time") LocalTime time,
             @Param("dayOfWeek") DayOfWeek dayOfWeek,
             @Param("excludedSlotId") UUID excludedSlotId
     );
 
-    List<Slot> findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(User user, DayOfWeek dayOfWeek);
-
-    List<Slot> findAllByUserAndActiveTrueOrderByDayOfWeekAscStartTimeAsc(User user);
+    @Query("""
+                SELECT s
+                FROM Slot s
+                WHERE s.user = :user
+                  AND s.active = true
+                  AND (:dayOfWeek IS NULL OR s.dayOfWeek = :dayOfWeek)
+                ORDER BY s.dayOfWeek ASC, s.startTime ASC
+            """)
+    List<Slot> findAllByUserAndOptionalDayOfWeek(
+            @Param("user") User user,
+            @Param("dayOfWeek") DayOfWeek dayOfWeek
+    );
 }

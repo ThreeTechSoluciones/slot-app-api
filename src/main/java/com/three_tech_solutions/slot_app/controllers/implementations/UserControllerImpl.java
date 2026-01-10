@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.UserController;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
@@ -42,7 +42,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return userService.getSlotsByDayOfWeek(userId, dayOfWeek);
     }
 }
