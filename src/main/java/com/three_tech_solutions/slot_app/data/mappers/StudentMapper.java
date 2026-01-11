@@ -39,6 +39,7 @@ public class StudentMapper {
                 student.getName(),
                 student.getLastname(),
                 student.getDni(),
+                student.getStudentSituation(),
                 student.isEnabled(),
                 student.getId()
         );

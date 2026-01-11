@@ -1,10 +1,11 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -50,13 +51,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, StudentSituation status, Boolean isActive, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                         getUserByIdOrThrowException(userId),
                         filter,
+                        status,
+                        isActive,
                         pageable
-                )
-                .map(studentMapper::toStudentResponse);
+                );
     }
 
     @Override

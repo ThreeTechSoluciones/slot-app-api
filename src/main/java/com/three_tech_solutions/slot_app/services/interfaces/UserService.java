@@ -1,10 +1,11 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public interface UserService extends UserDetailsService {
     @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable);
+    Page<StudentResponse> getUserStudents(UUID userId, String filter, StudentSituation status, Boolean isActive, Pageable pageable);
 
     User getUserByIdOrThrowException(UUID id) ;
 

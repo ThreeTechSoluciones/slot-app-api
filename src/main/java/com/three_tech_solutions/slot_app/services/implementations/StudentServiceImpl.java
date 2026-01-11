@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFee
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -17,6 +18,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -156,8 +159,25 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
+    public Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, StudentSituation status, Boolean isActive, Pageable pageable) {
+        Page<StudentResponse> studentsPage = studentRepository
+                .getStudentsByUserAndFilters(user, filters, isActive, pageable)
+                .map(studentMapper::toStudentResponse);
+        List<StudentResponse> filteredContent = getContentByStudentSituationFilter(status, studentsPage);
+
+        return new PageImpl<>(
+                filteredContent,
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
+                filteredContent.size()
+        );
+    }
+
+    private static List<StudentResponse> getContentByStudentSituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
+        return status != null ? filterStudentPageBySituationFilter(status, studentsPage) : studentsPage.getContent();
+    }
+
+    private static List<StudentResponse> filterStudentPageBySituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
+        return studentsPage.getContent().stream().filter(studentResponse -> studentResponse.status().equals(status)).toList();
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
