@@ -12,6 +12,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus.RECOVERED;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +25,8 @@ public class SpecificSlot {
     private LocalTime startTime;
     private LocalTime endTime;
     @Enumerated(EnumType.STRING)
+    @ManyToOne
+    private Slot slot;
     private SpecificSlotStatus status;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "specific_slot_id")
@@ -36,5 +40,9 @@ public class SpecificSlot {
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
+    }
+
+    public void addStudent(Student student) {
+        this.specificSlotDetails.add(new SpecificSlotDetail(student, RECOVERED));
     }
 }
