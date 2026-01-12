@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsRes
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ public interface StudentService {
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 
-    Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, Pageable pageable);
+    Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable);
 
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
 

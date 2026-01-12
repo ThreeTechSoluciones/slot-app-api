@@ -3,6 +3,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -47,14 +48,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                         getUserByIdOrThrowException(userId),
                         filter,
                         filterByAbsences,
+                        status,
+                        isActive,
                         pageable
-                )
-                .map(studentMapper::toStudentResponse);
+                );
     }
 
     @Override

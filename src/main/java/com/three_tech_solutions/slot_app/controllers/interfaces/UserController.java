@@ -20,6 +20,8 @@ public interface UserController {
     Page<StudentResponse> getUserStudents(
             @PathVariable UUID userId,
             @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "") Boolean isActive,
             @RequestParam(required = false, defaultValue = "false") boolean filterByAbsences,
             @PageableDefault(size = 20) Pageable pageable
     );
@@ -45,4 +47,5 @@ public interface UserController {
 
     @GetMapping("/{userId}/userPreferences")
     UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
+
 }
