@@ -21,7 +21,6 @@ import java.util.UUID;
 public class StudentControllerImpl implements StudentController {
     private final StudentService studentService;
 
-
     @Override
     public StudentResponse createStudent(CreateStudentRequest createStudentRequest) {
         return studentService.createStudent(createStudentRequest);
@@ -30,7 +29,6 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public void deleteStudent(UUID studentId){
         studentService.deleteStudent(studentId);
-
     }
 
     @Override
@@ -61,5 +59,15 @@ public class StudentControllerImpl implements StudentController {
     @Override
     public void validateIfDniExists(String dni) {
         studentService.validateIfDniExists(dni);
+    }
+
+    @Override
+    public void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId) {
+        studentService.registerStudentAbsenceForSpecificSlot(studentId, specificSlotId);
+    }
+
+    @Override
+    public void recoverSlot(UUID studentId, UUID specificSlotId) {
+        studentService.recoverSlot(studentId, specificSlotId);
     }
 }

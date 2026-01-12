@@ -31,7 +31,7 @@ public interface StudentService {
 
     StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated);
 
-    Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, StudentSituation status, Boolean isActive, Pageable pageable);
+    Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable);
 
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status);
 
@@ -40,4 +40,8 @@ public interface StudentService {
     void validateIfDniExists(String dni);
 
     Student getStudentByIdOrThrowExcepion(UUID studentId);
+
+    void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId);
+
+    void recoverSlot(UUID studentId, UUID specificSlotId);
 }

@@ -21,11 +21,15 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
            OR LOWER(CONCAT(s.lastname, ' ', s.name)) LIKE LOWER(CONCAT('%', :filter, '%'))
            OR s.dni LIKE CONCAT(:filter, '%'))
            AND (:isActive IS NULL OR s.enabled = :isActive)
+           AND (:filterByAbsences = false OR EXISTS (
+                   SELECT a FROM Absence a WHERE a.student = s AND a.status = 'PENDING'
+           ))
         ORDER BY s.enabled DESC
     """)
     Page<Student> getStudentsByUserAndFilters(
             @Param("user") User user,
             @Param("filter") String filter,
+            @Param("filterByAbsences") boolean filterByAbsences,
             @Param("isActive") Boolean isActive,
             Pageable pageable
     );
