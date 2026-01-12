@@ -65,4 +65,9 @@ public class StudentControllerImpl implements StudentController {
     public void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId) {
         studentService.registerStudentAbsenceForSpecificSlot(studentId, specificSlotId);
     }
+
+    @Override
+    public void recoverSlot(UUID studentId, UUID specificSlotId) {
+        studentService.recoverSlot(studentId, specificSlotId);
+    }
 }

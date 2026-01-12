@@ -30,4 +30,10 @@ public class SpecificSlotDetail {
     public SpecificSlotDetail(Student student) {
         this.student = student;
     }
+
+    public SpecificSlotDetail(Student student, SpecificSlotDetailStatus status) {
+        this.student = student;
+        this.status = status;
+    }
+
 }

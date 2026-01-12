@@ -43,6 +43,7 @@ public class StudentServiceImpl implements StudentService {
     private final SlotService slotService;
     private final PlanService planService;
     private final SpecificSlotDetailServiceImpl specificSlotDetailService;
+    private final SpecificSlotService specificSlotService;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
@@ -51,7 +52,8 @@ public class StudentServiceImpl implements StudentService {
             @Lazy MonthlyFeeService monthlyFeeService,
             @Lazy PlanService planService,
             @Lazy SlotService slotService,
-            SpecificSlotDetailServiceImpl specificSlotDetailService
+            SpecificSlotDetailServiceImpl specificSlotDetailService,
+            SpecificSlotService specificSlotService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
@@ -60,6 +62,7 @@ public class StudentServiceImpl implements StudentService {
         this.planService = planService;
         this.slotService = slotService;
         this.specificSlotDetailService = specificSlotDetailService;
+        this.specificSlotService = specificSlotService;
     }
 
 
@@ -159,8 +162,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, Pageable pageable) {
-        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, pageable);
+    public Page<Student> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, Pageable pageable) {
+        return studentRepository.getStudentsByUserAndNameAndLastnameAndDni(user, filters, filterByAbsences, pageable);
     }
 
     public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
@@ -174,7 +177,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentMonthlyFeeResponse createStudentMonthlyFee(UUID studentId) {
         return studentRepository
                 .findById(studentId)
-                .map(student -> monthlyFeeService.createMonthlyFeeForStudent(student))
+                .map(monthlyFeeService::createMonthlyFeeForStudent)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
 
@@ -211,6 +214,17 @@ public class StudentServiceImpl implements StudentService {
                         }
                 );
 
+    }
+
+    @Override
+    @Transactional
+    public void recoverSlot(UUID studentId, UUID specificSlotId) {
+        SpecificSlot specificSlot = specificSlotService.getSpecificSlotByIdOrThrowException(specificSlotId);
+        Student student = getStudentByIdOrThrowExcepion(studentId);
+        student.registerAbsenceAsRecovered();
+        specificSlot.addStudent(student);
+        specificSlotService.saveSpecificSlot(specificSlot);
+        studentRepository.save(student);
     }
 
     private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {

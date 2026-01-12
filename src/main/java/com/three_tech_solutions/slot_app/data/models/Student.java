@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import jakarta.persistence.*;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -81,6 +84,19 @@ public class Student {
                 ", lastname='" + lastname + '\'' +
                 ", dni='" + dni + '\'' +
                 '}';
+    }
+
+    public void registerAbsenceAsRecovered() {
+        this.getAbsences()
+                .stream()
+                .filter(absence -> absence.getStatus() == AbsenceStatus.PENDING)
+                .min(Comparator.comparing(absence -> absence.getSlotDate().isBefore(absence.getSlotDate())))
+                .ifPresentOrElse(
+                        absence -> absence.setStatus(AbsenceStatus.RECOVERED),
+                        () -> {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante no tiene turnos para recuperar.");
+                        }
+                );
     }
 }
 
