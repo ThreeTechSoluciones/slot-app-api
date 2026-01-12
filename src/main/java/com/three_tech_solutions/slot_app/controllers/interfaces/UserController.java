@@ -20,6 +20,7 @@ public interface UserController {
     Page<StudentResponse> getUserStudents(
             @PathVariable UUID userId,
             @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false, defaultValue = "false") boolean filterByAbsences,
             @PageableDefault(size = 20) Pageable pageable
     );
 

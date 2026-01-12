@@ -25,10 +25,11 @@ public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable) {
         return userService.getUserStudents(
                 userId,
                 filter,
+                filterByAbsences,
                 pageable
         );
     }

@@ -47,10 +47,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                         getUserByIdOrThrowException(userId),
                         filter,
+                        filterByAbsences,
                         pageable
                 )
                 .map(studentMapper::toStudentResponse);

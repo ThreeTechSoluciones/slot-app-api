@@ -19,7 +19,7 @@ public interface UserService extends UserDetailsService {
     @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable);
+    Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable);
 
     User getUserByIdOrThrowException(UUID id) ;
 

@@ -37,4 +37,10 @@ public class SpecificSlotDetail {
     public boolean studentGoesToSlot() {
         return this.status == ATTENDANCE || this.status == RECOVERED;
     }
+
+    public SpecificSlotDetail(Student student, SpecificSlotDetailStatus status) {
+        this.student = student;
+        this.status = status;
+    }
+
 }
