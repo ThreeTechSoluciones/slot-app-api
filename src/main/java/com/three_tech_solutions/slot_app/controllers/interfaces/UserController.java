@@ -1,10 +1,7 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.CalendarResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -45,4 +42,7 @@ public interface UserController {
             @RequestParam(defaultValue = "WEEKLY") CalendarViewType viewType,
             @RequestParam(required = false) LocalDate date
     );
+
+    @GetMapping("/{userId}/userPreferences")
+    UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
 }

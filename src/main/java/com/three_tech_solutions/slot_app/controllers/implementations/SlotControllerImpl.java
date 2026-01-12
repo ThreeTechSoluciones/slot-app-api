@@ -28,4 +28,9 @@ public class SlotControllerImpl implements SlotController {
     public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
         return slotService.updateSlot(slotId, updateSlotRequest);
     }
+
+    @Override
+    public void deleteSlot(UUID slotId) {
+        slotService.deleteSlot(slotId);
+    }
 }

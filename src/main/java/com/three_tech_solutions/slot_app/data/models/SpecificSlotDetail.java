@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus.ATTENDANCE;
+import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus.RECOVERED;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,12 +26,16 @@ public class SpecificSlotDetail {
     @ManyToOne
     private SpecificSlot specificSlot;
     @Enumerated(EnumType.STRING)
-    private SpecificSlotDetailStatus status = SpecificSlotDetailStatus.ATTENDANCE;
+    private SpecificSlotDetailStatus status = ATTENDANCE;
     @Id
     private UUID id = UUID.randomUUID();
 
     public SpecificSlotDetail(Student student) {
         this.student = student;
+    }
+
+    public boolean studentGoesToSlot() {
+        return this.status == ATTENDANCE || this.status == RECOVERED;
     }
 
     public SpecificSlotDetail(Student student, SpecificSlotDetailStatus status) {
