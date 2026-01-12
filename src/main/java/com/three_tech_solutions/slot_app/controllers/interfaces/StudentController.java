@@ -25,7 +25,7 @@ public interface StudentController {
     void deleteStudent(@PathVariable UUID studentId);
 
     @GetMapping("/{studentId}")
-    StudentDetailsResponse getStudentById(@PathVariable UUID studentId);
+    StudentDetailsResponse getStudentDetails(@PathVariable UUID studentId);
 
     @PatchMapping("/{studentId}")
     StudentResponse updateStudent (@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
