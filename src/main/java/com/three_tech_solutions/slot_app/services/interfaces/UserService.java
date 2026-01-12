@@ -34,7 +34,7 @@ public interface UserService extends UserDetailsService {
 
     void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest);
 
-    UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
+    List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 
     List<CalendarResponse> getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
 

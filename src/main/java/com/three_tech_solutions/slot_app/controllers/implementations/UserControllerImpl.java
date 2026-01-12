@@ -71,7 +71,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return userService.getSlotsByDayOfWeek(userId, dayOfWeek);
     }
 
@@ -84,6 +84,7 @@ public class UserControllerImpl implements UserController {
         );
     }
 
+    @Override
     public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId){
         return userService.getUserPreferences(userId);
     };

@@ -1,8 +1,10 @@
 package com.three_tech_solutions.slot_app.controllers.responses;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
-public record UserSlotsResponse(
+public record UserSlotsByDayResponse(
+        DayOfWeek dayOfWeek,
         int numberOfSlots,
         List<UserSlotResponse> slots
 ) {}

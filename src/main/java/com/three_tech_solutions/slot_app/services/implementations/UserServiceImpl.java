@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return slotService.getSlotsByDayOfWeek(getUserByIdOrThrowException(userId), dayOfWeek);
     }
 
@@ -110,6 +110,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
 
+    @Override
     public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId) {
         return this.userRepository.findById(userId)
                 .map(userPreferencesMapper::toUserPreferencesResponse)

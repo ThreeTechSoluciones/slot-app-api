@@ -36,7 +36,7 @@ public interface UserController {
     void updateUserCapacityPreference(@PathVariable UUID userId, @Valid @RequestBody UpdateUserCapacityRequest updateUserCapacityRequest);
 
     @GetMapping("/{userId}/slots")
-    UserSlotsResponse getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam DayOfWeek dayOfWeek);
+    List<UserSlotsByDayResponse> getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam(required = false) DayOfWeek dayOfWeek);
 
     @GetMapping("/{userId}/calendar")
     List<CalendarResponse> getCalendarView(

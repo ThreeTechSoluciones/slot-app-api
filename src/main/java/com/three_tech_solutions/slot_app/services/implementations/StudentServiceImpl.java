@@ -93,22 +93,6 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-    private void createInitialMonthlyFee(CreateStudentRequest studentDTO, Student student) {
-        monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
-    }
-
-    private void addStudentToSlots(CreateStudentRequest studentDTO, Student student) {
-        studentDTO.getSlotIds().forEach(slotId -> slotService.addStudentToSlot(slotId, student));
-    }
-
-    private User getUserByIdOrThrowException(UUID userId) {
-        return userService.getUserByIdOrThrowException(userId);
-    }
-
-    private Plan getPlanByIdOrThrowException(UUID planId) {
-        return planService.getPlanByIdOrThrowException(planId);
-    }
-
     @Override
     public StudentDetailsResponse getStudentById(UUID studentId) {
         Student student = studentRepository.findById(studentId)
@@ -207,16 +191,33 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El DNI no está registrado");
         }
     }
+
+    @Override
+    public Student getStudentByIdOrThrowExcepion(UUID studentId) {
+        return this.studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    }
+
     private Integer calculateStudentAge(LocalDate birthday) {
         return Optional.ofNullable(birthday)
                 .map(date -> Period.between(date, LocalDate.now()).getYears())
                 .orElse(null);
     }
 
-    @Override
-    public Student getStudentByIdOrThrowExcepion(UUID studentId) {
-        return this.studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+    private void createInitialMonthlyFee(CreateStudentRequest studentDTO, Student student) {
+        monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
+    }
+
+    private void addStudentToSlots(CreateStudentRequest studentDTO, Student student) {
+        studentDTO.getSlotIds().forEach(slotId -> slotService.addStudentToSlot(slotId, student));
+    }
+
+    private User getUserByIdOrThrowException(UUID userId) {
+        return userService.getUserByIdOrThrowException(userId);
+    }
+
+    private Plan getPlanByIdOrThrowException(UUID planId) {
+        return planService.getPlanByIdOrThrowException(planId);
     }
 
     @Override

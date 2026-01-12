@@ -3,17 +3,17 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
-import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,8 +23,8 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -52,10 +52,9 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public UserSlotsResponse getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return getSlotsByUserAndDayOfWeek(user, dayOfWeek).stream()
-                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
-                .collect(collectListAndBuildListSlotsResponse());
+    public List<UserSlotsByDayResponse> getSlotsByDayOfWeek(User user, DayOfWeek dayOfWeek) {
+        List<Slot> slots = getSlots(user, dayOfWeek);
+        return groupSlotsByDay(slots);
     }
 
     @Override
@@ -93,13 +92,32 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.save(slot);
     }
 
-    private List<Slot> getSlotsByUserAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return slotRepository.findAllByUserAndDayOfWeekAndActiveTrueOrderByStartTimeAsc(user, dayOfWeek);
+    private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {
+        return slotRepository.findAllByUserAndOptionalDayOfWeek(user, dayOfWeek);
     }
-    private Collector<UserSlotResponse, Object, UserSlotsResponse> collectListAndBuildListSlotsResponse() {
-        return Collectors.collectingAndThen(
-                Collectors.toList(),
-                list -> new UserSlotsResponse(list.size(), list)
+
+    private List<UserSlotsByDayResponse> groupSlotsByDay(List<Slot> slots) {
+        return slots
+                .stream()
+                .collect(Collectors.groupingBy(Slot::getDayOfWeek))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(this::toUserSlotsByDayResponse)
+                .toList();
+    }
+
+    private UserSlotsByDayResponse toUserSlotsByDayResponse(
+            Map.Entry<DayOfWeek, List<Slot>> entry
+    ) {
+        List<UserSlotResponse> slotResponses = entry.getValue().stream()
+                .map(slot -> slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot)))
+                .toList();
+
+        return new UserSlotsByDayResponse(
+                entry.getKey(),
+                slotResponses.size(),
+                slotResponses
         );
     }
 
