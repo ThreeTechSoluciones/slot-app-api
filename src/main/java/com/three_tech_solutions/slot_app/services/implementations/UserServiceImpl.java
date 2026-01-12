@@ -1,18 +1,13 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.*;
+import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
-import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
-import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
-import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.services.interfaces.*;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -24,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final SlotService slotService;
     private final PlanService planService;
+    private final CalendarService calendarService;
     private final UserPreferencesMapper userPreferencesMapper;
 
 
@@ -50,10 +47,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
                         getUserByIdOrThrowException(userId),
                         filter,
+                        filterByAbsences,
                         pageable
                 )
                 .map(studentMapper::toStudentResponse);
@@ -104,6 +102,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<CalendarResponse> getCalendar(UUID userId, CalendarViewType viewType, LocalDate date) {
+        return userRepository.findById(userId)
+                .map(user -> calendarService.getUserCalendar(user, viewType, date))
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
     public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId) {
         return this.userRepository.findById(userId)
                 .map(userPreferencesMapper::toUserPreferencesResponse)

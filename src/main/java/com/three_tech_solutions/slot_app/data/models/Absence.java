@@ -25,5 +25,12 @@ public class Absence {
     @ManyToOne
     private Student student;
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
+
+    public Absence(LocalDate slotDate, AbsenceStatus status, LocalTime startTime, LocalTime endTime) {
+        this.slotDate = slotDate;
+        this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }

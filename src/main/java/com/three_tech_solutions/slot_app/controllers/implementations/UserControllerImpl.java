@@ -1,11 +1,9 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.UserController;
-import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
-import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.*;
+import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -25,10 +25,11 @@ public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
-    public Page<StudentResponse> getUserStudents(UUID userId, String filter, Pageable pageable) {
+    public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, Pageable pageable) {
         return userService.getUserStudents(
                 userId,
                 filter,
+                filterByAbsences,
                 pageable
         );
     }
@@ -49,6 +50,14 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    public List<CalendarResponse> getCalendarView(UUID userId, CalendarViewType viewType, LocalDate date) {
+        return userService.getCalendar(
+                userId,
+                viewType,
+                Optional.ofNullable(date).orElse(LocalDate.now())
+        );
+    }
+
     public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId){
         return userService.getUserPreferences(userId);
     };
