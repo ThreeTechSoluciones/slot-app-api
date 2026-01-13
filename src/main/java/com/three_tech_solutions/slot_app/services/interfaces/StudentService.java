@@ -23,7 +23,7 @@ public interface StudentService {
 
     void deleteStudent(UUID studentId);
 
-    StudentDetailsResponse getStudentById(UUID studentId);
+    StudentDetailsResponse getStudentDetails(UUID studentId);
 
     void activateStudent(UUID studentId);
 

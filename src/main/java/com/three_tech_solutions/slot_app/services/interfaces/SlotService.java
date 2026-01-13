@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
@@ -23,4 +24,6 @@ public interface SlotService {
     void addStudentToSlot(UUID slotId, Student student);
 
     void deleteSlot(UUID slotId);
+
+    List<StudentSlotResponse> getSlotsByStudent(Student student);
 }

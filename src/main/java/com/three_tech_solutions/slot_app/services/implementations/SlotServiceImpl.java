@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.data.models.*;
@@ -90,6 +91,14 @@ public class SlotServiceImpl implements SlotService {
         logicallyDeleteSpecificSlots(slot);
         slot.setActive(false);
         slotRepository.save(slot);
+    }
+
+    @Override
+    public List<StudentSlotResponse> getSlotsByStudent(Student student) {
+        return slotRepository.findAllByStudentOrderByDayAndTime(student)
+                .stream()
+                .map(slotMapper::toStudentSlotResponse)
+                .toList();
     }
 
     private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {

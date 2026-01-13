@@ -5,6 +5,7 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentReque
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
@@ -94,11 +95,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDetailsResponse getStudentById(UUID studentId) {
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
-        Integer age = calculateStudentAge(student.getBirthday());
-        return studentMapper.toStudentDetailsResponse(student, age);
+    public StudentDetailsResponse getStudentDetails(UUID studentId) {
+        Student student = getStudentByIdOrThrowExcepion(studentId);
+        List<StudentSlotResponse> slots = getStudentSlots(student);
+        return studentMapper.toStudentDetailsResponse(student, slots , calculateStudentAge(student.getBirthday()));
     }
 
     @Override
@@ -308,5 +308,9 @@ public class StudentServiceImpl implements StudentService {
 
     private boolean planTypeIsBeginningOfMonth(PaymentPlanName paymentPlanName){
         return PaymentPlanName.BEGINNING_OF_MONTH.equals(paymentPlanName);
+    }
+
+    private List<StudentSlotResponse> getStudentSlots(Student student) {
+        return slotService.getSlotsByStudent(student);
     }
 }
