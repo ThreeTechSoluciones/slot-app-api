@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentReque
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.PaymentPlan;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -51,7 +52,7 @@ public class StudentMapper {
                 .toList();
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student, Integer age) {
+    public StudentDetailsResponse toStudentDetailsResponse(Student student, List<StudentSlotResponse> slots, Integer age) {
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -68,7 +69,8 @@ public class StudentMapper {
                 student.getPaymentPlan().getPaymentDay(),
                 student.isEnabled(),
                 student.getStudentSituation(),
-                student.getPaymentPlan().getPlan().getId()
+                student.getPaymentPlan().getPlan().getId(),
+                slots
         );
     }
 

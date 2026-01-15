@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public record StudentDetailsResponse (
@@ -24,5 +25,6 @@ public record StudentDetailsResponse (
      Byte paymentDay,
      boolean status,
      StudentSituation situation,
-     UUID planId
+     UUID planId,
+     List<StudentSlotResponse> slots
 ) {}
