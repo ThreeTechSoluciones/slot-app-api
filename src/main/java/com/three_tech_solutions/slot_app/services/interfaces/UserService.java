@@ -3,10 +3,6 @@ package com.three_tech_solutions.slot_app.services.interfaces;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
-import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserPreferencesResponse;
-import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsResponse;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.domain.Page;
@@ -36,7 +32,7 @@ public interface UserService extends UserDetailsService {
 
     List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 
-    List<CalendarResponse> getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
+    NewCalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
 
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
 }

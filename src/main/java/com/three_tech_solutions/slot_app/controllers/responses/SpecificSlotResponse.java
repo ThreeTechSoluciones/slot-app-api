@@ -15,6 +15,7 @@ public record SpecificSlotResponse(
         LocalTime endTime,
         byte maxCapacity,
         int capacity,
+        SpecificSlotResponseStatus status,
         List<Student> students
 ) {
     public record Student(
@@ -22,4 +23,11 @@ public record SpecificSlotResponse(
             String fullName,
             SpecificSlotDetailStatus status
     ){}
+
+    public enum SpecificSlotResponseStatus {
+        FINALIZED,
+        IN_PROGRESS,
+        FUTURE,
+        CANCELED;
+    }
 }

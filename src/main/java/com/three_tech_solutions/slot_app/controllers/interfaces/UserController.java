@@ -39,7 +39,7 @@ public interface UserController {
     List<UserSlotsByDayResponse> getSlotsByDayOfWeek(@PathVariable UUID userId, @RequestParam(required = false) DayOfWeek dayOfWeek);
 
     @GetMapping("/{userId}/calendar")
-    List<CalendarResponse> getCalendarView(
+    NewCalendarResponse getCalendarView(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "WEEKLY") CalendarViewType viewType,
             @RequestParam(required = false) LocalDate date
