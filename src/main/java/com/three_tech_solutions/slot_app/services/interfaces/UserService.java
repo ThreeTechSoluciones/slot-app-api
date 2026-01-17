@@ -32,7 +32,7 @@ public interface UserService extends UserDetailsService {
 
     List<UserSlotsByDayResponse> getSlotsByDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 
-    NewCalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
+    CalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
 
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
 }

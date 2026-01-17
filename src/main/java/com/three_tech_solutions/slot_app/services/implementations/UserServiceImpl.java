@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public NewCalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date) {
+    public CalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date) {
         return userRepository.findById(userId)
                 .map(user -> calendarService.getUserCalendar(user, viewType, date))
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));

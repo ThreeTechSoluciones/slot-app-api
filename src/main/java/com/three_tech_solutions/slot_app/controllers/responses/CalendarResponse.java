@@ -7,14 +7,19 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record CalendarResponse(
-        DayOfWeek dayOfWeek,
-        int numberOfDay,
-        List<SpecificSlotResponse> slots
+        List<Day> days,
+        List<SlotTime> times,
+        SpecificSlotResponse[][] slots
 ) {
-    public record Time(
-        @JsonFormat(pattern = "HH:mm")
-        LocalTime startTime,
-        @JsonFormat(pattern = "HH:mm")
-        LocalTime endTime
-    ){}
+    public record Day(
+            DayOfWeek dayOfWeek,
+            int numberOfDay
+    ) {}
+
+    public record SlotTime(
+            @JsonFormat(pattern = "HH:mm")
+            LocalTime startTime,
+            @JsonFormat(pattern = "HH:mm")
+            LocalTime endTime
+    ) {}
 }
