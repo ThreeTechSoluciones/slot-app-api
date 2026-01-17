@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.models.Slot;
+import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +39,13 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
             @Param("user") User user,
             @Param("dayOfWeek") DayOfWeek dayOfWeek
     );
+
+    @Query("""
+        SELECT s
+        FROM Slot s
+        LEFT JOIN s.students st
+        WHERE st = :student
+        ORDER BY s.dayOfWeek ASC, s.startTime ASC
+    """)
+    List<Slot> findAllByStudentOrderByDayAndTime(@Param("student") Student student);
 }

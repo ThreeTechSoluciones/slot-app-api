@@ -32,8 +32,8 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public StudentDetailsResponse getStudentById(UUID studentId) {
-        return studentService.getStudentById(studentId);
+    public StudentDetailsResponse getStudentDetails(UUID studentId) {
+        return studentService.getStudentDetails(studentId);
     }
 
     @Override
