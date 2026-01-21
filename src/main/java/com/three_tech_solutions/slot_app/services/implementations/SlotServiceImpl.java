@@ -46,7 +46,7 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void createSlot(CreateSlotRequest request) {
         User user = getUserByIdOrThrowException(request.userId());
-        validateNoActiveConflicts(request.dayOfWeek(), request.startTime(), null);
+        validateNoActiveConflicts(request.dayOfWeek(), request.startTime(), calculateEndTime(user, request.startTime()), null);
         Optional<Slot> inactiveSlot = findInactiveExactSlot(user, request.dayOfWeek(), request.startTime());
         if (inactiveSlot.isPresent()) {
             recoverSlot(inactiveSlot.get(), user);
@@ -79,7 +79,7 @@ public class SlotServiceImpl implements SlotService {
         User user = oldSlot.getUser();
 
         validateStartTimeIsDifferent(oldSlot, request);
-        validateNoActiveConflicts(oldSlot.getDayOfWeek(), request.startTime(), slotId);
+        validateNoActiveConflicts(oldSlot.getDayOfWeek(), request.startTime(), calculateEndTime(user, request.startTime()), null);
         Optional<Slot> inactiveSlot = findInactiveExactSlot(user, oldSlot.getDayOfWeek(), request.startTime());
         Slot finalSlot;
 
@@ -238,20 +238,14 @@ public class SlotServiceImpl implements SlotService {
         return userService.getUserByIdOrThrowException(userId);
     }
 
-    private void validateNoActiveConflicts(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
-        if (slotRepository.existsWithinRange(startTime, dayOfWeek, excludedSlotId)) {
+    private void validateNoActiveConflicts(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, UUID excludedSlotId) {
+        if (slotRepository.existsActiveSlotWithinRange(dayOfWeek, startTime, endTime, excludedSlotId)) {
             throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y el rango de horario ingresado");
         }
     }
 
     private Optional<Slot> findInactiveExactSlot(User user, DayOfWeek dayOfWeek, LocalTime startTime) {
-        return slotRepository.findAllByUserAndOptionalDayOfWeek(user, dayOfWeek)
-                .stream()
-                .filter(slot ->
-                        !slot.isActive()
-                                && slot.getStartTime().equals(startTime)
-                )
-                .findFirst();
+        return slotRepository.findInactiveExactSlot(user, dayOfWeek, startTime);
     }
 
     private Slot recoverSlot(Slot slot, User user) {
