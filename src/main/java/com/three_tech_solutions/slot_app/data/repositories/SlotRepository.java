@@ -16,7 +16,8 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
     @Query("""
         SELECT COUNT(s) > 0
         FROM Slot s
-        WHERE :dayOfWeek = s.dayOfWeek
+        WHERE s.active = true
+            AND s.dayOfWeek = :dayOfWeek
             AND :time >= s.startTime
             AND :time <  s.endTime
             AND (:excludedSlotId IS NULL OR s.id <> :excludedSlotId)

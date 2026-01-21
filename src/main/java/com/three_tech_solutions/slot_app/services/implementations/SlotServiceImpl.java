@@ -22,10 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -48,8 +45,15 @@ public class SlotServiceImpl implements SlotService {
 
     @Override
     public void createSlot(CreateSlotRequest request) {
-        validateNoConflictingSlot(request.dayOfWeek(), request.startTime(), null);
-        slotRepository.save(buildSlot(request));
+        User user = getUserByIdOrThrowException(request.userId());
+        validateNoActiveConflicts(request.dayOfWeek(), request.startTime(), null);
+        Optional<Slot> inactiveSlot = findInactiveExactSlot(user, request.dayOfWeek(), request.startTime());
+        if (inactiveSlot.isPresent()) {
+            recoverSlot(inactiveSlot.get(), user);
+        } else {
+            Slot newSlot = buildSlot(request, user);
+            slotRepository.save(newSlot);
+        }
     }
 
     @Override
@@ -70,14 +74,26 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
-        Slot slot = getSlotByIdOrThrowException(slotId);
-        validateStartTimeIsDifferent(slot, updateSlotRequest);
-        validateNoConflictingSlot(slot.getDayOfWeek(), updateSlotRequest.startTime(), slot.getId());
-        slotMapper.updateSlot(slot, updateSlotRequest);
-        slot.setEndTime(calculateEndTime(slot.getUser(), slot.getStartTime()));
-        slotRepository.save(slot);
-        return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
+    public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest request) {
+        Slot oldSlot = getSlotByIdOrThrowException(slotId);
+        User user = oldSlot.getUser();
+
+        validateStartTimeIsDifferent(oldSlot, request);
+        validateNoActiveConflicts(oldSlot.getDayOfWeek(), request.startTime(), slotId);
+        Optional<Slot> inactiveSlot = findInactiveExactSlot(user, oldSlot.getDayOfWeek(), request.startTime());
+        Slot finalSlot;
+
+        if (inactiveSlot.isPresent()) {
+            Slot recoveredSlot = inactiveSlot.get();
+            transferStudents(oldSlot, recoveredSlot);
+            deactivateSlot(oldSlot);
+            finalSlot = recoverSlot(recoveredSlot, user);
+        } else {
+            updateSlotInPlace(oldSlot, request, user);
+            finalSlot = slotRepository.save(oldSlot);
+        }
+
+        return slotMapper.toSlotResponse(finalSlot, calculateUsedCapacity(finalSlot));
     }
 
     @Override
@@ -147,67 +163,127 @@ public class SlotServiceImpl implements SlotService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "No se encontró el turno"));
     }
 
-    private Slot buildSlot(CreateSlotRequest request) {
-        User user = getUserByIdOrThrowException(request.userId());
-        return new Slot(
+    private Slot buildSlot(CreateSlotRequest request, User user) {
+        Slot slot = new Slot(
                 request.dayOfWeek(),
                 request.startTime(),
                 calculateEndTime(user, request.startTime()),
                 user.getUserPreferences().getSlotCapacity(),
                 user,
+                new ArrayList<>()
+        );
+        LocalDate firstDate = getNextDateOfDayOfWeek(request.dayOfWeek());
+        slot.setSpecificSlots(
                 createSpecificSlots(
-                        request,
-                        user.getUserPreferences().getSlotDurationMinutes(),
-                        user.getUserPreferences().getSlotCapacity()
+                        slot,
+                        firstDate,
+                        user.getUserPreferences().getSlotDurationMinutes()
                 )
         );
+
+        return slot;
+    }
+
+    private List<SpecificSlot> createSpecificSlotsFromToday(
+            Slot slot,
+            User user
+    ) {
+        LocalDate firstDate = getNextDateOfDayOfWeek(slot.getDayOfWeek());
+        long duration = user.getUserPreferences().getSlotDurationMinutes();
+
+        return createSpecificSlots(slot, firstDate, duration);
     }
 
     private List<SpecificSlot> createSpecificSlots(
-            CreateSlotRequest request,
-            long slotDurationMinutes,
-            byte slotCapacity
+            Slot slot,
+            LocalDate date,
+            long slotDurationMinutes
     ) {
         List<SpecificSlot> specificSlots = new ArrayList<>();
-        LocalDate date = getNextDateOfDayOfWeek(request);
         LocalDate endDate = date.plusMonths(2);
 
         while (date.isBefore(endDate) || date.isEqual(endDate)) {
-            specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes));
+            specificSlots.add(buildSpecificSlot(slot, date, slotDurationMinutes));
             date = date.plusWeeks(1);
         }
 
         return specificSlots;
     }
 
+    private void deactivateSlot(Slot slot) {
+        deleteFutureSpecificSlotsPhysically(slot);
+        slot.setActive(false);
+        slotRepository.save(slot);
+    }
+
     private SpecificSlot buildSpecificSlot(
-            CreateSlotRequest request,
+            Slot slot,
             LocalDate startDate,
-            byte slotCapacity,
             long slotDurationMinutes
     ) {
         return new SpecificSlot(
                 startDate,
-                slotCapacity,
-                request.startTime(),
-                request.startTime().plusMinutes(slotDurationMinutes),
+                slot.getCapacity(),
+                slot.getStartTime(),
+                slot.getStartTime().plusMinutes(slotDurationMinutes),
                 SpecificSlotStatus.CREATED
         );
     }
 
-    private static LocalDate getNextDateOfDayOfWeek(CreateSlotRequest request) {
-        return LocalDate.now().with(TemporalAdjusters.next(request.dayOfWeek()));
+    private static LocalDate getNextDateOfDayOfWeek(DayOfWeek dayOfWeek) {
+        return LocalDate.now().with(TemporalAdjusters.next(dayOfWeek));
     }
 
     private User getUserByIdOrThrowException(UUID userId) {
         return userService.getUserByIdOrThrowException(userId);
     }
 
-    private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
+    private void validateNoActiveConflicts(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
         if (slotRepository.existsWithinRange(startTime, dayOfWeek, excludedSlotId)) {
-            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
+            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y el rango de horario ingresado");
         }
     }
+
+    private Optional<Slot> findInactiveExactSlot(User user, DayOfWeek dayOfWeek, LocalTime startTime) {
+        return slotRepository.findAllByUserAndOptionalDayOfWeek(user, dayOfWeek)
+                .stream()
+                .filter(slot ->
+                        !slot.isActive()
+                                && slot.getStartTime().equals(startTime)
+                )
+                .findFirst();
+    }
+
+    private Slot recoverSlot(Slot slot, User user) {
+        slot.setActive(true);
+
+        deleteFutureSpecificSlotsPhysically(slot);
+
+        slot.getSpecificSlots().addAll(
+                createSpecificSlotsFromToday(slot, user)
+        );
+
+        return slotRepository.save(slot);
+    }
+
+    private void transferStudents(Slot from, Slot to) {
+        to.getStudents().addAll(from.getStudents());
+    }
+
+    private void updateSlotInPlace(
+            Slot slot,
+            UpdateSlotRequest request,
+            User user
+    ) {
+        slot.setStartTime(request.startTime());
+        slot.setEndTime(calculateEndTime(user, request.startTime()));
+
+        slot.getSpecificSlots().clear();
+        slot.getSpecificSlots().addAll(
+                createSpecificSlotsFromToday(slot, user)
+        );
+    }
+
 
     private LocalTime calculateEndTime(User user, LocalTime startTime) {
         return startTime.plusMinutes(user.getUserPreferences().getSlotDurationMinutes());
