@@ -76,7 +76,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public List<CalendarResponse> getCalendarView(UUID userId, CalendarViewType viewType, LocalDate date) {
+    public CalendarResponse getCalendarView(UUID userId, CalendarViewType viewType, LocalDate date) {
         return userService.getCalendar(
                 userId,
                 viewType,

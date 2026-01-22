@@ -8,10 +8,9 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse.SpecificSlotResponseStatus.calculateStatus;
 
 public abstract class CalendarViewBuilder {
 
@@ -21,17 +20,17 @@ public abstract class CalendarViewBuilder {
         this.specificSlotService = specificSlotService;
     }
 
-    public List<CalendarResponse> getCalendarView(User user, LocalDate date) {
-        List<CalendarResponse> calendarResponses = new ArrayList<>();
+    public CalendarResponse getCalendarView(User user, LocalDate date) {
+        List<SpecificSlot> specificSlots = getSpecificSlots(user, date);
+        List<CalendarResponse.Day> days = getDaysWhereUserHasAtLeastOneSlot(specificSlots);
+        List<CalendarResponse.SlotTime> times = getTimesWhereUserHasAtLeastOneSlot(specificSlots);
+        SpecificSlotResponse[][] calendar = buildCalendarWithSlotsByDayAndTime(times, days, specificSlots);
 
-        getSpecificSlots(user, date)
-                .stream()
-                .collect(Collectors.groupingBy(SpecificSlot::getSlotDate))
-                .forEach((dateKey, specificSlot) -> calendarResponses.add(
-                        buildCalendarResponse(specificSlot, dateKey)
-                ));
-
-        return calendarResponses.stream().sorted(Comparator.comparingInt(CalendarResponse::numberOfDay)).toList();
+        return new CalendarResponse(
+                days,
+                times,
+                calendar
+        );
     }
 
     protected abstract LocalDate getStartDate(LocalDate date);
@@ -46,17 +45,6 @@ public abstract class CalendarViewBuilder {
         );
     }
 
-    private CalendarResponse buildCalendarResponse(List<SpecificSlot> specificSlots, LocalDate date) {
-        return new CalendarResponse(
-                date.getDayOfWeek(),
-                date.getDayOfMonth(),
-                specificSlots
-                        .stream()
-                        .map(CalendarViewBuilder::buildSpecificSlotResponse)
-                        .toList()
-        );
-    }
-
     private static SpecificSlotResponse buildSpecificSlotResponse(SpecificSlot specificSlot) {
         return new SpecificSlotResponse(
                 specificSlot.getId(),
@@ -64,6 +52,7 @@ public abstract class CalendarViewBuilder {
                 specificSlot.getEndTime(),
                 specificSlot.getCapacity(),
                 getSpecificSlotUsedCapacity(specificSlot),
+                calculateStatus(specificSlot),
                 getStudentsList(specificSlot)
         );
     }
@@ -86,6 +75,47 @@ public abstract class CalendarViewBuilder {
                 specificSlotDetail.getStudent().getName() + " " + specificSlotDetail.getStudent().getLastname(),
                 specificSlotDetail.getStatus()
         );
+    }
+
+    private static SpecificSlotResponse[][] buildCalendarWithSlotsByDayAndTime(List<CalendarResponse.SlotTime> times, List<CalendarResponse.Day> days, List<SpecificSlot> specificSlots) {
+        SpecificSlotResponse[][] calendar = new SpecificSlotResponse[times.size()][days.size()];
+        for (SpecificSlot specificSlot : specificSlots) {
+            int dayIndex = getDayIndex(specificSlot, days);
+            int timeIndex = getTimeIndex(specificSlot, times);
+
+            calendar[timeIndex][dayIndex] = buildSpecificSlotResponse(specificSlot);
+        }
+        return calendar;
+    }
+
+    private static int getTimeIndex(SpecificSlot specificSlot, List<CalendarResponse.SlotTime> times) {
+        return times.indexOf(new CalendarResponse.SlotTime(
+                specificSlot.getStartTime(),
+                specificSlot.getEndTime()
+        ));
+    }
+
+    private static int getDayIndex(SpecificSlot specificSlot, List<CalendarResponse.Day> days) {
+        return days.indexOf(new CalendarResponse.Day(
+                specificSlot.getSlotDate().getDayOfWeek(),
+                specificSlot.getSlotDate().getDayOfMonth()
+        ));
+    }
+
+    private static List<CalendarResponse.SlotTime> getTimesWhereUserHasAtLeastOneSlot(List<SpecificSlot> specificSlots) {
+        return specificSlots.stream().map(specificSlot -> new CalendarResponse.SlotTime(
+                        specificSlot.getStartTime(),
+                        specificSlot.getEndTime()
+                ))
+                .distinct().toList();
+    }
+
+    private static List<CalendarResponse.Day> getDaysWhereUserHasAtLeastOneSlot(List<SpecificSlot> specificSlots) {
+        return specificSlots.stream().map(specificSlot -> new CalendarResponse.Day(
+                        specificSlot.getSlotDate().getDayOfWeek(),
+                        specificSlot.getSlotDate().getDayOfMonth()
+                ))
+                .distinct().toList();
     }
 
 }

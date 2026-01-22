@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -18,7 +17,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarViewFactory calendarViewFactory;
 
     @Override
-    public List<CalendarResponse> getUserCalendar(User user, CalendarViewType viewType, LocalDate date) {
+    public CalendarResponse getUserCalendar(User user, CalendarViewType viewType, LocalDate date) {
         return calendarViewFactory
                 .getCalendarViewBuilder(viewType)
                 .getCalendarView(user, date);
