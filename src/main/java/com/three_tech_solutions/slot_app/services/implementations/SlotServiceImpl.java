@@ -249,6 +249,7 @@ public class SlotServiceImpl implements SlotService {
 
     private void transferStudents(Slot from, Slot to) {
         to.getStudents().addAll(from.getStudents());
+        from.getStudents().clear();
     }
 
     private void updateSlotSchedule(
