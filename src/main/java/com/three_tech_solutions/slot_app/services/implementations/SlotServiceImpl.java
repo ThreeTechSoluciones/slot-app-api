@@ -77,19 +77,19 @@ public class SlotServiceImpl implements SlotService {
     public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest request) {
         Slot oldSlot = getSlotByIdOrThrowException(slotId);
         User user = oldSlot.getUser();
-
         validateStartTimeIsDifferent(oldSlot, request);
-        validateNoActiveConflicts(oldSlot.getDayOfWeek(), request.startTime(), calculateEndTime(user, request.startTime()), null);
+        validateNoActiveConflicts(oldSlot.getDayOfWeek(), request.startTime(), calculateEndTime(user, request.startTime()), slotId);
         Optional<Slot> inactiveSlot = findInactiveExactSlot(user, oldSlot.getDayOfWeek(), request.startTime());
         Slot finalSlot;
 
         if (inactiveSlot.isPresent()) {
             Slot recoveredSlot = inactiveSlot.get();
             transferStudents(oldSlot, recoveredSlot);
-            deactivateSlot(oldSlot);
+            inactivateSlot(oldSlot);
+            slotRepository.save(oldSlot);
             finalSlot = recoverSlot(recoveredSlot, user);
         } else {
-            updateSlotInPlace(oldSlot, request, user);
+            updateSlotSchedule(oldSlot, request, user);
             finalSlot = slotRepository.save(oldSlot);
         }
 
@@ -100,12 +100,10 @@ public class SlotServiceImpl implements SlotService {
     @Transactional
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-
         validateSlotIsActive(slot);
         validateSlotHasNoStudents(slot);
-        deleteFutureSpecificSlotsPhysically(slot);
+        inactivateSlot(slot);
         logicallyDeleteSpecificSlots(slot);
-        slot.setActive(false);
         slotRepository.save(slot);
     }
 
@@ -172,14 +170,7 @@ public class SlotServiceImpl implements SlotService {
                 user,
                 new ArrayList<>()
         );
-        LocalDate firstDate = getNextDateOfDayOfWeek(request.dayOfWeek());
-        slot.setSpecificSlots(
-                createSpecificSlots(
-                        slot,
-                        firstDate,
-                        user.getUserPreferences().getSlotDurationMinutes()
-                )
-        );
+        slot.setSpecificSlots(createSpecificSlotsFromToday(slot, user));
 
         return slot;
     }
@@ -210,10 +201,9 @@ public class SlotServiceImpl implements SlotService {
         return specificSlots;
     }
 
-    private void deactivateSlot(Slot slot) {
+    private void inactivateSlot(Slot slot) {
         deleteFutureSpecificSlotsPhysically(slot);
         slot.setActive(false);
-        slotRepository.save(slot);
     }
 
     private SpecificSlot buildSpecificSlot(
@@ -250,9 +240,6 @@ public class SlotServiceImpl implements SlotService {
 
     private Slot recoverSlot(Slot slot, User user) {
         slot.setActive(true);
-
-        deleteFutureSpecificSlotsPhysically(slot);
-
         slot.getSpecificSlots().addAll(
                 createSpecificSlotsFromToday(slot, user)
         );
@@ -264,7 +251,7 @@ public class SlotServiceImpl implements SlotService {
         to.getStudents().addAll(from.getStudents());
     }
 
-    private void updateSlotInPlace(
+    private void updateSlotSchedule(
             Slot slot,
             UpdateSlotRequest request,
             User user
