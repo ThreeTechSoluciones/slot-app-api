@@ -21,7 +21,7 @@ public class Slot {
     private byte capacity;
     @ManyToOne
     private User user;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "slot_id")
     private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
