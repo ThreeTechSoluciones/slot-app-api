@@ -1,4 +1,4 @@
-package com.three_tech_solutions.slot_app.controllers.interfaces;
+package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
