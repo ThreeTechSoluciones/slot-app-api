@@ -44,6 +44,8 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     @Override
     public void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot) {
         SpecificSlot specificSlot = getSpecificSlotByIdOrThrowException(specificSlotId);
+        validateIfSpecificSlotIsNotAlreadyCanceled(specificSlot);
+
         if (studentsMustRecoverSlot) {
             specificSlot
                     .getSpecificSlotDetails()
@@ -55,6 +57,12 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
         specificSlot.setStatus(CANCELED);
         specificSlot.setSpecificSlotDetails(Collections.emptyList());
         specificSlotRepository.save(specificSlot);
+    }
+
+    private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {
+        if (specificSlot.getStatus() == CANCELED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El turno ya se encuentra cancelado");
+        }
     }
 
     private void registerAbsenceForStudent(UUID specificSlotId, SpecificSlotDetail specificSlotDetail) {
