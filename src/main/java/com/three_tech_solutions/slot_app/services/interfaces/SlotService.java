@@ -26,4 +26,9 @@ public interface SlotService {
     void deleteSlot(UUID slotId);
 
     List<StudentSlotResponse> getSlotsByStudent(Student student);
+
+    void validateFutureSpecificSlotsCapacity(User user, byte newCapacity);
+
+    void updateFutureSpecificSlotsCapacity(User user, byte newCapacity);
+
 }
