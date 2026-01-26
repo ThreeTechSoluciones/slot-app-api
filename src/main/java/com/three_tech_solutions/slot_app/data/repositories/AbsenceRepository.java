@@ -2,7 +2,6 @@ package com.three_tech_solutions.slot_app.data.repositories;
 
 import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.models.Absence;
-import com.three_tech_solutions.slot_app.data.models.Slot;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
