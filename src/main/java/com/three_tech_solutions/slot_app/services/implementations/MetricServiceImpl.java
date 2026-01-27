@@ -45,17 +45,16 @@ public class MetricServiceImpl implements MetricService {
 
     @Override
     public StudentsSummaryMetricsResponse getStudentsSummaryMetrics() {
-        List<Student> students = getAllStudents();
-        int activeStudentsCount = 0;
+        List<Student> activeStudents = getAllStudents()
+                .stream()
+                .filter(Student::isEnabled)
+                .toList();
+
+        int activeStudentsCount = activeStudents.size();
         int studentsOnTimeCount = 0;
         int studentsOutstandingCount = 0;
 
-        for (Student student : students) {
-
-            if (student.isEnabled()) {
-                activeStudentsCount++;
-            }
-
+        for (Student student : activeStudents) {
             switch (student.getStudentSituation()) {
                 case EN_TERMINO -> studentsOnTimeCount++;
                 case CON_DEUDA -> studentsOutstandingCount++;
@@ -63,11 +62,10 @@ public class MetricServiceImpl implements MetricService {
         }
 
         return new StudentsSummaryMetricsResponse(
-            activeStudentsCount,
-            studentsOnTimeCount,
-            studentsOutstandingCount
+                activeStudentsCount,
+                studentsOnTimeCount,
+                studentsOutstandingCount
         );
-
     }
 
     private List<MonthlyFee> getStudentMonthlyFees(UUID studentId) {
