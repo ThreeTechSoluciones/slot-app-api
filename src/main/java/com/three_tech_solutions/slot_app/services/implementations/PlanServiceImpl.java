@@ -77,9 +77,13 @@ public class PlanServiceImpl implements PlanService {
     public PlanResponse updatePlan(UUID planId, UpdatePlanRequest createPlanRequest) {
         return planRepository.findById(planId)
                 .map(plan -> {
-                    plan.setName(createPlanRequest.name());
-                    plan.setNumberOfDays(createPlanRequest.numberOfDays());
-                    return buildPlanResponse(planRepository.save(plan));
+                    try {
+                        plan.setName(createPlanRequest.name());
+                        plan.setNumberOfDays(createPlanRequest.numberOfDays());
+                        return buildPlanResponse(planRepository.save(plan));
+                    } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan con el nombre ingresado ya existe");
+                    }
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan ingresado no existe"));
     }
