@@ -13,4 +13,6 @@ public interface SpecificSlotService {
     SpecificSlot getSpecificSlotByIdOrThrowException(UUID specificSlotId);
 
     void saveSpecificSlot(SpecificSlot specificSlot);
+
+    void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot);
 }

@@ -6,11 +6,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsRes
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
-import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
-import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
-import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
-import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
-import com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus;
+import com.three_tech_solutions.slot_app.data.enums.*;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
@@ -46,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
     private final MonthlyFeeService monthlyFeeService;
     private final SlotService slotService;
     private final PlanService planService;
-    private final SpecificSlotDetailServiceImpl specificSlotDetailService;
+    private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
 
     public StudentServiceImpl(
@@ -56,8 +52,8 @@ public class StudentServiceImpl implements StudentService {
             @Lazy MonthlyFeeService monthlyFeeService,
             @Lazy PlanService planService,
             @Lazy SlotService slotService,
-            SpecificSlotDetailServiceImpl specificSlotDetailService,
-            SpecificSlotService specificSlotService
+            SpecificSlotDetailService specificSlotDetailService,
+            @Lazy SpecificSlotService specificSlotService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
