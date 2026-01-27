@@ -9,7 +9,6 @@ import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.PlanRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

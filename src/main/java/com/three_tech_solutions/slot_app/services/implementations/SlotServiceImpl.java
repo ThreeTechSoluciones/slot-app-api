@@ -155,10 +155,6 @@ public class SlotServiceImpl implements SlotService {
         return studentService.getStudentByIdOrThrowExcepion(studentId);
     }
 
-    private static boolean startDateIsTodayOrAfter(SpecificSlot specificSlot) {
-        return specificSlot.getSlotDate().isEqual(LocalDate.now()) || specificSlot.getSlotDate().isAfter(LocalDate.now());
-    }
-
     private Slot getSlotByIdOrThrowException(UUID slotId) {
         return slotRepository.findById(slotId)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "No se encontró el turno"));
