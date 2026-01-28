@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreatePlanRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdatePriceRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.data.models.Plan;
@@ -66,6 +67,27 @@ public class PlanServiceImpl implements PlanService {
                 .toList();
     }
 
+    @Override
+    public void deletePlan(UUID planId) {
+        Plan plan = this.getPlanByIdOrThrowException(planId);
+        planRepository.delete(plan);
+    }
+
+    @Override
+    public PlanResponse updatePlan(UUID planId, UpdatePlanRequest createPlanRequest) {
+        return planRepository.findById(planId)
+                .map(plan -> {
+                    try {
+                        plan.setName(createPlanRequest.name());
+                        plan.setNumberOfDays(createPlanRequest.numberOfDays());
+                        return buildPlanResponse(planRepository.save(plan));
+                    } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan con el nombre ingresado ya existe");
+                    }
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan ingresado no existe"));
+    }
+
     private static void setEndDateToCurrentPriceIfNecessary(UpdatePriceRequest updatePriceRequest, Plan plan) {
         LocalDate today = LocalDate.now();
         if (updatePriceRequest.startDate().isBefore(today) || updatePriceRequest.startDate().isEqual(today)) {
@@ -108,11 +130,6 @@ public class PlanServiceImpl implements PlanService {
 
     private User getUser(CreatePlanRequest createPlanRequest) {
         return userService.getUserByIdOrThrowException(createPlanRequest.userId());
-    }
-    @Override
-    public void deletePlan(UUID planId) {
-        Plan plan = this.getPlanByIdOrThrowException(planId);
-        planRepository.delete(plan);
     }
 
 }
