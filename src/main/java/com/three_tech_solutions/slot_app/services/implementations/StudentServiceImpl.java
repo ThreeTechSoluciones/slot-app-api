@@ -126,22 +126,24 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest studentUpdated) {
-        validatePaymentDay(studentUpdated.getPaymentPlanName(), studentUpdated.getPaymentDay());
+    @Transactional
+    public StudentResponse updateStudent(UUID studentId, UpdateStudentRequest request) {
+        validatePaymentDay(request.getPaymentPlanName(), request.getPaymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
-                    if (planTypeIsBeginningOfMonth(studentUpdated.getPaymentPlanName())) {
-                        studentUpdated.setPaymentDay(null);
-                    }
-                    studentMapper.updateStudent(
-                            student,
-                            studentUpdated,
-                            getPlanByIdOrThrowException(studentUpdated.getPlanId())
-                    );
-                    studentRepository.save(student);
-                    return studentMapper.toStudentResponse(student);
+                    removePaymentDayIfNewPlanIsBeginningOfMonth(request);
+                    studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
+                    slotService.updateSlotsForStudent(request.getSlotIds(), student);
+
+                    return studentMapper.toStudentResponse(studentRepository.save(student));
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+    }
+
+    private void removePaymentDayIfNewPlanIsBeginningOfMonth(UpdateStudentRequest studentUpdated) {
+        if (planTypeIsBeginningOfMonth(studentUpdated.getPaymentPlanName())) {
+            studentUpdated.setPaymentDay(null);
+        }
     }
 
     @Override

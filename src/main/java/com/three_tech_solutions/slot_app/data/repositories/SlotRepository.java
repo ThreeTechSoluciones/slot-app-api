@@ -48,4 +48,20 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
         ORDER BY s.dayOfWeek ASC, s.startTime ASC
     """)
     List<Slot> findAllByStudentOrderByDayAndTime(@Param("student") Student student);
+
+    @Query("""
+        SELECT s
+        FROM Slot s
+        WHERE s.id NOT IN :slotIds
+            AND :student MEMBER OF s.students
+    """)
+    List<Slot> findSlotsWhereStudentIsRegistedAndNeedToBeRemoved(List<UUID> slotIds, Student student);
+
+    @Query("""
+        SELECT s
+        FROM Slot s
+        WHERE s.id IN :slotIds
+            AND :student NOT MEMBER OF s.students
+    """)
+    List<Slot> findAllWhereStudentIsNotRegisted(List<UUID> slotIds, Student student);
 }
