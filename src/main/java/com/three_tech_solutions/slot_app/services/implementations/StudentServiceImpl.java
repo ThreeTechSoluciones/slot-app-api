@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
     private final MonthlyFeeService monthlyFeeService;
     private final SlotService slotService;
     private final PlanService planService;
-    private final SpecificSlotDetailServiceImpl specificSlotDetailService;
+    private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
 
     public StudentServiceImpl(
@@ -52,8 +52,8 @@ public class StudentServiceImpl implements StudentService {
             @Lazy MonthlyFeeService monthlyFeeService,
             @Lazy PlanService planService,
             @Lazy SlotService slotService,
-            SpecificSlotDetailServiceImpl specificSlotDetailService,
-            SpecificSlotService specificSlotService
+            SpecificSlotDetailService specificSlotDetailService,
+            @Lazy SpecificSlotService specificSlotService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;

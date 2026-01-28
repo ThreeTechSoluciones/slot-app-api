@@ -107,6 +107,39 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
+    public void validateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
+        getFutureSpecificSlots(user).stream()
+                .filter(specificSlot ->
+                        specificSlot.getSpecificSlotDetails().size() > newCapacity
+                )
+                .findAny()
+                .ifPresent(s -> {
+                    throw new ResponseStatusException(
+                            BAD_REQUEST,
+                            "La nueva capacidad es menor a la cantidad de alumnos inscriptos en uno o más turnos futuros"
+                    );
+                });
+    }
+
+    @Override
+    public void updateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
+
+        getFutureSpecificSlots(user)
+                .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
+    }
+
+    private List<SpecificSlot> getFutureSpecificSlots(User user) {
+        LocalDate today = LocalDate.now();
+        return user.getSlots().stream()
+                .flatMap(slot -> slot.getSpecificSlots().stream())
+                .filter(specificSlot ->
+                        !specificSlot.getSlotDate().isBefore(today)
+                )
+                .toList();
+    }
+
+
+    @Override
     public void updateSlotsForStudent(List<UUID> slotIds, Student student) {
         List<Slot> slotsWhereToRemoveStudent = slotRepository.findSlotsWhereStudentIsRegistedAndNeedToBeRemoved(slotIds, student);
         List<Slot> slotsWhereToAddStudent = slotRepository.findAllWhereStudentIsNotRegisted(slotIds, student);

@@ -28,4 +28,8 @@ public interface SlotService {
     List<StudentSlotResponse> getSlotsByStudent(Student student);
 
     void updateSlotsForStudent(List<UUID> slotIds, Student student);
+
+    void validateFutureSpecificSlotsCapacity(User user, byte newCapacity);
+
+    void updateFutureSpecificSlotsCapacity(User user, byte newCapacity);
 }

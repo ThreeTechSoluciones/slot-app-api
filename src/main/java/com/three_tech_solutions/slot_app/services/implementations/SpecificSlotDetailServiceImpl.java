@@ -1,8 +1,8 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.controllers.interfaces.SpecificSlotDetailRepository;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
+import com.three_tech_solutions.slot_app.data.repositories.SpecificSlotDetailRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,7 @@ public class SpecificSlotDetailServiceImpl implements SpecificSlotDetailService 
         return specificSlotDetailRepository.findBySpecificSlotIdAndStudentId(specificSlotId, studentId);
     }
 
+    @Override
     public void registerAbsence(SpecificSlotDetail specificSlotDetail) {
         specificSlotDetail.setStatus(SpecificSlotDetailStatus.ABSENCE);
         specificSlotDetailRepository.save(specificSlotDetail);
