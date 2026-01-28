@@ -35,6 +35,4 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     );
 
     boolean existsByDni(String dni);
-
-    boolean existsByPaymentPlan_Plan_Id(UUID planId);
 }

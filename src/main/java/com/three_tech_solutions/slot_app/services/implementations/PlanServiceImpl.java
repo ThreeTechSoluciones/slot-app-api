@@ -9,6 +9,7 @@ import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.PlanRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.PlanService;
+import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,10 +27,12 @@ public class PlanServiceImpl implements PlanService {
 
     private final UserService userService;
     private final PlanRepository planRepository;
+    private final StudentService studentService;
 
-    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository) {
+    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository, StudentService studentService) {
         this.userService = userService;
         this.planRepository = planRepository;
+        this.studentService = studentService;
     }
 
     @Override
@@ -70,6 +73,7 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public void deletePlan(UUID planId) {
         Plan plan = this.getPlanByIdOrThrowException(planId);
+        validatePlanIsNotUsed(planId);
         planRepository.delete(plan);
     }
 
@@ -132,4 +136,12 @@ public class PlanServiceImpl implements PlanService {
         return userService.getUserByIdOrThrowException(createPlanRequest.userId());
     }
 
+    private void validatePlanIsNotUsed(UUID planId) {
+        if (studentService.isPlanUsed(planId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar el plan porque posee estudiantes asociados"
+            );
+        }
+    }
 }
