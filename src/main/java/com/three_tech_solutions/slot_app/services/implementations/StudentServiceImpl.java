@@ -246,10 +246,6 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
-    public boolean isPlanUsed(UUID planId) {
-        return studentRepository.existsByPaymentPlan_Plan_Id(planId);
-    }
-
     private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
         Student student = getStudentByIdOrThrowExcepion(studentId);
         buildStudentAbsence(specificSlotDetail, student);

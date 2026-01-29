@@ -44,6 +44,4 @@ public interface StudentService {
     void registerStudentAbsenceForSpecificSlot(UUID studentId, UUID specificSlotId);
 
     void recoverSlot(UUID studentId, UUID specificSlotId);
-
-    boolean isPlanUsed (UUID planId);
 }
