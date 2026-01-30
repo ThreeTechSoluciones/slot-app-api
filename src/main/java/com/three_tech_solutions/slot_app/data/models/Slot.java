@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -38,4 +39,33 @@ public class Slot {
         this.user = user;
         this.specificSlots = specificSlots;
     }
+
+    public void removeStudent(Student student) {
+        this.students.remove(student);
+        this.specificSlots
+                .stream().filter(Slot::isFutureSpecificSlot)
+                .forEach(specificSlot ->
+                        specificSlot
+                            .getSpecificSlotDetails()
+                            .removeIf(detail -> detail.getStudent().equals(student))
+                );
+    }
+
+    public void addStudent(Student student) {
+        this.getStudents().add(student);
+        this.getSpecificSlots()
+                .stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .forEach(specificSlot -> {
+                    List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
+                    slotDetails.add(new SpecificSlotDetail(student));
+                });
+    }
+
+    private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {
+        LocalDate today = LocalDate.now();
+        return specificSlot.getSlotDate().isEqual(today) || specificSlot.getSlotDate().isAfter(today);
+    }
+
+
 }

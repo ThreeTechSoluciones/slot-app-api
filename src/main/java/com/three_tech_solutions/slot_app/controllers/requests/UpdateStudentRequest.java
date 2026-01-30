@@ -1,13 +1,11 @@
 package com.three_tech_solutions.slot_app.controllers.requests;
 
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 @Data
 
@@ -31,5 +29,7 @@ public class UpdateStudentRequest {
     String pathologies;
     @NotNull(message = "Debe ingresar un plan")
     UUID planId;
+    @NotEmpty(message = "El alumno debe tener al menos un horario asignado")
+    private List<UUID> slotIds;
 
 }

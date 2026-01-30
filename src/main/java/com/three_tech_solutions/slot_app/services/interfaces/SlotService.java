@@ -4,13 +4,13 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
-import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
+import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 
 import java.time.DayOfWeek;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public interface SlotService {
     void createSlot(CreateSlotRequest request);
@@ -26,4 +26,10 @@ public interface SlotService {
     void deleteSlot(UUID slotId);
 
     List<StudentSlotResponse> getSlotsByStudent(Student student);
+
+    void updateSlotsForStudent(List<UUID> slotIds, Student student);
+
+    void validateFutureSpecificSlotsCapacity(User user, byte newCapacity);
+
+    void updateFutureSpecificSlotsCapacity(User user, byte newCapacity);
 }

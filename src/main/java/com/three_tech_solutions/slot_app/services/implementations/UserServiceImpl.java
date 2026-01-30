@@ -9,6 +9,7 @@ import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -88,14 +89,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest) {
-        this.userRepository.findById(userId)
-                .ifPresentOrElse(
-                        (user) -> updateUserCapacityAndSaveIt(updateUserCapacityRequest, user),
-                        () -> {
-                            throw new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario");
-                        }
-                );
+    @Transactional
+    public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest request) {
+        User user = getUserByIdOrThrowException(userId);
+        byte newCapacity = request.capacity();
+
+        slotService.validateFutureSpecificSlotsCapacity(user, newCapacity);
+        user.getUserPreferences().setSlotCapacity(newCapacity);
+        slotService.updateFutureSpecificSlotsCapacity(user, newCapacity);
+        userRepository.save(user);
     }
 
     @Override
@@ -115,10 +117,5 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.findById(userId)
                 .map(userPreferencesMapper::toUserPreferencesResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
-    }
-
-    private void updateUserCapacityAndSaveIt(UpdateUserCapacityRequest updateUserCapacityRequest, User user) {
-        user.getUserPreferences().setSlotCapacity(updateUserCapacityRequest.capacity());
-        userRepository.save(user);
     }
 }
