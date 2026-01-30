@@ -5,16 +5,20 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
-import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
+import com.three_tech_solutions.slot_app.data.models.Slot;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
+import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,6 +36,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Service
+@Slf4j
 public class SlotServiceImpl implements SlotService {
     private final SlotRepository slotRepository;
     private final UserService userService;
@@ -101,6 +106,51 @@ public class SlotServiceImpl implements SlotService {
                 .toList();
     }
 
+    @Override
+    public void validateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
+        getFutureSpecificSlots(user).stream()
+                .filter(specificSlot ->
+                        specificSlot.getSpecificSlotDetails().size() > newCapacity
+                )
+                .findAny()
+                .ifPresent(s -> {
+                    throw new ResponseStatusException(
+                            BAD_REQUEST,
+                            "La nueva capacidad es menor a la cantidad de alumnos inscriptos en uno o más turnos futuros"
+                    );
+                });
+    }
+
+    @Override
+    public void updateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
+
+        getFutureSpecificSlots(user)
+                .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
+    }
+
+    private List<SpecificSlot> getFutureSpecificSlots(User user) {
+        LocalDate today = LocalDate.now();
+        return user.getSlots().stream()
+                .flatMap(slot -> slot.getSpecificSlots().stream())
+                .filter(specificSlot ->
+                        !specificSlot.getSlotDate().isBefore(today)
+                )
+                .toList();
+    }
+
+
+    @Override
+    public void updateSlotsForStudent(List<UUID> slotIds, Student student) {
+        List<Slot> slotsWhereToRemoveStudent = slotRepository.findSlotsWhereStudentIsRegistedAndNeedToBeRemoved(slotIds, student);
+        List<Slot> slotsWhereToAddStudent = slotRepository.findAllWhereStudentIsNotRegisted(slotIds, student);
+
+        slotsWhereToRemoveStudent.forEach(slot -> slot.removeStudent(student));
+        slotsWhereToAddStudent.forEach(slot -> slot.addStudent(student));
+
+        slotsWhereToRemoveStudent.addAll(slotsWhereToAddStudent);
+        slotRepository.saveAll(slotsWhereToRemoveStudent);
+    }
+
     private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {
         return slotRepository.findAllByUserAndOptionalDayOfWeek(user, dayOfWeek);
     }
@@ -136,10 +186,6 @@ public class SlotServiceImpl implements SlotService {
 
     private Student getStudent(UUID studentId) {
         return studentService.getStudentByIdOrThrowExcepion(studentId);
-    }
-
-    private static boolean startDateIsTodayOrAfter(SpecificSlot specificSlot) {
-        return specificSlot.getSlotDate().isEqual(LocalDate.now()) || specificSlot.getSlotDate().isAfter(LocalDate.now());
     }
 
     private Slot getSlotByIdOrThrowException(UUID slotId) {
@@ -223,8 +269,7 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.findById(slotId)
                 .ifPresentOrElse(slot -> {
                     try {
-                        addStudentToSlot(student, slot);
-                        createSpecificSlotWithStudent(student, slot);
+                        slot.addStudent(student);
                         slotRepository.save(slot);
                     } catch (DataIntegrityViolationException e) {
                         throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
@@ -233,20 +278,6 @@ public class SlotServiceImpl implements SlotService {
                     }
                 }, () -> {
                     throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
-                });
-    }
-
-    private static void addStudentToSlot(Student student, Slot slot) {
-        slot.getStudents().add(student);
-    }
-
-    private static void createSpecificSlotWithStudent(Student student, Slot slot) {
-        slot.getSpecificSlots()
-                .stream()
-                .filter(SlotServiceImpl::startDateIsTodayOrAfter)
-                .forEach(specificSlot -> {
-                    List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
-                    slotDetails.add(new SpecificSlotDetail(student));
                 });
     }
 
