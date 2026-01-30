@@ -70,7 +70,13 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public void deletePlan(UUID planId) {
         Plan plan = this.getPlanByIdOrThrowException(planId);
-        planRepository.delete(plan);
+        try {
+            planRepository.delete(plan);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se pudo eliminar el plan porque posee alumnos");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo eliminar el plan");
+        }
     }
 
     @Override
@@ -131,5 +137,4 @@ public class PlanServiceImpl implements PlanService {
     private User getUser(CreatePlanRequest createPlanRequest) {
         return userService.getUserByIdOrThrowException(createPlanRequest.userId());
     }
-
 }
