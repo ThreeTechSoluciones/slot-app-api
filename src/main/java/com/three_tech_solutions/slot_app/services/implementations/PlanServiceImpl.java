@@ -91,10 +91,6 @@ public class PlanServiceImpl implements PlanService {
         if (updatePlanRequest.startDate() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar la fecha de inicio del nuevo precio");
         }
-
-        if (updatePlanRequest.startDate().isBefore(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio del nuevo precio no puede ser menor a la actual");
-        }
     }
 
     private static void setEndDateToCurrentPriceIfNecessary(UpdatePlanRequest updatePlanRequest, Plan plan) {
