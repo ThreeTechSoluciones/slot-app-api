@@ -2,13 +2,11 @@ package com.three_tech_solutions.slot_app.data.mappers;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
-import com.three_tech_solutions.slot_app.data.models.PaymentPlan;
-import com.three_tech_solutions.slot_app.data.models.Plan;
-import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.models.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,10 +44,12 @@ public class StudentMapper {
         );
     }
 
-    public List<StudentResponse> toResponseList(List<Student> students) {
-        return students.stream()
-                .map(this::toStudentResponse)
-                .toList();
+    public static SpecificSlotResponse.Student buildStudentResponse(SpecificSlotDetail specificSlotDetail) {
+        return new SpecificSlotResponse.Student(
+                specificSlotDetail.getStudent().getId(),
+                specificSlotDetail.getStudent().getName() + " " + specificSlotDetail.getStudent().getLastname(),
+                specificSlotDetail.getStatus()
+        );
     }
 
     public StudentDetailsResponse toStudentDetailsResponse(Student student, List<StudentSlotResponse> slots, Integer age) {

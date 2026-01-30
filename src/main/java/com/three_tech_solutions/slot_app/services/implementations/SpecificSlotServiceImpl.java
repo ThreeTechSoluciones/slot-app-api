@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
-import com.three_tech_solutions.slot_app.components.calendar_view_builder.CalendarViewBuilder;
 import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -68,7 +68,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
         return specificSlotDetailService
                 .getSpecificSlotDetailsBySpecificSlot(specificSlotId, filter)
                 .stream()
-                .map(CalendarViewBuilder::buildStudentResponse)
+                .map(StudentMapper::buildStudentResponse)
                 .toList();
     }
 
