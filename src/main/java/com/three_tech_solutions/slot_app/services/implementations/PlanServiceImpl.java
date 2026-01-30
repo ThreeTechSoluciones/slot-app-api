@@ -2,7 +2,6 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdatePlanRequest;
-import com.three_tech_solutions.slot_app.controllers.requests.UpdatePriceRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Price;
@@ -49,16 +48,6 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public PlanResponse updatePrice(UUID planId, UpdatePriceRequest updatePriceRequest) {
-        Plan plan = this.getPlanByIdOrThrowException(planId);
-        setEndDateToCurrentPriceIfNecessary(updatePriceRequest, plan);
-        plan.getPrices().addFirst(new Price(updatePriceRequest.amount(), updatePriceRequest.startDate()));
-        return buildPlanResponse(
-                this.planRepository.save(plan)
-        );
-    }
-
-    @Override
     public List<PlanResponse> getPlansByUserAndName(User user, String planName) {
         return this.planRepository
                 .findAllByUserAndPlanName(user, planName)
@@ -74,12 +63,18 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public PlanResponse updatePlan(UUID planId, UpdatePlanRequest createPlanRequest) {
+    public PlanResponse updatePlan(UUID planId, UpdatePlanRequest updatePlanRequest) {
         return planRepository.findById(planId)
                 .map(plan -> {
                     try {
-                        plan.setName(createPlanRequest.name());
-                        plan.setNumberOfDays(createPlanRequest.numberOfDays());
+                        if (mustUpdatePrice(updatePlanRequest)) {
+                            validateStartDateOfNewPrice(updatePlanRequest);
+                            setEndDateToCurrentPriceIfNecessary(updatePlanRequest, plan);
+                            plan.getPrices().addFirst(new Price(updatePlanRequest.amount(), updatePlanRequest.startDate()));
+                        }
+
+                        plan.setName(updatePlanRequest.name());
+                        plan.setNumberOfDays(updatePlanRequest.numberOfDays());
                         return buildPlanResponse(planRepository.save(plan));
                     } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan con el nombre ingresado ya existe");
@@ -88,9 +83,23 @@ public class PlanServiceImpl implements PlanService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan ingresado no existe"));
     }
 
-    private static void setEndDateToCurrentPriceIfNecessary(UpdatePriceRequest updatePriceRequest, Plan plan) {
+    private static boolean mustUpdatePrice(UpdatePlanRequest updatePlanRequest) {
+        return updatePlanRequest.amount() != null;
+    }
+
+    private static void validateStartDateOfNewPrice(UpdatePlanRequest updatePlanRequest) {
+        if (updatePlanRequest.startDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar la fecha de inicio del nuevo precio");
+        }
+
+        if (updatePlanRequest.startDate().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio del nuevo precio no puede ser menor a la actual");
+        }
+    }
+
+    private static void setEndDateToCurrentPriceIfNecessary(UpdatePlanRequest updatePlanRequest, Plan plan) {
         LocalDate today = LocalDate.now();
-        if (updatePriceRequest.startDate().isBefore(today) || updatePriceRequest.startDate().isEqual(today)) {
+        if (updatePlanRequest.startDate().isBefore(today) || updatePlanRequest.startDate().isEqual(today)) {
             plan.getCurrentPrice().setEndDate(today);
         }
     }
