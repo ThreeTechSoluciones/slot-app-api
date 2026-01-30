@@ -69,7 +69,7 @@ public abstract class CalendarViewBuilder {
         return specificSlot.getSpecificSlotDetails().stream().map(CalendarViewBuilder::buildStudentResponse).toList();
     }
 
-    private static SpecificSlotResponse.Student buildStudentResponse(SpecificSlotDetail specificSlotDetail) {
+    public static SpecificSlotResponse.Student buildStudentResponse(SpecificSlotDetail specificSlotDetail) {
         return new SpecificSlotResponse.Student(
                 specificSlotDetail.getStudent().getId(),
                 specificSlotDetail.getStudent().getName() + " " + specificSlotDetail.getStudent().getLastname(),
