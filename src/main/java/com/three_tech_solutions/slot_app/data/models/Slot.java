@@ -21,7 +21,7 @@ public class Slot {
     private byte capacity;
     @ManyToOne
     private User user;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "slot_id")
     private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
