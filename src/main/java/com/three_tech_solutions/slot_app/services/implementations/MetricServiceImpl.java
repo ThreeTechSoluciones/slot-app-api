@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.responses.StudentPaymentsMetricResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentsSummaryMetricsResponse;
+import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.services.interfaces.MetricService;
@@ -45,26 +46,35 @@ public class MetricServiceImpl implements MetricService {
 
     @Override
     public StudentsSummaryMetricsResponse getStudentsSummaryMetrics() {
-        List<Student> activeStudents = getAllStudents()
-                .stream()
-                .filter(Student::isEnabled)
-                .toList();
+        List<Student> students = getAllStudents();
 
-        int activeStudentsCount = activeStudents.size();
-        int studentsOnTimeCount = 0;
-        int studentsOutstandingCount = 0;
+        int activeStudentsCount = 0;
+        int activeStudentsOnTimeCount = 0;
+        int activeStudentsWithDebtCount = 0;
+        int inactiveStudentsWithDebtCount = 0;
 
-        for (Student student : activeStudents) {
-            switch (student.getStudentSituation()) {
-                case EN_TERMINO -> studentsOnTimeCount++;
-                case CON_DEUDA -> studentsOutstandingCount++;
+        for (Student student : students) {
+
+            if (student.isEnabled()) {
+                activeStudentsCount++;
+
+                switch (student.getStudentSituation()) {
+                    case EN_TERMINO -> activeStudentsOnTimeCount++;
+                    case CON_DEUDA -> activeStudentsWithDebtCount++;
+                }
+
+            } else {
+                if (student.getStudentSituation() == StudentSituation.CON_DEUDA) {
+                    inactiveStudentsWithDebtCount++;
+                }
             }
         }
 
         return new StudentsSummaryMetricsResponse(
                 activeStudentsCount,
-                studentsOnTimeCount,
-                studentsOutstandingCount
+                activeStudentsOnTimeCount,
+                activeStudentsWithDebtCount,
+                inactiveStudentsWithDebtCount
         );
     }
 
