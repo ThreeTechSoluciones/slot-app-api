@@ -69,7 +69,7 @@ public class PlanServiceImpl implements PlanService {
                     try {
                         if (mustUpdatePrice(updatePlanRequest)) {
                             validateStartDateOfNewPrice(updatePlanRequest);
-                            setEndDateToCurrentPriceIfNecessary(updatePlanRequest, plan);
+                            setEndDateToCurrentPrice(updatePlanRequest, plan);
                             plan.getPrices().addFirst(new Price(updatePlanRequest.amount(), updatePlanRequest.startDate()));
                         }
 
@@ -91,13 +91,18 @@ public class PlanServiceImpl implements PlanService {
         if (updatePlanRequest.startDate() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe ingresar la fecha de inicio del nuevo precio");
         }
+
+        if (updatePlanRequest.startDate().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de inicio del nuevo precio no puede ser anterior a la fecha actual");
+        }
     }
 
-    private static void setEndDateToCurrentPriceIfNecessary(UpdatePlanRequest updatePlanRequest, Plan plan) {
-        LocalDate today = LocalDate.now();
-        if (updatePlanRequest.startDate().isBefore(today) || updatePlanRequest.startDate().isEqual(today)) {
-            plan.getCurrentPrice().setEndDate(today);
-        }
+    private void setEndDateToCurrentPrice(UpdatePlanRequest updatePlanRequest, Plan plan) {
+        plan
+            .getPrices()
+            .stream()
+            .filter(price -> price.getEndDate() == null)
+            .forEach(price -> price.setEndDate(updatePlanRequest.startDate()));
     }
 
     private Plan createAndSavePlan(CreatePlanRequest createPlanRequest) {
