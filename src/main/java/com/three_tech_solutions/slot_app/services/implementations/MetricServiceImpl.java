@@ -63,10 +63,8 @@ public class MetricServiceImpl implements MetricService {
                     case CON_DEUDA -> activeStudentsWithDebtCount++;
                 }
 
-            } else {
-                if (student.getStudentSituation() == StudentSituation.CON_DEUDA) {
+            } else if (student.getStudentSituation() == StudentSituation.CON_DEUDA) {
                     inactiveStudentsWithDebtCount++;
-                }
             }
         }
 
