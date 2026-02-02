@@ -128,6 +128,13 @@ public class SlotServiceImpl implements SlotService {
                 .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
     }
 
+    @Transactional
+    public void removeStudentFromAllSlots(Student student) {
+        List<Slot> slots = slotRepository.findAllByStudentOrderByDayAndTime(student);
+        slots.forEach(slot -> slot.removeStudent(student));
+        slotRepository.saveAll(slots);
+    }
+
     private List<SpecificSlot> getFutureSpecificSlots(User user) {
         LocalDate today = LocalDate.now();
         return user.getSlots().stream()

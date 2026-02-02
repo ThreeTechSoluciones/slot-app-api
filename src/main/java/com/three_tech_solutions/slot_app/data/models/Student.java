@@ -30,7 +30,7 @@ public class Student {
      String pathologies;
      @ManyToOne
      private User user;
-     @OneToOne(cascade = CascadeType.ALL)
+     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
      private PaymentPlan paymentPlan;
      private boolean enabled = true;
      private LocalDate admissionDate = LocalDate.now();

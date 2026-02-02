@@ -28,7 +28,7 @@ public class SpecificSlot {
     @ManyToOne
     private Slot slot;
     private SpecificSlotStatus status;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "specific_slot_id")
     private List<SpecificSlotDetail> specificSlotDetails;
     @Id
