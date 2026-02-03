@@ -26,7 +26,7 @@ public class SpecificSlot {
     private LocalTime endTime;
     @ManyToOne
     private User user;
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Slot slot;
     @Enumerated(EnumType.STRING)
     private SpecificSlotStatus status;

@@ -92,7 +92,6 @@ public class SlotServiceImpl implements SlotService {
     @Transactional
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-        validateSlotIsActive(slot);
         validateSlotHasNoStudents(slot);
         deleteFutureSpecificSlotsPhysically(slot);
         logicallyDeleteSpecificSlots(slot);
@@ -285,11 +284,6 @@ public class SlotServiceImpl implements SlotService {
                 }, () -> {
                     throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
                 });
-    }
-
-    private void validateSlotIsActive(Slot slot) {
-        if (!slot.isActive()) {throw new ResponseStatusException(BAD_REQUEST, "El turno ya fue eliminado");
-        }
     }
 
     private void validateSlotHasNoStudents(Slot slot) {

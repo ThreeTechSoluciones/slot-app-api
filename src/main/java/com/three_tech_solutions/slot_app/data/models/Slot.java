@@ -27,7 +27,6 @@ public class Slot {
     private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
     private Set<Student> students = new HashSet<>();
-    private boolean active = true;
     @Id
     private UUID id = UUID.randomUUID();
 
