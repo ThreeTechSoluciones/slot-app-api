@@ -48,4 +48,12 @@ public class SpecificSlot {
     public void addStudent(Student student) {
         this.specificSlotDetails.add(new SpecificSlotDetail(student, RECOVERED));
     }
+
+    public int getSpecificSlotUsedCapacity() {
+        return getStudentsWithAttendanceOrRecoveredStatus().size();
+    }
+
+    private List<SpecificSlotDetail> getStudentsWithAttendanceOrRecoveredStatus() {
+        return this.getSpecificSlotDetails().stream().filter(SpecificSlotDetail::studentGoesToSlot).toList();
+    }
 }

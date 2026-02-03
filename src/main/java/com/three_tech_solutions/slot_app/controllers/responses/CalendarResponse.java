@@ -13,13 +13,15 @@ public record CalendarResponse(
 ) {
     public record Day(
             DayOfWeek dayOfWeek,
-            int numberOfDay
+            int numberOfDay,
+            boolean current
     ) {}
 
     public record SlotTime(
             @JsonFormat(pattern = "HH:mm")
             LocalTime startTime,
             @JsonFormat(pattern = "HH:mm")
-            LocalTime endTime
+            LocalTime endTime,
+            boolean current
     ) {}
 }
