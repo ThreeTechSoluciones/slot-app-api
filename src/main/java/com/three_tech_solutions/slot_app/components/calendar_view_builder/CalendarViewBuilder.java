@@ -54,14 +54,10 @@ public abstract class CalendarViewBuilder {
                 specificSlot.getStartTime(),
                 specificSlot.getEndTime(),
                 specificSlot.getCapacity(),
-                getSpecificSlotUsedCapacity(specificSlot),
+                specificSlot.getSpecificSlotUsedCapacity(),
                 calculateStatus(specificSlot),
                 getStudentsList(specificSlot)
         );
-    }
-
-    private int getSpecificSlotUsedCapacity(SpecificSlot specificSlot) {
-        return slotService.getSpecificSlotUsedCapacity(specificSlot);
     }
 
     private static List<SpecificSlotResponse.Student> getStudentsList(SpecificSlot specificSlot) {

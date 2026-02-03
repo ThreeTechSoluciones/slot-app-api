@@ -123,11 +123,6 @@ public class SlotServiceImpl implements SlotService {
     }
 
     @Override
-    public int getSpecificSlotUsedCapacity(SpecificSlot specificSlot) {
-        return getStudentsWithAttendanceOrRecoveredStatus(specificSlot).size();
-    }
-
-    @Override
     public void updateSlotsForStudent(List<UUID> slotIds, Student student) {
         List<Slot> slotsWhereToRemoveStudent = slotRepository.findSlotsWhereStudentIsRegistedAndNeedToBeRemoved(slotIds, student);
         List<Slot> slotsWhereToAddStudent = slotRepository.findAllWhereStudentIsNotRegisted(slotIds, student);
@@ -139,20 +134,11 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.saveAll(slotsWhereToRemoveStudent);
     }
 
-    private List<SpecificSlotDetail> getStudentsWithAttendanceOrRecoveredStatus(SpecificSlot specificSlot) {
-        return specificSlot.getSpecificSlotDetails().stream().filter(SpecificSlotDetail::studentGoesToSlot).toList();
-    }
-
     private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {
+        int slotUsedCapacity = calculateUsedCapacity(specificSlot.getSlot());
+        int specificSlotUsedCapacity = specificSlot.getSpecificSlotUsedCapacity();
 
-        int slotUsedCapacity =
-                getSlotUsedCapacity(specificSlot.getSlot());
-
-        int specificSlotUsedCapacity =
-                getSpecificSlotUsedCapacity(specificSlot);
-
-        return newCapacity < slotUsedCapacity
-                || newCapacity < specificSlotUsedCapacity;
+        return newCapacity < slotUsedCapacity || newCapacity < specificSlotUsedCapacity;
     }
 
     private List<SpecificSlot> getFutureSpecificSlots(User user) {

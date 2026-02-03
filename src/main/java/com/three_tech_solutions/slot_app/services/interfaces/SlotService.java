@@ -33,6 +33,4 @@ public interface SlotService {
     void validateFutureSpecificSlotsCapacity(User user, byte newCapacity);
 
     void updateFutureSpecificSlotsCapacity(User user, byte newCapacity);
-
-    int getSpecificSlotUsedCapacity(SpecificSlot specificSlot);
 }
