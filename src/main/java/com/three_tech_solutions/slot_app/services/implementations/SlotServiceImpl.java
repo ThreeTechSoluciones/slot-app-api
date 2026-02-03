@@ -7,10 +7,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
-import com.three_tech_solutions.slot_app.data.models.Slot;
-import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
-import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -109,9 +106,7 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void validateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
         getFutureSpecificSlots(user).stream()
-                .filter(specificSlot ->
-                        specificSlot.getSpecificSlotDetails().size() > newCapacity
-                )
+                .filter(specificSlot -> exceedsCapacity(specificSlot, newCapacity))
                 .findAny()
                 .ifPresent(s -> {
                     throw new ResponseStatusException(
@@ -123,21 +118,9 @@ public class SlotServiceImpl implements SlotService {
 
     @Override
     public void updateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
-
         getFutureSpecificSlots(user)
                 .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
     }
-
-    private List<SpecificSlot> getFutureSpecificSlots(User user) {
-        LocalDate today = LocalDate.now();
-        return user.getSlots().stream()
-                .flatMap(slot -> slot.getSpecificSlots().stream())
-                .filter(specificSlot ->
-                        !specificSlot.getSlotDate().isBefore(today)
-                )
-                .toList();
-    }
-
 
     @Override
     public void updateSlotsForStudent(List<UUID> slotIds, Student student) {
@@ -149,6 +132,23 @@ public class SlotServiceImpl implements SlotService {
 
         slotsWhereToRemoveStudent.addAll(slotsWhereToAddStudent);
         slotRepository.saveAll(slotsWhereToRemoveStudent);
+    }
+
+    private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {
+        int slotUsedCapacity = calculateUsedCapacity(specificSlot.getSlot());
+        int specificSlotUsedCapacity = specificSlot.getSpecificSlotUsedCapacity();
+
+        return newCapacity < slotUsedCapacity || newCapacity < specificSlotUsedCapacity;
+    }
+
+    private List<SpecificSlot> getFutureSpecificSlots(User user) {
+        LocalDate today = LocalDate.now();
+        return user.getSlots().stream()
+                .flatMap(slot -> slot.getSpecificSlots().stream())
+                .filter(specificSlot ->
+                        !specificSlot.getSlotDate().isBefore(today)
+                )
+                .toList();
     }
 
     private List<Slot> getSlots(User user, DayOfWeek dayOfWeek) {
