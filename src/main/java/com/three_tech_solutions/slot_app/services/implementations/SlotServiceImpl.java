@@ -50,8 +50,9 @@ public class SlotServiceImpl implements SlotService {
 
     @Override
     public void createSlot(CreateSlotRequest request) {
-        validateNoConflictingSlot(request.dayOfWeek(), request.startTime(), null);
-        slotRepository.save(buildSlot(request));
+        User user = getUserByIdOrThrowException(request.userId());
+        validateNoConflictingSlot(request.dayOfWeek(), request.startTime(),calculateEndTime(user, request.startTime()), null);
+        slotRepository.save(buildSlot(request, user));
     }
 
     @Override
@@ -74,11 +75,16 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public UserSlotResponse updateSlot(UUID slotId, UpdateSlotRequest updateSlotRequest) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-        validateStartTimeIsDifferent(slot, updateSlotRequest);
-        validateNoConflictingSlot(slot.getDayOfWeek(), updateSlotRequest.startTime(), slot.getId());
+        LocalTime newStartTime = updateSlotRequest.startTime();
+        LocalTime newEndTime = calculateEndTime(slot.getUser(), newStartTime);
+
+        validateStartTimeIsDifferent(slot, newStartTime);
+        validateNoConflictingSlot(slot.getDayOfWeek(), newStartTime, newEndTime, slot.getId());
         slotMapper.updateSlot(slot, updateSlotRequest);
-        slot.setEndTime(calculateEndTime(slot.getUser(), slot.getStartTime()));
+        slot.setEndTime(newEndTime);
+        updateFutureSpecificSlotsSchedule(slot, newStartTime, newEndTime);
         slotRepository.save(slot);
+
         return slotMapper.toSlotResponse(slot, calculateUsedCapacity(slot));
     }
 
@@ -193,8 +199,7 @@ public class SlotServiceImpl implements SlotService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "No se encontró el turno"));
     }
 
-    private Slot buildSlot(CreateSlotRequest request) {
-        User user = getUserByIdOrThrowException(request.userId());
+    private Slot buildSlot(CreateSlotRequest request, User user) {
         return new Slot(
                 request.dayOfWeek(),
                 request.startTime(),
@@ -249,9 +254,9 @@ public class SlotServiceImpl implements SlotService {
         return userService.getUserByIdOrThrowException(userId);
     }
 
-    private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, UUID excludedSlotId) {
-        if (slotRepository.existsWithinRange(startTime, dayOfWeek, excludedSlotId)) {
-            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y horario ingresado");
+    private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, UUID excludedSlotId) {
+        if (slotRepository.existsWithinRange(dayOfWeek, startTime, endTime, excludedSlotId)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y el rango de horario ingresado");
         }
     }
 
@@ -259,8 +264,8 @@ public class SlotServiceImpl implements SlotService {
         return startTime.plusMinutes(user.getUserPreferences().getSlotDurationMinutes());
     }
 
-    private void validateStartTimeIsDifferent(Slot slot, UpdateSlotRequest updateSlotRequest) {
-        if (slot.getStartTime().equals(updateSlotRequest.startTime())) {
+    private void validateStartTimeIsDifferent(Slot slot, LocalTime newStartTime) {
+        if (slot.getStartTime().equals(newStartTime)) {
             throw new ResponseStatusException(BAD_REQUEST, "La hora ingresada es igual a la actual");
         }
     }
@@ -303,5 +308,13 @@ public class SlotServiceImpl implements SlotService {
     private void logicallyDeleteSpecificSlots(Slot slot) {
         slot.getSpecificSlots()
                 .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
+    }
+
+    private void updateFutureSpecificSlotsSchedule(Slot slot, LocalTime newStartTime, LocalTime newEndTime) {
+        slot.getFutureSpecificSlots()
+                .forEach(specificSlot -> {
+                    specificSlot.setStartTime(newStartTime);
+                    specificSlot.setEndTime(newEndTime);
+                });
     }
 }
