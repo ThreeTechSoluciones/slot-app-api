@@ -31,7 +31,6 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
         SELECT s
         FROM Slot s
         WHERE s.user = :user
-            AND s.active = true
             AND (:dayOfWeek IS NULL OR s.dayOfWeek = :dayOfWeek)
             ORDER BY s.dayOfWeek ASC, s.startTime ASC
     """)

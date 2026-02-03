@@ -287,8 +287,11 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private void validateSlotHasNoStudents(Slot slot) {
-        if (!slot.getStudents().isEmpty()) {
-            throw new ResponseStatusException(BAD_REQUEST, "No se puede eliminar el turno ya que tiene alumnos asociados");
+        if (slot.hasAtLeastOneStudentRegisted()) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "No se puede eliminar el turno porque tiene alumnos asignados o recuperando"
+            );
         }
     }
 

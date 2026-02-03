@@ -61,6 +61,12 @@ public class Slot {
                 });
     }
 
+    public boolean hasAtLeastOneStudentRegisted() {
+        return this.specificSlots.stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .anyMatch(SpecificSlot::hasStudentsThatGoToSlot);
+    }
+
     private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {
         LocalDate today = LocalDate.now();
         return specificSlot.getSlotDate().isEqual(today) || specificSlot.getSlotDate().isAfter(today);
