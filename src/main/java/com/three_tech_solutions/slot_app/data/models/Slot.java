@@ -62,6 +62,12 @@ public class Slot {
                 });
     }
 
+    public List<SpecificSlot> getFutureSpecificSlots() {
+        return this.specificSlots.stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .toList();
+    }
+
     private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {
         LocalDate today = LocalDate.now();
         return specificSlot.getSlotDate().isEqual(today) || specificSlot.getSlotDate().isAfter(today);
