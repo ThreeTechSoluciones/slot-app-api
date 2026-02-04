@@ -10,8 +10,5 @@ import java.util.UUID;
 
 public interface AbsenceRepository extends JpaRepository<Absence, UUID> {
 
-    List<Absence> findByStatusAndSlotDateBefore(
-            AbsenceStatus status,
-            LocalDate date
-    );
+    List<Absence> findByStatus(AbsenceStatus status);
 }
