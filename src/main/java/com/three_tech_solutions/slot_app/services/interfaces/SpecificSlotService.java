@@ -15,4 +15,6 @@ public interface SpecificSlotService {
     void saveSpecificSlot(SpecificSlot specificSlot);
 
     void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot);
+
+    void deleteSpecificSlots(List<SpecificSlot> specificSlots);
 }

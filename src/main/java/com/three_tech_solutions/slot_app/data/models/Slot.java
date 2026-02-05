@@ -22,12 +22,11 @@ public class Slot {
     private byte capacity;
     @ManyToOne
     private User user;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "slot_id")
     private List<SpecificSlot> specificSlots = new ArrayList<>();
     @ManyToMany
     private Set<Student> students = new HashSet<>();
-    private boolean active = true;
     @Id
     private UUID id = UUID.randomUUID();
 
@@ -60,6 +59,12 @@ public class Slot {
                     List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
                     slotDetails.add(new SpecificSlotDetail(student));
                 });
+    }
+
+    public boolean hasAtLeastOneStudentRegisted() {
+        return this.specificSlots.stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .anyMatch(SpecificSlot::hasStudentsThatGoToSlot);
     }
 
     private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {

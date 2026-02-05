@@ -16,9 +16,9 @@ public interface SpecificSlotRepository extends JpaRepository<SpecificSlot, UUID
         SELECT DISTINCT s FROM SpecificSlot s
         LEFT JOIN FETCH s.specificSlotDetails d
         LEFT JOIN FETCH d.student
-        WHERE s.slot.user = :user
+        WHERE s.user = :user
           AND s.slotDate BETWEEN :startDate AND :endDate
         ORDER BY s.slotDate, s.startTime
         """)
-    List<SpecificSlot> findAllBySlot_UserAndSlotDateBetween(User user, LocalDate startDate, LocalDate endDate);
+    List<SpecificSlot> findAllByUserAndSlotDateBetween(User user, LocalDate startDate, LocalDate endDate);
 }
