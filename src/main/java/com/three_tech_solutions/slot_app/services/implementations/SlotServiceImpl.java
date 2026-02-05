@@ -10,6 +10,7 @@ import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
+import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
@@ -39,13 +40,15 @@ public class SlotServiceImpl implements SlotService {
     private final UserService userService;
     private final StudentService studentService;
     private final SlotMapper slotMapper;
+    private final SpecificSlotService specificSlotService;
 
 
-    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, StudentService studentService, SlotMapper slotMapper) {
+    public SlotServiceImpl(SlotRepository slotRepository, @Lazy UserService userService, StudentService studentService, SlotMapper slotMapper, SpecificSlotService specificSlotService) {
         this.slotRepository = slotRepository;
         this.userService = userService;
         this.slotMapper = slotMapper;
         this.studentService = studentService;
+        this.specificSlotService = specificSlotService;
     }
 
     @Override
@@ -86,13 +89,11 @@ public class SlotServiceImpl implements SlotService {
     @Transactional
     public void deleteSlot(UUID slotId) {
         Slot slot = getSlotByIdOrThrowException(slotId);
-
-        validateSlotIsActive(slot);
         validateSlotHasNoStudents(slot);
         deleteFutureSpecificSlotsPhysically(slot);
         logicallyDeleteSpecificSlots(slot);
-        slot.setActive(false);
-        slotRepository.save(slot);
+        unlinkSpecificSlots(slot);
+        slotRepository.delete(slot);
     }
 
     @Override
@@ -204,7 +205,8 @@ public class SlotServiceImpl implements SlotService {
                 createSpecificSlots(
                         request,
                         user.getUserPreferences().getSlotDurationMinutes(),
-                        user.getUserPreferences().getSlotCapacity()
+                        user.getUserPreferences().getSlotCapacity(),
+                        user
                 )
         );
     }
@@ -212,14 +214,15 @@ public class SlotServiceImpl implements SlotService {
     private List<SpecificSlot> createSpecificSlots(
             CreateSlotRequest request,
             long slotDurationMinutes,
-            byte slotCapacity
+            byte slotCapacity,
+            User user
     ) {
         List<SpecificSlot> specificSlots = new ArrayList<>();
         LocalDate date = getNextDateOfDayOfWeek(request);
         LocalDate endDate = date.plusMonths(2);
 
         while (date.isBefore(endDate) || date.isEqual(endDate)) {
-            specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes));
+            specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes, user));
             date = date.plusWeeks(1);
         }
 
@@ -230,13 +233,15 @@ public class SlotServiceImpl implements SlotService {
             CreateSlotRequest request,
             LocalDate startDate,
             byte slotCapacity,
-            long slotDurationMinutes
+            long slotDurationMinutes,
+            User user
     ) {
         return new SpecificSlot(
                 startDate,
                 slotCapacity,
                 request.startTime(),
                 request.startTime().plusMinutes(slotDurationMinutes),
+                user,
                 SpecificSlotStatus.CREATED
         );
     }
@@ -281,27 +286,38 @@ public class SlotServiceImpl implements SlotService {
                 });
     }
 
-    private void validateSlotIsActive(Slot slot) {
-        if (!slot.isActive()) {throw new ResponseStatusException(BAD_REQUEST, "El turno ya fue eliminado");
-        }
-    }
-
     private void validateSlotHasNoStudents(Slot slot) {
-        if (!slot.getStudents().isEmpty()) {
-            throw new ResponseStatusException(BAD_REQUEST, "No se puede eliminar el turno ya que tiene alumnos asociados");
+        if (slot.hasAtLeastOneStudentRegisted()) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "No se puede eliminar el turno porque tiene alumnos asignados o recuperando"
+            );
         }
     }
 
     private void deleteFutureSpecificSlotsPhysically(Slot slot) {
         LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
 
-        slot.getSpecificSlots().removeIf(specificSlot ->
-                specificSlot.getSlotDate().isAfter(today) ||
-                        (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(LocalTime.now())));
+        List<SpecificSlot> toDelete = slot.getSpecificSlots().stream()
+                .filter(specificSlot ->
+                        specificSlot.getSlotDate().isAfter(today) ||
+                                (specificSlot.getSlotDate().isEqual(today)
+                                        && specificSlot.getStartTime().isAfter(now))
+                )
+                .toList();
+        specificSlotService.deleteSpecificSlots(toDelete);
+        slot.getSpecificSlots().removeAll(toDelete);
     }
 
     private void logicallyDeleteSpecificSlots(Slot slot) {
         slot.getSpecificSlots()
                 .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
+    }
+
+    private void unlinkSpecificSlots(Slot slot) {
+        slot.getSpecificSlots()
+                .forEach(specificSlot ->
+                        specificSlot.setSlot(null));
     }
 }
