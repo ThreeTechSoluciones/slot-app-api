@@ -24,9 +24,11 @@ public class SpecificSlot {
     private byte capacity;
     private LocalTime startTime;
     private LocalTime endTime;
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    private User user;
     @ManyToOne
     private Slot slot;
+    @Enumerated(EnumType.STRING)
     private SpecificSlotStatus status;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "specific_slot_id")
@@ -34,11 +36,12 @@ public class SpecificSlot {
     @Id
     private UUID id = UUID.randomUUID();
 
-    public SpecificSlot(LocalDate slotDate, byte capacity, LocalTime startTime, LocalTime endTime, SpecificSlotStatus status) {
+    public SpecificSlot(LocalDate slotDate, byte capacity, LocalTime startTime, LocalTime endTime, User user, SpecificSlotStatus status) {
         this.slotDate = slotDate;
         this.capacity = capacity;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.user = user;
         this.status = status;
     }
 
@@ -48,6 +51,10 @@ public class SpecificSlot {
 
     public int getSpecificSlotUsedCapacity() {
         return getStudentsWithAttendanceOrRecoveredStatus().size();
+    }
+
+    public boolean hasStudentsThatGoToSlot() {
+        return !getStudentsWithAttendanceOrRecoveredStatus().isEmpty();
     }
 
     private List<SpecificSlotDetail> getStudentsWithAttendanceOrRecoveredStatus() {

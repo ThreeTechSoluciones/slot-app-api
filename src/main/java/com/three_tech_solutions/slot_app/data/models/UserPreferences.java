@@ -17,6 +17,7 @@ import java.util.UUID;
 public class UserPreferences {
     private byte slotCapacity = 27;
     private long slotDurationMinutes = 60;
+    private byte daysToRecoverAbsence = 14;
     @Id
     private UUID id = UUID.randomUUID();
 }
