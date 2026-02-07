@@ -6,6 +6,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotRespo
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
+import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.models.*;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class StudentMapper {
                 student.getDni(),
                 student.getStudentSituation(),
                 student.isEnabled(),
+                getNumberOfSlotsToRecover(student),
                 student.getId()
         );
     }
@@ -74,8 +76,6 @@ public class StudentMapper {
         );
     }
 
-
-
     public void updateStudent(Student student, UpdateStudentRequest request, Plan plan) {
         student.setName(request.getName());
         student.setLastname(request.getLastName());
@@ -86,5 +86,10 @@ public class StudentMapper {
         student.getPaymentPlan().setPlan(plan);
         student.setBirthday(request.getBirthday());
         student.setPathologies(request.getPathologies());
+    }
+
+
+    private int getNumberOfSlotsToRecover(Student student) {
+        return student.getAbsences().stream().filter(absence -> absence.getStatus() == AbsenceStatus.PENDING).toList().size();
     }
 }

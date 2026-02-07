@@ -10,6 +10,7 @@ public record StudentResponse (
     String dni,
     StudentSituation status,
     Boolean isActive,
+    int daysToRecover,
     UUID id
 
 ) {}

@@ -31,7 +31,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
 
     @Override
     public List<SpecificSlot> getAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate) {
-        return specificSlotRepository.findAllBySlot_UserAndSlotDateBetween(user, startDate, endDate);
+        return specificSlotRepository.findAllByUserAndSlotDateBetween(user, startDate, endDate);
     }
 
     @Override
@@ -43,6 +43,11 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     @Override
     public void saveSpecificSlot(SpecificSlot specificSlot) {
         this.specificSlotRepository.save(specificSlot);
+    }
+
+    @Override
+    public void deleteSpecificSlots(List<SpecificSlot> specificSlots) {
+        specificSlotRepository.deleteAll(specificSlots);
     }
 
     @Override

@@ -18,4 +18,6 @@ public interface SpecificSlotService {
     void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot);
 
     List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(UUID specificSlotId, String filter);
+
+    void deleteSpecificSlots(List<SpecificSlot> specificSlots);
 }

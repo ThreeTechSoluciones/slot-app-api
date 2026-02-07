@@ -2,7 +2,6 @@ package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdatePlanRequest;
-import com.three_tech_solutions.slot_app.controllers.requests.UpdatePriceRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -15,11 +14,9 @@ public interface PlanService {
 
     Plan getPlanByIdOrThrowException(UUID planId);
 
-    PlanResponse updatePrice(UUID planId, UpdatePriceRequest updatePriceRequest);
-
     List<PlanResponse> getPlansByUserAndName(User user, String planName);
 
     void deletePlan(UUID planId);
 
-    PlanResponse updatePlan(UUID planId, UpdatePlanRequest createPlanRequest);
+    PlanResponse updatePlan(UUID planId, UpdatePlanRequest updatePlanRequest);
 }

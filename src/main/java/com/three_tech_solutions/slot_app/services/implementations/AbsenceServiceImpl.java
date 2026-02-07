@@ -25,17 +25,27 @@ public class AbsenceServiceImpl implements AbsenceService {
     @Override
     public void expirePendingAbsences() {
         log.info("Iniciando proceso de expiración de ausencias");
-        LocalDate expirationDate = LocalDate.now().minusDays(14);
+        LocalDate today = LocalDate.now();
 
-        absenceRepository.saveAll(
-                getAbsencesToExpire(expirationDate)
-                        .stream()
-                        .peek(absence -> absence.setStatus(AbsenceStatus.OUT_OF_TIME))
-                        .toList()
-        );
+        List<Absence> absencesToExpire = getPendingAbsences().stream()
+                .filter(absence -> shouldExpireAbsence(absence, today))
+                .peek(absence -> absence.setStatus(AbsenceStatus.OUT_OF_TIME))
+                .toList();
+
+        absenceRepository.saveAll(absencesToExpire);
     }
 
-    private List<Absence> getAbsencesToExpire(LocalDate expirationDate) {
-        return absenceRepository.findByStatusAndSlotDateBefore(AbsenceStatus.PENDING, expirationDate);
+    private boolean shouldExpireAbsence(Absence absence, LocalDate today) {
+        byte daysToRecover = absence.getStudent()
+                .getUser()
+                .getUserPreferences()
+                .getDaysToRecoverAbsence();
+
+        LocalDate expirationDate = today.minusDays(daysToRecover);
+
+        return absence.getSlotDate().isBefore(expirationDate);
+    }
+    private List<Absence> getPendingAbsences() {
+        return absenceRepository.findByStatus(AbsenceStatus.PENDING);
     }
 }
