@@ -73,4 +73,14 @@ public class Slot {
     }
 
 
+    public boolean isAtFullCapacity() {
+        return this.students.size() == this.capacity;
+    }
+
+    public boolean someSpecificSlotIsAtFullCapacity() {
+        return this
+                .specificSlots
+                .stream()
+                .anyMatch(SpecificSlot::isAtFullCapacity);
+    }
 }

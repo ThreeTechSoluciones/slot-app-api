@@ -60,4 +60,8 @@ public class SpecificSlot {
     private List<SpecificSlotDetail> getStudentsWithAttendanceOrRecoveredStatus() {
         return this.getSpecificSlotDetails().stream().filter(SpecificSlotDetail::studentGoesToSlot).toList();
     }
+
+    public boolean isAtFullCapacity() {
+        return this.capacity == this.getSpecificSlotUsedCapacity();
+    }
 }
