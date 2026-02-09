@@ -61,6 +61,12 @@ public class Slot {
                 });
     }
 
+    public List<SpecificSlot> getFutureSpecificSlots() {
+        return this.specificSlots.stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .toList();
+    }
+
     public boolean hasAtLeastOneStudentRegisted() {
         return this.specificSlots.stream()
                 .filter(Slot::isFutureSpecificSlot)
