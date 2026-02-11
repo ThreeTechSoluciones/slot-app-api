@@ -7,7 +7,10 @@ import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
 import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
-import com.three_tech_solutions.slot_app.data.models.*;
+import com.three_tech_solutions.slot_app.data.models.Slot;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
+import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SlotRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
@@ -279,16 +282,30 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.findById(slotId)
                 .ifPresentOrElse(slot -> {
                     try {
+                        validateSlotCapacity(slot);
                         slot.addStudent(student);
                         slotRepository.save(slot);
                     } catch (DataIntegrityViolationException e) {
                         throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya se encuentra registrado en el turno solicitado");
+                    } catch (ResponseStatusException e) {
+                        throw e;
                     } catch (Exception e) {
+                        log.error("Error al registrar el estudiante {} en el turno {}: {}", student.getId(), slotId, e.getMessage());
                         throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al registrar el estudiante en el turno solicitado");
                     }
                 }, () -> {
                     throw new ResponseStatusException(BAD_REQUEST, "No se encuentra registrado el turno solicitado");
                 });
+    }
+
+    private static void validateSlotCapacity(Slot slot) {
+        if (slot.isAtFullCapacity()) {
+            throw new ResponseStatusException(BAD_REQUEST, "El turno ya se encuentra completo");
+        }
+
+        if (slot.someSpecificSlotIsAtFullCapacity()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Uno o más turnos futuros ya se encuentran completos");
+        }
     }
 
     private void validateSlotHasNoStudents(Slot slot) {
