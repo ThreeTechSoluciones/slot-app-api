@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailS
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,5 +26,11 @@ public class SpecificSlotDetailServiceImpl implements SpecificSlotDetailService 
     public void registerAbsence(SpecificSlotDetail specificSlotDetail) {
         specificSlotDetail.setStatus(SpecificSlotDetailStatus.ABSENCE);
         specificSlotDetailRepository.save(specificSlotDetail);
+    }
+
+    @Override
+    public List<SpecificSlotDetail> getSpecificSlotDetailsBySpecificSlot(UUID specificSlotId, String filter) {
+        return specificSlotDetailRepository
+                .findAllBySpecificSlotIdAndStudentFilter(specificSlotId, filter);
     }
 }

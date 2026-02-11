@@ -17,13 +17,14 @@ public interface SlotRepository extends JpaRepository<Slot, UUID> {
         SELECT COUNT(s) > 0
         FROM Slot s
         WHERE :dayOfWeek = s.dayOfWeek
-            AND :time >= s.startTime
-            AND :time <  s.endTime
+            AND :startTime < s.endTime
+            AND :endTime > s.startTime
             AND (:excludedSlotId IS NULL OR s.id <> :excludedSlotId)
     """)
     boolean existsWithinRange(
-            @Param("time") LocalTime time,
             @Param("dayOfWeek") DayOfWeek dayOfWeek,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
             @Param("excludedSlotId") UUID excludedSlotId
     );
 

@@ -1,10 +1,9 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/specific-slots")
@@ -13,5 +12,11 @@ public interface SpecificSlotsController {
     void cancelSpecificSlot(
             @PathVariable UUID specificSlotId,
             @RequestParam(required = false, defaultValue = "true") boolean studentsMustRecoverSlot
+    );
+
+    @GetMapping("/{specificSlotId}/students")
+    List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(
+            @PathVariable UUID specificSlotId,
+            @RequestParam(required = false, defaultValue = "") String filter
     );
 }

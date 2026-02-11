@@ -1,10 +1,13 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SpecificSlotRepository;
 import com.three_tech_solutions.slot_app.exceptions.custom_exceptions.StudentAlreadyRegisteredException;
+import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
@@ -27,6 +30,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
 
     private final SpecificSlotRepository specificSlotRepository;
     private final StudentService studentService;
+    private final SpecificSlotDetailService specificSlotDetailService;
 
     @Override
     public List<SpecificSlot> getAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate) {
@@ -65,6 +69,15 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
         specificSlot.setStatus(CANCELED);
         specificSlot.setSpecificSlotDetails(Collections.emptyList());
         specificSlotRepository.save(specificSlot);
+    }
+
+    @Override
+    public List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(UUID specificSlotId, String filter) {
+        return specificSlotDetailService
+                .getSpecificSlotDetailsBySpecificSlot(specificSlotId, filter)
+                .stream()
+                .map(StudentMapper::buildStudentResponse)
+                .toList();
     }
 
     private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {

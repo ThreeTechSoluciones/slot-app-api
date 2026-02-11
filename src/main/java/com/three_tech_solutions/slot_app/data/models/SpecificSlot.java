@@ -52,7 +52,7 @@ public class SpecificSlot {
     public int getSpecificSlotUsedCapacity() {
         return getStudentsWithAttendanceOrRecoveredStatus().size();
     }
-    
+
     public boolean hasStudentsThatGoToSlot() {
         return !getStudentsWithAttendanceOrRecoveredStatus().isEmpty();
     }
