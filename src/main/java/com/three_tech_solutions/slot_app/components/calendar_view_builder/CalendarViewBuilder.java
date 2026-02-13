@@ -4,7 +4,6 @@ import com.three_tech_solutions.slot_app.controllers.responses.CalendarResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
-import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 

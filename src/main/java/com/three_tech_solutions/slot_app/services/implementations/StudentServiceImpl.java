@@ -48,6 +48,8 @@ public class StudentServiceImpl implements StudentService {
     private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
 
+    private static final Byte BEGINNING_OF_MONTH_PAYMENT_DAY = 10;
+
     public StudentServiceImpl(
             StudentRepository studentRepository,
             StudentMapper studentMapper,
@@ -68,21 +70,17 @@ public class StudentServiceImpl implements StudentService {
         this.specificSlotService = specificSlotService;
     }
 
-
     @Transactional
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
-        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
-        Plan plan = getPlanByIdOrThrowException(studentDTO.getPlanId());
-        User user = getUserByIdOrThrowException(studentDTO.getUserId());
-
-        Student student = studentMapper.toStudent(studentDTO, plan, user);
+        validateCreateStudentRequest(studentDTO);
 
         try{
+            Student student = studentMapper.toStudent(studentDTO, buildStudentPaymentPlan(studentDTO), getUserByIdOrThrowException(studentDTO.getUserId()));
             studentRepository.save(student);
             createInitialMonthlyFee(studentDTO, student);
             addStudentToSlots(studentDTO, student);
+            return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (ResponseStatusException exception) {
@@ -91,9 +89,6 @@ public class StudentServiceImpl implements StudentService {
         } catch (Exception exception){
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR,"Ocurrió un error al registrar el estudiante. Intente nuevamente");
         }
-
-        return studentMapper.toStudentResponse(student);
-
     }
 
     @Override
@@ -317,4 +312,23 @@ public class StudentServiceImpl implements StudentService {
     private List<StudentSlotResponse> getStudentSlots(Student student) {
         return slotService.getSlotsByStudent(student);
     }
+
+
+    private void validateCreateStudentRequest(CreateStudentRequest studentDTO) {
+        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
+        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
+    }
+
+    private PaymentPlan buildStudentPaymentPlan(CreateStudentRequest studentDTO) {
+        return new PaymentPlan(
+                getPaymentDay(studentDTO),
+                studentDTO.getPaymentPlanName(),
+                getPlanByIdOrThrowException(studentDTO.getPlanId())
+        );
+    }
+
+    private static Byte getPaymentDay(CreateStudentRequest studentDTO) {
+        return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_PAYMENT_DAY;
+    }
+
 }
