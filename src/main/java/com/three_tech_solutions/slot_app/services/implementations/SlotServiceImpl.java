@@ -304,7 +304,7 @@ public class SlotServiceImpl implements SlotService {
         }
 
         if (slot.someSpecificSlotIsAtFullCapacity()) {
-            throw new ResponseStatusException(BAD_REQUEST, "Uno o más turnos futuros ya se encuentran completos");
+            throw new ResponseStatusException(BAD_REQUEST, "Una o más fechas están completas debido a recuperaciones de clase.");
         }
     }
 
