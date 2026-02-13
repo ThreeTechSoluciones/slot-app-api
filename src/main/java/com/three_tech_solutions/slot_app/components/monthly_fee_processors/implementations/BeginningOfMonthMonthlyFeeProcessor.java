@@ -10,12 +10,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static com.three_tech_solutions.slot_app.utils.PaymentPlanUtils.BEGINNING_OF_MONTH_EXPIRATION_DATE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Component
 public class BeginningOfMonthMonthlyFeeProcessor extends MonthlyFeeProcessor {
-
-    public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
 
     @Override
     public PaymentPlanName getCurrentPlan() {

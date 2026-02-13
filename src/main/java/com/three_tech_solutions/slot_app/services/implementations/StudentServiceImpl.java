@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations.BeginningOfMonthMonthlyFeeProcessor.BEGINNING_OF_MONTH_EXPIRATION_DATE;
+import static com.three_tech_solutions.slot_app.utils.PaymentPlanUtils.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -48,7 +48,6 @@ public class StudentServiceImpl implements StudentService {
     private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
 
-    private static final Byte BEGINNING_OF_MONTH_PAYMENT_DAY = 10;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
@@ -298,7 +297,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private boolean paymentDayIsInvalid(Byte paymentDay) {
-        return paymentDay == null || paymentDay <= 10 || paymentDay > 28;
+        return paymentDay == null || paymentDay <= SPECIFIC_DAY_MINIMUM_DAY || paymentDay > SPECIFIC_DAY_MAXIMUM_DAY;
     }
 
     private boolean planTypeIsSpecificDay(PaymentPlanName paymentPlanName) {
@@ -328,7 +327,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private static Byte getPaymentDay(CreateStudentRequest studentDTO) {
-        return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_PAYMENT_DAY;
+        return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_EXPIRATION_DATE;
     }
 
 }
