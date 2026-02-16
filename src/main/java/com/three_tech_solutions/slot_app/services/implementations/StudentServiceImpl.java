@@ -162,7 +162,7 @@ public class StudentServiceImpl implements StudentService {
         return new PageImpl<>(
                 filteredContent,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
-                filteredContent.size()
+                studentsPage.getTotalElements()
         );
     }
 
