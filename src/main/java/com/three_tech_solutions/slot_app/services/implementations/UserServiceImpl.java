@@ -80,10 +80,10 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
+    public Page<PlanResponse> getUserPlans(UUID userId, String planName, Pageable pageable) {
         return userRepository.findById(userId)
                 .map(user ->
-                        planService.getPlansByUserAndName(user, planName)
+                        planService.getPlansByUserAndName(user, planName, pageable)
                 )
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }

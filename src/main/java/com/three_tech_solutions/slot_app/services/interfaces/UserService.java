@@ -26,7 +26,7 @@ public interface UserService extends UserDetailsService {
 
     void createUser(String username, String password);
 
-    List<PlanResponse> getUserPlans(UUID userId, String planName);
+    Page<PlanResponse> getUserPlans(UUID userId, String planName, Pageable pageable);
 
     void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest updateUserCapacityRequest);
 
