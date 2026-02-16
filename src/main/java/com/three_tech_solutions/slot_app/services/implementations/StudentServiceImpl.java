@@ -171,8 +171,7 @@ public class StudentServiceImpl implements StudentService {
         // we are filtering the content of the page, but the total elements of the page
         // still corresponds to the total elements without applying the student situation filter.
         // So we need to adjust the total elements of the page to correspond to the filtered content size.
-        long contentSize = status == null ? studentsPage.getTotalElements() : filteredContent.size();
-        return contentSize;
+        return status == null ? studentsPage.getTotalElements() : filteredContent.size();
     }
 
     private static List<StudentResponse> getContentByStudentSituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
