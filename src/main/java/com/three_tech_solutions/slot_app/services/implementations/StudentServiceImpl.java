@@ -117,6 +117,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = getStudentByIdOrThrowExcepion(studentId);
         validateStudentIsEnabled(student);
         removeStudentFromAllSlots(student);
+        deleteFutureNonRecurrentSpecificSlotDetails(studentId);
         student.setPaymentPlan(null);
         student.setEnabled(false);
     }
@@ -316,5 +317,9 @@ public class StudentServiceImpl implements StudentService {
 
     private void removeStudentFromAllSlots(Student student) {
         slotService.removeStudentFromAllSlots(student);
+    }
+
+    private void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId) {
+        specificSlotDetailService.deleteFutureNonRecurrentSpecificSlotDetails(studentId);
     }
 }

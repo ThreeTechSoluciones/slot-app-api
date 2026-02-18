@@ -9,4 +9,6 @@ public interface SpecificSlotDetailService {
     Optional<SpecificSlotDetail> getSpecificSlotDetailBySpecificSlotIdAndStudentId(UUID specificSlotId, UUID studentId);
 
     void registerAbsence(SpecificSlotDetail specificSlotDetail);
+
+    void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId);
 }

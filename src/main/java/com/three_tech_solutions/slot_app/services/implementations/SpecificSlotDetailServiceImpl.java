@@ -4,9 +4,12 @@ import com.three_tech_solutions.slot_app.data.enums.SpecificSlotDetailStatus;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.repositories.SpecificSlotDetailRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,5 +28,11 @@ public class SpecificSlotDetailServiceImpl implements SpecificSlotDetailService 
     public void registerAbsence(SpecificSlotDetail specificSlotDetail) {
         specificSlotDetail.setStatus(SpecificSlotDetailStatus.ABSENCE);
         specificSlotDetailRepository.save(specificSlotDetail);
+    }
+
+    @Transactional
+    @Override
+    public void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId) {
+        specificSlotDetailRepository.deleteFutureByStudent(studentId, LocalDate.now(), LocalTime.now());
     }
 }
