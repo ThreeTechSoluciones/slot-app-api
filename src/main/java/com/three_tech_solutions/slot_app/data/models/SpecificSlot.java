@@ -52,12 +52,16 @@ public class SpecificSlot {
     public int getSpecificSlotUsedCapacity() {
         return getStudentsWithAttendanceOrRecoveredStatus().size();
     }
-    
+
     public boolean hasStudentsThatGoToSlot() {
         return !getStudentsWithAttendanceOrRecoveredStatus().isEmpty();
     }
 
     private List<SpecificSlotDetail> getStudentsWithAttendanceOrRecoveredStatus() {
         return this.getSpecificSlotDetails().stream().filter(SpecificSlotDetail::studentGoesToSlot).toList();
+    }
+
+    public boolean isAtFullCapacity() {
+        return this.capacity == this.getSpecificSlotUsedCapacity();
     }
 }

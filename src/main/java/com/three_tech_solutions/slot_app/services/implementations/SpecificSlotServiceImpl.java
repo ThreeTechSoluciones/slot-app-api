@@ -1,12 +1,17 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SpecificSlotRepository;
+import com.three_tech_solutions.slot_app.exceptions.custom_exceptions.StudentAlreadyRegisteredException;
+import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,12 +23,14 @@ import java.util.UUID;
 
 import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus.CANCELED;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class SpecificSlotServiceImpl implements SpecificSlotService {
 
     private final SpecificSlotRepository specificSlotRepository;
     private final StudentService studentService;
+    private final SpecificSlotDetailService specificSlotDetailService;
 
     @Override
     public List<SpecificSlot> getAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate) {
@@ -64,6 +71,15 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
         specificSlotRepository.save(specificSlot);
     }
 
+    @Override
+    public List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(UUID specificSlotId, String filter) {
+        return specificSlotDetailService
+                .getSpecificSlotDetailsBySpecificSlot(specificSlotId, filter)
+                .stream()
+                .map(StudentMapper::buildStudentResponse)
+                .toList();
+    }
+
     private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {
         if (specificSlot.getStatus() == CANCELED) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El turno ya se encuentra cancelado");
@@ -71,9 +87,16 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     }
 
     private void registerAbsenceForStudent(UUID specificSlotId, SpecificSlotDetail specificSlotDetail) {
-        studentService.registerStudentAbsenceForSpecificSlot(
-                specificSlotDetail.getStudent().getId(),
-                specificSlotId
-        );
+        try {
+            studentService.registerStudentAbsenceForSpecificSlot(
+                    specificSlotDetail.getStudent().getId(),
+                    specificSlotId
+            );
+        } catch (StudentAlreadyRegisteredException e) {
+            log.info("Student with ID {} was already registered as absent for specific slot with ID {}",
+                    specificSlotDetail.getStudent().getId(),
+                    specificSlotId
+            );
+        }
     }
 }

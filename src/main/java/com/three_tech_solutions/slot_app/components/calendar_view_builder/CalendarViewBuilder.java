@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.components.calendar_view_builder;
 
 import com.three_tech_solutions.slot_app.controllers.responses.CalendarResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
+import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -61,16 +62,9 @@ public abstract class CalendarViewBuilder {
     }
 
     private static List<SpecificSlotResponse.Student> getStudentsList(SpecificSlot specificSlot) {
-        return specificSlot.getSpecificSlotDetails().stream().map(CalendarViewBuilder::buildStudentResponse).toList();
+        return specificSlot.getSpecificSlotDetails().stream().map(StudentMapper::buildStudentResponse).toList();
     }
 
-    private static SpecificSlotResponse.Student buildStudentResponse(SpecificSlotDetail specificSlotDetail) {
-        return new SpecificSlotResponse.Student(
-                specificSlotDetail.getStudent().getId(),
-                specificSlotDetail.getStudent().getName() + " " + specificSlotDetail.getStudent().getLastname(),
-                specificSlotDetail.getStatus()
-        );
-    }
 
     private static SpecificSlotResponse[][] buildCalendarWithSlotsByDayAndTime(List<CalendarResponse.SlotTime> times, List<CalendarResponse.Day> days, List<SpecificSlot> specificSlots) {
         SpecificSlotResponse[][] calendar = new SpecificSlotResponse[times.size()][days.size()];

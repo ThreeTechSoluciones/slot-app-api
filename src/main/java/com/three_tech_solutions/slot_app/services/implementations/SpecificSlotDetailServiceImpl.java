@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -28,6 +29,12 @@ public class SpecificSlotDetailServiceImpl implements SpecificSlotDetailService 
     public void registerAbsence(SpecificSlotDetail specificSlotDetail) {
         specificSlotDetail.setStatus(SpecificSlotDetailStatus.ABSENCE);
         specificSlotDetailRepository.save(specificSlotDetail);
+    }
+
+    @Override
+    public List<SpecificSlotDetail> getSpecificSlotDetailsBySpecificSlot(UUID specificSlotId, String filter) {
+        return specificSlotDetailRepository
+                .findAllBySpecificSlotIdAndStudentFilter(specificSlotId, filter);
     }
 
     @Transactional

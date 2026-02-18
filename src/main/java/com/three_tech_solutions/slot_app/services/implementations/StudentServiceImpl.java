@@ -10,8 +10,10 @@ import com.three_tech_solutions.slot_app.data.enums.*;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.StudentRepository;
+import com.three_tech_solutions.slot_app.exceptions.custom_exceptions.StudentAlreadyRegisteredException;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 
 @Service
+@Slf4j
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
@@ -82,6 +85,9 @@ public class StudentServiceImpl implements StudentService {
             addStudentToSlots(studentDTO, student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
+        } catch (ResponseStatusException exception) {
+            log.error("Error al crear el estudiante: {}", exception.getReason());
+            throw exception;
         } catch (Exception exception){
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR,"Ocurrió un error al registrar el estudiante. Intente nuevamente");
         }
@@ -264,7 +270,7 @@ public class StudentServiceImpl implements StudentService {
 
     private static void validateIfStudentIsNotAlreadyRegisteredAsAbsent(SpecificSlotDetail specificSlotDetail) {
         if(specificSlotDetailStatusIsAbsence(specificSlotDetail)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El alumno ya se encuentra registrado como ausente en el turno.");
+            throw new StudentAlreadyRegisteredException();
         }
     }
 

@@ -61,6 +61,12 @@ public class Slot {
                 });
     }
 
+    public List<SpecificSlot> getFutureSpecificSlots() {
+        return this.specificSlots.stream()
+                .filter(Slot::isFutureSpecificSlot)
+                .toList();
+    }
+
     public boolean hasAtLeastOneStudentRegisted() {
         return this.specificSlots.stream()
                 .filter(Slot::isFutureSpecificSlot)
@@ -73,5 +79,16 @@ public class Slot {
 
         return specificSlot.getSlotDate().isAfter(today)
                 || (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(now));
+    }
+
+    public boolean isAtFullCapacity() {
+        return this.students.size() == this.capacity;
+    }
+
+    public boolean someSpecificSlotIsAtFullCapacity() {
+        return this
+                .specificSlots
+                .stream()
+                .anyMatch(SpecificSlot::isAtFullCapacity);
     }
 }

@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.User;
 
@@ -15,6 +16,8 @@ public interface SpecificSlotService {
     void saveSpecificSlot(SpecificSlot specificSlot);
 
     void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot);
+
+    List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(UUID specificSlotId, String filter);
 
     void deleteSpecificSlots(List<SpecificSlot> specificSlots);
 }
