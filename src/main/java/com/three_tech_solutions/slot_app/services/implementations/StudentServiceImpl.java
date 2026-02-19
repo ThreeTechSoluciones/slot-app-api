@@ -162,8 +162,16 @@ public class StudentServiceImpl implements StudentService {
         return new PageImpl<>(
                 filteredContent,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
-                filteredContent.size()
+                getContentSize(status, studentsPage, filteredContent)
         );
+    }
+
+    private static long getContentSize(StudentSituation status, Page<StudentResponse> studentsPage, List<StudentResponse> filteredContent) {
+        // This is because when we apply the student situation filter,
+        // we are filtering the content of the page, but the total elements of the page
+        // still corresponds to the total elements without applying the student situation filter.
+        // So we need to adjust the total elements of the page to correspond to the filtered content size.
+        return status == null ? studentsPage.getTotalElements() : filteredContent.size();
     }
 
     private static List<StudentResponse> getContentByStudentSituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
