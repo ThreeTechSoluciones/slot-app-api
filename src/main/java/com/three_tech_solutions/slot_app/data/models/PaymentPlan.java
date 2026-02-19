@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.data.models;
 
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PaymentPlan {
     Byte paymentDay;
+    @Enumerated
     PaymentPlanName paymentPlanName;
     @ManyToOne
     Plan plan;

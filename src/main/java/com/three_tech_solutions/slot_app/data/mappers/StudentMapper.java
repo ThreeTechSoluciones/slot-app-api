@@ -16,7 +16,7 @@ import java.util.List;
 public class StudentMapper {
 
 
-    public Student toStudent(CreateStudentRequest studentDTO, Plan plan, User user) {
+    public Student toStudent(CreateStudentRequest studentDTO, PaymentPlan paymentPlan, User user) {
         return new Student(
                 studentDTO.getName(),
                 studentDTO.getLastName(),
@@ -25,11 +25,7 @@ public class StudentMapper {
                 studentDTO.getBirthday(),
                 studentDTO.getPathologies(),
                 user,
-                new PaymentPlan(
-                        studentDTO.getPaymentDay(),
-                        studentDTO.getPaymentPlanName(),
-                        plan
-                )
+                paymentPlan
         );
     }
 
