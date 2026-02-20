@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void createSlot(CreateSlotRequest request) {
         User user = getUserByIdOrThrowException(request.userId());
-        validateNoConflictingSlot(request.dayOfWeek(), request.startTime(),calculateEndTime(user, request.startTime()), null);
+        validateSlotRequest(request.dayOfWeek(), request.startTime(),calculateEndTime(user, request.startTime()), null, user.getUserPreferences().getSlotDurationMinutes());
         slotRepository.save(buildSlot(request, user));
     }
 
@@ -85,7 +86,7 @@ public class SlotServiceImpl implements SlotService {
         LocalTime newEndTime = calculateEndTime(slot.getUser(), newStartTime);
 
         validateStartTimeIsDifferent(slot, newStartTime);
-        validateNoConflictingSlot(slot.getDayOfWeek(), newStartTime, newEndTime, slot.getId());
+        validateSlotRequest(slot.getDayOfWeek(), newStartTime, newEndTime, slot.getId(), slot.getUser().getUserPreferences().getSlotDurationMinutes());
         slotMapper.updateSlot(slot, updateSlotRequest);
         slot.setEndTime(newEndTime);
         updateFutureSpecificSlotsSchedule(slot, newStartTime, newEndTime);
@@ -279,9 +280,22 @@ public class SlotServiceImpl implements SlotService {
         return userService.getUserByIdOrThrowException(userId);
     }
 
+    private void validateSlotRequest(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, UUID excludedSlotId, long slotDurationMinutes) {
+        validateSlotDateChange(startTime, slotDurationMinutes);
+        validateNoConflictingSlot(dayOfWeek, startTime, endTime, excludedSlotId);
+    }
+
     private void validateNoConflictingSlot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, UUID excludedSlotId) {
         if (slotRepository.existsWithinRange(dayOfWeek, startTime, endTime, excludedSlotId)) {
             throw new ResponseStatusException(BAD_REQUEST, "Ya existe un turno que coincide con el día y el rango de horario ingresado");
+        }
+    }
+
+    private static void validateSlotDateChange(LocalTime startTime, long slotDurationMinutes) {
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), startTime);
+        LocalDateTime finishDate = startDate.plusMinutes(slotDurationMinutes);
+        if (!startDate.toLocalDate().isEqual(finishDate.toLocalDate())) {
+            throw new ResponseStatusException(BAD_REQUEST, "El horario ingresado no es válido por un cambio de día en el turno");
         }
     }
 
