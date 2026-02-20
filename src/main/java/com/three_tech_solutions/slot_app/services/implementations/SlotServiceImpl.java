@@ -233,15 +233,32 @@ public class SlotServiceImpl implements SlotService {
             User user
     ) {
         List<SpecificSlot> specificSlots = new ArrayList<>();
-        LocalDate date = getNextDateOfDayOfWeek(request);
+        LocalDate date = getNextOrSameDateOfDayOfWeek(request);
         LocalDate endDate = date.plusMonths(2);
 
-        while (date.isBefore(endDate) || date.isEqual(endDate)) {
+        while (dateIsWithinSlotCreationPeriod(date, endDate)) {
+            /*
+             * This is to evict create slots with a start time
+             * before now when the day of week is the same as today
+             */
+            if (slotTimeIsBeforeNow(request, date)) {
+                date = date.plusWeeks(1);
+                continue;
+            }
+
             specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes, user));
             date = date.plusWeeks(1);
         }
 
         return specificSlots;
+    }
+
+    private static boolean dateIsWithinSlotCreationPeriod(LocalDate date, LocalDate endDate) {
+        return date.isBefore(endDate) || date.isEqual(endDate);
+    }
+
+    private static boolean slotTimeIsBeforeNow(CreateSlotRequest request, LocalDate date) {
+        return date.isEqual(LocalDate.now()) && request.startTime().isBefore(LocalTime.now());
     }
 
     private SpecificSlot buildSpecificSlot(
@@ -261,8 +278,8 @@ public class SlotServiceImpl implements SlotService {
         );
     }
 
-    private static LocalDate getNextDateOfDayOfWeek(CreateSlotRequest request) {
-        return LocalDate.now().with(TemporalAdjusters.next(request.dayOfWeek()));
+    private static LocalDate getNextOrSameDateOfDayOfWeek(CreateSlotRequest request) {
+        return LocalDate.now().with(TemporalAdjusters.nextOrSame(request.dayOfWeek()));
     }
 
     private User getUserByIdOrThrowException(UUID userId) {
@@ -311,7 +328,7 @@ public class SlotServiceImpl implements SlotService {
         }
 
         if (slot.someSpecificSlotIsAtFullCapacity()) {
-            throw new ResponseStatusException(BAD_REQUEST, "Uno o más turnos futuros ya se encuentran completos");
+            throw new ResponseStatusException(BAD_REQUEST, "Una o más fechas están completas debido a recuperaciones de clase.");
         }
     }
 

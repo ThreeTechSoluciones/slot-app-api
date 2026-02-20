@@ -5,8 +5,9 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface PlanService {
@@ -14,7 +15,7 @@ public interface PlanService {
 
     Plan getPlanByIdOrThrowException(UUID planId);
 
-    List<PlanResponse> getPlansByUserAndName(User user, String planName);
+    Page<PlanResponse> getPlansByUserAndName(User user, String planName, Pageable pageable);
 
     void deletePlan(UUID planId);
 

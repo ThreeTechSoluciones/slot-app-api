@@ -61,8 +61,8 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public List<PlanResponse> getUserPlans(UUID userId, String planName) {
-        return userService.getUserPlans(userId, planName);
+    public Page<PlanResponse> getUserPlans(UUID userId, String planName, Pageable pageable) {
+        return userService.getUserPlans(userId, planName, pageable);
     }
 
     @Override

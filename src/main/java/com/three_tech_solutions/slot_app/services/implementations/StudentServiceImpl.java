@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations.BeginningOfMonthMonthlyFeeProcessor.BEGINNING_OF_MONTH_EXPIRATION_DATE;
+import static com.three_tech_solutions.slot_app.utils.PaymentPlanUtils.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -68,21 +68,17 @@ public class StudentServiceImpl implements StudentService {
         this.specificSlotService = specificSlotService;
     }
 
-
     @Transactional
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
-        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
-        Plan plan = getPlanByIdOrThrowException(studentDTO.getPlanId());
-        User user = getUserByIdOrThrowException(studentDTO.getUserId());
-
-        Student student = studentMapper.toStudent(studentDTO, plan, user);
+        validateCreateStudentRequest(studentDTO);
 
         try{
+            Student student = studentMapper.toStudent(studentDTO, buildStudentPaymentPlan(studentDTO), getUserByIdOrThrowException(studentDTO.getUserId()));
             studentRepository.save(student);
             createInitialMonthlyFee(studentDTO, student);
             addStudentToSlots(studentDTO, student);
+            return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
         } catch (ResponseStatusException exception) {
@@ -91,9 +87,6 @@ public class StudentServiceImpl implements StudentService {
         } catch (Exception exception){
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR,"Ocurrió un error al registrar el estudiante. Intente nuevamente");
         }
-
-        return studentMapper.toStudentResponse(student);
-
     }
 
     @Override
@@ -159,8 +152,16 @@ public class StudentServiceImpl implements StudentService {
         return new PageImpl<>(
                 filteredContent,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
-                filteredContent.size()
+                getContentSize(status, studentsPage, filteredContent)
         );
+    }
+
+    private static long getContentSize(StudentSituation status, Page<StudentResponse> studentsPage, List<StudentResponse> filteredContent) {
+        // This is because when we apply the student situation filter,
+        // we are filtering the content of the page, but the total elements of the page
+        // still corresponds to the total elements without applying the student situation filter.
+        // So we need to adjust the total elements of the page to correspond to the filtered content size.
+        return status == null ? studentsPage.getTotalElements() : filteredContent.size();
     }
 
     private static List<StudentResponse> getContentByStudentSituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
@@ -300,7 +301,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private boolean paymentDayIsInvalid(Byte paymentDay) {
-        return paymentDay == null || paymentDay <= 10 || paymentDay > 28;
+        return paymentDay == null || paymentDay <= SPECIFIC_DAY_MINIMUM_DAY || paymentDay > SPECIFIC_DAY_MAXIMUM_DAY;
     }
 
     private boolean planTypeIsSpecificDay(PaymentPlanName paymentPlanName) {
@@ -328,4 +329,23 @@ public class StudentServiceImpl implements StudentService {
     private void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId) {
         specificSlotDetailService.deleteFutureNonRecurrentSpecificSlotDetails(studentId);
     }
+
+
+    private void validateCreateStudentRequest(CreateStudentRequest studentDTO) {
+        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
+        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
+    }
+
+    private PaymentPlan buildStudentPaymentPlan(CreateStudentRequest studentDTO) {
+        return new PaymentPlan(
+                getPaymentDay(studentDTO),
+                studentDTO.getPaymentPlanName(),
+                getPlanByIdOrThrowException(studentDTO.getPlanId())
+        );
+    }
+
+    private static Byte getPaymentDay(CreateStudentRequest studentDTO) {
+        return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_EXPIRATION_DATE;
+    }
+
 }

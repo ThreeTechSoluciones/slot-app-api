@@ -21,7 +21,6 @@ public record CalendarResponse(
             @JsonFormat(pattern = "HH:mm")
             LocalTime startTime,
             @JsonFormat(pattern = "HH:mm")
-            LocalTime endTime,
-            boolean current
+            LocalTime endTime
     ) {}
 }

@@ -27,9 +27,10 @@ public interface UserController {
     );
 
     @GetMapping("/{userId}/plans")
-    List<PlanResponse> getUserPlans(
+    Page<PlanResponse> getUserPlans(
             @PathVariable UUID userId,
-            @RequestParam(required = false, defaultValue = "") String planName
+            @RequestParam(required = false, defaultValue = "") String planName,
+            Pageable pageable
     );
 
     @PatchMapping("/{userId}/capacity")
