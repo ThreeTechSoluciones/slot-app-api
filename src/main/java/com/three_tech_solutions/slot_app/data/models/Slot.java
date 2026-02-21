@@ -75,9 +75,11 @@ public class Slot {
 
     private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {
         LocalDate today = LocalDate.now();
-        return specificSlot.getSlotDate().isEqual(today) || specificSlot.getSlotDate().isAfter(today);
-    }
+        LocalTime now = LocalTime.now();
 
+        return specificSlot.getSlotDate().isAfter(today)
+                || (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(now));
+    }
 
     public boolean isAtFullCapacity() {
         return this.students.size() == this.capacity;

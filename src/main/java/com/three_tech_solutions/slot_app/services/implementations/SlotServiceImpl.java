@@ -132,6 +132,13 @@ public class SlotServiceImpl implements SlotService {
                 .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
     }
 
+    @Transactional
+    public void removeStudentFromAllSlots(Student student) {
+        List<Slot> slots = slotRepository.findAllByStudentOrderByDayAndTime(student);
+        slots.forEach(slot -> slot.removeStudent(student));
+        slotRepository.saveAll(slots);
+    }
+
     @Override
     public void updateSlotsForStudent(List<UUID> slotIds, Student student) {
         List<Slot> slotsWhereToRemoveStudent = slotRepository.findSlotsWhereStudentIsRegistedAndNeedToBeRemoved(slotIds, student);
