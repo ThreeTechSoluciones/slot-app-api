@@ -51,6 +51,10 @@ public class StudentMapper {
     }
 
     public StudentDetailsResponse toStudentDetailsResponse(Student student, List<StudentSlotResponse> slots, Integer age) {
+
+        PaymentPlan paymentPlan = student.getPaymentPlan();
+        Plan plan = paymentPlan != null ? paymentPlan.getPlan() : null;
+
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -61,13 +65,13 @@ public class StudentMapper {
                 age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
-                student.getPaymentPlan().getPaymentPlanName().getName(),
-                student.getPaymentPlan().getPlan().getName(),
-                student.getPaymentPlan().getPlan().getNumberOfDays(),
-                student.getPaymentPlan().getPaymentDay(),
+                paymentPlan != null ? paymentPlan.getPaymentPlanName().getName() : null,
+                plan != null ? plan.getName() : null,
+                plan != null ? plan.getNumberOfDays() : null,
+                paymentPlan != null ? paymentPlan.getPaymentDay() : null,
                 student.isEnabled(),
                 student.getStudentSituation(),
-                student.getPaymentPlan().getPlan().getId(),
+                plan != null ? plan.getId() : null,
                 slots
         );
     }
