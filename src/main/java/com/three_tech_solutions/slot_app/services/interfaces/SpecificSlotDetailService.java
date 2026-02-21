@@ -12,4 +12,6 @@ public interface SpecificSlotDetailService {
     void registerAbsence(SpecificSlotDetail specificSlotDetail);
 
     List<SpecificSlotDetail> getSpecificSlotDetailsBySpecificSlot(UUID specificSlotId, String filter);
+
+    void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId);
 }

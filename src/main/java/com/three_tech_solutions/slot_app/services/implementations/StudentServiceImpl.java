@@ -48,7 +48,6 @@ public class StudentServiceImpl implements StudentService {
     private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
 
-
     public StudentServiceImpl(
             StudentRepository studentRepository,
             StudentMapper studentMapper,
@@ -102,7 +101,6 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
 
-
         student.setEnabled(true);
         studentRepository.save(student);
     }
@@ -113,16 +111,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public void deleteStudent(UUID studentId){
-        studentRepository.findById(studentId)
-                .map(student -> {
-                    if (!student.isEnabled()) {
-                        throw new ResponseStatusException(BAD_REQUEST, "El estudiante ya está eliminado.");
-                    }
-                    student.setEnabled(false);
-                    return studentRepository.save(student);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
+        Student student = getStudentByIdOrThrowExcepion(studentId);
+        validateStudentIsEnabled(student);
+        removeStudentFromAllSlots(student);
+        deleteFutureNonRecurrentSpecificSlotDetails(studentId);
+        student.setPaymentPlan(null);
+        student.setEnabled(false);
     }
 
     @Override
@@ -318,6 +314,20 @@ public class StudentServiceImpl implements StudentService {
 
     private List<StudentSlotResponse> getStudentSlots(Student student) {
         return slotService.getSlotsByStudent(student);
+    }
+
+    private void validateStudentIsEnabled(Student student) {
+        if (!student.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya se encuentra eliminado.");
+        }
+    }
+
+    private void removeStudentFromAllSlots(Student student) {
+        slotService.removeStudentFromAllSlots(student);
+    }
+
+    private void deleteFutureNonRecurrentSpecificSlotDetails(UUID studentId) {
+        specificSlotDetailService.deleteFutureNonRecurrentSpecificSlotDetails(studentId);
     }
 
 

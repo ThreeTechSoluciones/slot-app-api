@@ -34,5 +34,7 @@ public interface SlotService {
 
     void updateFutureSpecificSlotsCapacity(User user, byte newCapacity);
 
+    void removeStudentFromAllSlots(Student student);
+
     void updateSlotsCapacity(User user, byte newCapacity);
 }
