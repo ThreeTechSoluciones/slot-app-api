@@ -144,6 +144,11 @@ public class SlotServiceImpl implements SlotService {
         slotRepository.saveAll(slotsWhereToRemoveStudent);
     }
 
+    @Override
+    public void updateSlotsCapacity(User user, byte newCapacity) {
+        user.getSlots().forEach(slot -> slot.setCapacity(newCapacity));
+    }
+
     private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {
         int slotUsedCapacity = calculateUsedCapacity(specificSlot.getSlot());
         int specificSlotUsedCapacity = specificSlot.getSpecificSlotUsedCapacity();
