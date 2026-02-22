@@ -193,8 +193,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void validateIfDniExists(String dni) {
-        if (!studentRepository.existsByDni(dni)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El DNI no está registrado");
+        if (studentRepository.existsByDni(dni)) {
+            throw new ResponseStatusException(BAD_REQUEST, "El DNI ya está registrado");
         }
     }
 
