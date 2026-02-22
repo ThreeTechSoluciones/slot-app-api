@@ -47,6 +47,7 @@ public interface StudentController {
     StudentMonthlyFeeResponse createStudentMonthlyFee(@PathVariable UUID studentId);
 
     @PostMapping("/dni/{dni}/validate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void validateIfDniExists(@PathVariable String dni);
 
     @PostMapping("/{studentId}/slots/specific-slot/{specificSlotId}/absence")
