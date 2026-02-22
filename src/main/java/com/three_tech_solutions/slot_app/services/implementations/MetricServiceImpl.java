@@ -21,26 +21,34 @@ public class MetricServiceImpl implements MetricService {
 
     @Override
     public StudentPaymentsMetricResponse getStudentPaymentsMetric(UUID studentId) {
+
         List<MonthlyFee> monthlyFees = getStudentMonthlyFees(studentId);
-        int onTimeCount = 0;
-        int outstandingCount = 0;
-        int payedCount = 0;
+
+        int paidCount = 0;
+        int expiredCount = 0;
+        int paidOutOfTimeCount = 0;
 
         for (MonthlyFee monthlyFee : monthlyFees) {
+
             switch (monthlyFee.getCurrentStatus()) {
-                case PENDING, OUT_OF_TIME -> outstandingCount++;
-                case PAYED -> {
-                    payedCount++;
-                    onTimeCount++;
+
+                case PAYED ->
+                        paidCount++;
+
+                case PAYED_OUT_OF_TIME -> {
+                    paidCount++;
+                    paidOutOfTimeCount++;
                 }
-                case PAYED_OUT_OF_TIME -> payedCount++;
+
+                case OUT_OF_TIME ->
+                        expiredCount++;
             }
         }
 
         return new StudentPaymentsMetricResponse(
-            onTimeCount,
-            outstandingCount,
-            payedCount
+                paidCount,
+                expiredCount,
+                paidOutOfTimeCount
         );
     }
 
@@ -49,7 +57,6 @@ public class MetricServiceImpl implements MetricService {
         List<Student> students = getAllStudents();
 
         int activeStudentsCount = 0;
-        int activeStudentsOnTimeCount = 0;
         int activeStudentsWithDebtCount = 0;
         int inactiveStudentsWithDebtCount = 0;
 
@@ -58,19 +65,17 @@ public class MetricServiceImpl implements MetricService {
             if (student.isEnabled()) {
                 activeStudentsCount++;
 
-                switch (student.getStudentSituation()) {
-                    case EN_TERMINO -> activeStudentsOnTimeCount++;
-                    case CON_DEUDA -> activeStudentsWithDebtCount++;
+                if (student.getStudentSituation() == StudentSituation.CON_DEUDA) {
+                    activeStudentsWithDebtCount++;
                 }
 
             } else if (student.getStudentSituation() == StudentSituation.CON_DEUDA) {
-                    inactiveStudentsWithDebtCount++;
+                inactiveStudentsWithDebtCount++;
             }
         }
 
         return new StudentsSummaryMetricsResponse(
                 activeStudentsCount,
-                activeStudentsOnTimeCount,
                 activeStudentsWithDebtCount,
                 inactiveStudentsWithDebtCount
         );
