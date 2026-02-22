@@ -244,6 +244,7 @@ public class StudentServiceImpl implements StudentService {
     public void recoverSlot(UUID studentId, UUID specificSlotId) {
         SpecificSlot specificSlot = specificSlotService.getSpecificSlotByIdOrThrowException(specificSlotId);
         Student student = getStudentByIdOrThrowExcepion(studentId);
+        validateRecoverySlotIsNotRegularSlot(student, specificSlot);
         student.registerAbsenceAsRecovered();
         specificSlot.addStudent(student);
         specificSlotService.saveSpecificSlot(specificSlot);
@@ -346,6 +347,21 @@ public class StudentServiceImpl implements StudentService {
 
     private static Byte getPaymentDay(CreateStudentRequest studentDTO) {
         return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_EXPIRATION_DATE;
+    }
+
+    private void validateRecoverySlotIsNotRegularSlot(Student student, SpecificSlot specificSlot) {
+
+        boolean studentAlreadyRegisteredInSlot =
+                specificSlot.getSlot()
+                        .getStudents()
+                        .contains(student);
+
+        if (studentAlreadyRegisteredInSlot) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede recuperar en un turno en el que el estudiante ya está inscripto."
+            );
+        }
     }
 
 }
