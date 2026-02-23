@@ -11,6 +11,7 @@ import com.three_tech_solutions.slot_app.data.models.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class StudentMapper {
@@ -50,10 +51,13 @@ public class StudentMapper {
         );
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student, List<StudentSlotResponse> slots, Integer age) {
+    public StudentDetailsResponse toStudentDetailsResponse(
+            Student student,
+            List<StudentSlotResponse> slots,
+            Integer age
+    ) {
 
         PaymentPlan paymentPlan = student.getPaymentPlan();
-        Plan plan = paymentPlan != null ? paymentPlan.getPlan() : null;
 
         return new StudentDetailsResponse(
                 student.getId(),
@@ -65,13 +69,13 @@ public class StudentMapper {
                 age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
-                paymentPlan != null ? paymentPlan.getPaymentPlanName().getName() : null,
-                plan != null ? plan.getName() : null,
-                plan != null ? plan.getNumberOfDays() : null,
-                paymentPlan != null ? paymentPlan.getPaymentDay() : null,
+                getValueOrNull(paymentPlan, p -> p.getPaymentPlanName().getName()),
+                getValueOrNull(paymentPlan, p -> p.getPlan().getName()),
+                getValueOrNull(paymentPlan, p -> p.getPlan().getNumberOfDays()),
+                getValueOrNull(paymentPlan, PaymentPlan::getPaymentDay),
                 student.isEnabled(),
                 student.getStudentSituation(),
-                plan != null ? plan.getId() : null,
+                getValueOrNull(paymentPlan, p -> p.getPlan().getId()),
                 slots
         );
     }
@@ -91,5 +95,9 @@ public class StudentMapper {
 
     private int getNumberOfSlotsToRecover(Student student) {
         return student.getAbsences().stream().filter(absence -> absence.getStatus() == AbsenceStatus.PENDING).toList().size();
+    }
+
+    private static <T, R> R getValueOrNull(T object, Function<T, R> accessor) {
+        return object != null ? accessor.apply(object) : null;
     }
 }
