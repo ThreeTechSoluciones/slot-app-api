@@ -7,10 +7,10 @@ import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.three_tech_solutions.slot_app.controllers.responses.SpecificSlotResponse.SpecificSlotResponseStatus.calculateStatus;
 
@@ -86,7 +86,7 @@ public abstract class CalendarViewBuilder {
         return days.indexOf(new CalendarResponse.Day(
                 specificSlot.getSlotDate().getDayOfWeek(),
                 specificSlot.getSlotDate().getDayOfMonth(),
-                isCurrentDay(specificSlot.getSlotDate().getDayOfWeek())
+                isCurrentDay(specificSlot.getSlotDate())
         ));
     }
 
@@ -103,13 +103,13 @@ public abstract class CalendarViewBuilder {
         return specificSlots.stream().map(specificSlot -> new CalendarResponse.Day(
                         specificSlot.getSlotDate().getDayOfWeek(),
                         specificSlot.getSlotDate().getDayOfMonth(),
-                        isCurrentDay(specificSlot.getSlotDate().getDayOfWeek())
+                        isCurrentDay(specificSlot.getSlotDate())
                 ))
                 .distinct().toList();
     }
 
-    private static boolean isCurrentDay(DayOfWeek dayOfWeek) {
-        return dayOfWeek == LocalDate.now().getDayOfWeek();
+    private static boolean isCurrentDay(LocalDate day) {
+        return Objects.equals(day, LocalDate.now());
     }
 
     private static List<CalendarResponse.SlotTime> sortedTimes(List<CalendarResponse.SlotTime> times) {
