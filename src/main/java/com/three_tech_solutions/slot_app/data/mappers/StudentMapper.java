@@ -11,7 +11,8 @@ import com.three_tech_solutions.slot_app.data.models.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
+
+import static com.three_tech_solutions.slot_app.utils.NullSafeUtils.getValueOrNull;
 
 @Service
 public class StudentMapper {
@@ -97,7 +98,4 @@ public class StudentMapper {
         return student.getAbsences().stream().filter(absence -> absence.getStatus() == AbsenceStatus.PENDING).toList().size();
     }
 
-    private static <T, R> R getValueOrNull(T object, Function<T, R> accessor) {
-        return object != null ? accessor.apply(object) : null;
-    }
 }
