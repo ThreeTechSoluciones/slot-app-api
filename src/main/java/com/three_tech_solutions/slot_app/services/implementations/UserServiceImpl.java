@@ -120,8 +120,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
-        slotService.updateSlotsCapacity(user, newCapacity);
-        slotService.updateFutureSpecificSlotsCapacity(user, newCapacity);
+        slotService.updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
     }
 
 }
