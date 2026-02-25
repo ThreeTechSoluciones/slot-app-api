@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.three_tech_solutions.slot_app.utils.NullSafeUtils.getValueOrNull;
+
 @Service
 public class StudentMapper {
 
@@ -50,7 +52,14 @@ public class StudentMapper {
         );
     }
 
-    public StudentDetailsResponse toStudentDetailsResponse(Student student, List<StudentSlotResponse> slots, Integer age) {
+    public StudentDetailsResponse toStudentDetailsResponse(
+            Student student,
+            List<StudentSlotResponse> slots,
+            Integer age
+    ) {
+
+        PaymentPlan paymentPlan = student.getPaymentPlan();
+
         return new StudentDetailsResponse(
                 student.getId(),
                 student.getName(),
@@ -61,13 +70,13 @@ public class StudentMapper {
                 age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
-                student.getPaymentPlan().getPaymentPlanName().getName(),
-                student.getPaymentPlan().getPlan().getName(),
-                student.getPaymentPlan().getPlan().getNumberOfDays(),
-                student.getPaymentPlan().getPaymentDay(),
+                getValueOrNull(paymentPlan, p -> p.getPaymentPlanName().getName()),
+                getValueOrNull(paymentPlan, p -> p.getPlan().getName()),
+                getValueOrNull(paymentPlan, p -> p.getPlan().getNumberOfDays()),
+                getValueOrNull(paymentPlan, PaymentPlan::getPaymentDay),
                 student.isEnabled(),
                 student.getStudentSituation(),
-                student.getPaymentPlan().getPlan().getId(),
+                getValueOrNull(paymentPlan, p -> p.getPlan().getId()),
                 slots
         );
     }
@@ -88,4 +97,5 @@ public class StudentMapper {
     private int getNumberOfSlotsToRecover(Student student) {
         return student.getAbsences().stream().filter(absence -> absence.getStatus() == AbsenceStatus.PENDING).toList().size();
     }
+
 }
