@@ -148,8 +148,6 @@ public class SlotServiceImpl implements SlotService {
     @Override
     public void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
         user.getSlots().forEach(slot -> slot.setCapacity(newCapacity));
-        getFutureSpecificSlots(user)
-                .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
     }
 
     private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {
