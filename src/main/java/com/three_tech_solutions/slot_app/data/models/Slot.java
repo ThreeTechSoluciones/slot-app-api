@@ -91,4 +91,10 @@ public class Slot {
                 .stream()
                 .anyMatch(SpecificSlot::isAtFullCapacity);
     }
+
+    public void setCapacity(byte capacity) {
+        this.capacity = capacity;
+        this.getFutureSpecificSlots()
+                .forEach(specificSlot -> specificSlot.setCapacity(capacity));
+    }
 }

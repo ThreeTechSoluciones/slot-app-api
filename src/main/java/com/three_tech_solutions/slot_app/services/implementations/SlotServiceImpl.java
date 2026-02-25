@@ -126,12 +126,6 @@ public class SlotServiceImpl implements SlotService {
                 });
     }
 
-    @Override
-    public void updateFutureSpecificSlotsCapacity(User user, byte newCapacity) {
-        getFutureSpecificSlots(user)
-                .forEach(specificSlot -> specificSlot.setCapacity(newCapacity));
-    }
-
     @Transactional
     public void removeStudentFromAllSlots(Student student) {
         List<Slot> slots = slotRepository.findAllByStudentOrderByDayAndTime(student);
@@ -149,6 +143,11 @@ public class SlotServiceImpl implements SlotService {
 
         slotsWhereToRemoveStudent.addAll(slotsWhereToAddStudent);
         slotRepository.saveAll(slotsWhereToRemoveStudent);
+    }
+
+    @Override
+    public void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
+        user.getSlots().forEach(slot -> slot.setCapacity(newCapacity));
     }
 
     private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {

@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
         slotService.validateFutureSpecificSlotsCapacity(user, newCapacity);
         user.getUserPreferences().setSlotCapacity(newCapacity);
-        slotService.updateFutureSpecificSlotsCapacity(user, newCapacity);
+        updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
         userRepository.save(user);
     }
 
@@ -118,4 +118,9 @@ public class UserServiceImpl implements UserService {
                 .map(userPreferencesMapper::toUserPreferencesResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
+
+    private void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
+        slotService.updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
+    }
+
 }
