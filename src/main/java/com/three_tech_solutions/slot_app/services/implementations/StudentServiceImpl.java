@@ -144,6 +144,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable) {
+        if (filterByAbsences) {
+            isActive = true;
+        }
+        
         Page<StudentResponse> studentsPage = studentRepository
                 .getStudentsByUserAndFilters(user, filters, filterByAbsences, isActive, pageable)
                 .map(studentMapper::toStudentResponse);
