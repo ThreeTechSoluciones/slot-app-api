@@ -5,6 +5,8 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFee
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,11 +17,12 @@ public interface MonthlyFeeService {
     void createStudentsMonthlyFee();
     void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest);
     void payMonthlyFee(UUID monthlyFeeId);
-    List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(
+    Page<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(
             Student student,
             String month,
             LocalDate expirationDate,
-            MonthlyFeeStatus status
+            MonthlyFeeStatus status,
+            Pageable pageable
     );
 
     StudentMonthlyFeeResponse createMonthlyFeeForStudent(Student student);

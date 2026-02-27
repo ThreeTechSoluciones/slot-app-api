@@ -10,9 +10,10 @@ import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -47,8 +48,8 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
-        return studentService.getStudentMonthlyFees(studentId, month, expirationDate, status);
+    public Page<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status, Pageable pageable) {
+        return studentService.getStudentMonthlyFees(studentId, month, expirationDate, status, pageable);
     }
 
     @Override

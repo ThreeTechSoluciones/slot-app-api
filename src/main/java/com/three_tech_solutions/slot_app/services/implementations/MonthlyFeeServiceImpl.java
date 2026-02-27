@@ -18,6 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -88,12 +90,10 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(Student student, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+    public Page<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(Student student, String month, LocalDate expirationDate, MonthlyFeeStatus status, Pageable pageable) {
         return monthlyFeeRepository
-                .findAllByStudentAndMonthAndStatusAndExpirationDate(student, getMonthValue(month), status, expirationDate)
-                .stream()
-                .map(MonthlyFeeMapper::toStudentMonthlyFeeResponse)
-                .toList();
+                .findAllByStudentAndMonthAndStatusAndExpirationDate(student, getMonthValue(month), status, expirationDate, pageable)
+                .map(MonthlyFeeMapper::toStudentMonthlyFeeResponse);
     }
 
     @Override
