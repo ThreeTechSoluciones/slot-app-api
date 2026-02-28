@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 
+import com.three_tech_solutions.slot_app.controllers.requests.ActivateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
@@ -25,7 +26,7 @@ public interface StudentService {
 
     StudentDetailsResponse getStudentDetails(UUID studentId);
 
-    void activateStudent(UUID studentId);
+    StudentResponse activateStudent(UUID studentId, ActivateStudentRequest activateStudentRequest);
 
     List<Student> getStudents();
 

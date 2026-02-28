@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
-import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.context.InitialPaymentContext;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.Payment;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface MonthlyFeeService {
 
     void createStudentsMonthlyFee();
-    void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest);
+    void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext);
     void payMonthlyFee(UUID monthlyFeeId);
     List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(
             Student student,

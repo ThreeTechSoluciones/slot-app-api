@@ -1,8 +1,8 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.context.InitialPaymentContext;
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.factory.MonthlyFeeProcessorFactory;
-import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.mappers.MonthlyFeeMapper;
@@ -17,7 +17,6 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -62,12 +61,12 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public void createInitialMonthlyFee(Student student, CreateStudentRequest createStudentRequest) {
+    public void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
         MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(
                 student,
                 getMonthlyFeeNumber(),
-                createStudentRequest
+                initialPaymentContext
         );
         monthlyFeeRepository.save(monthlyFee);
     }

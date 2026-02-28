@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.ActivateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
@@ -32,7 +33,7 @@ public interface StudentController {
 
     @PostMapping("/{studentId}/activate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void activateStudent(@PathVariable UUID studentId);
+    StudentResponse activateStudent(@PathVariable UUID studentId, @RequestBody ActivateStudentRequest activateStudentRequest);
 
     @GetMapping("/{studentId}/monthly-fees")
     List<StudentMonthlyFeeResponse> getStudentMonthlyFees(
