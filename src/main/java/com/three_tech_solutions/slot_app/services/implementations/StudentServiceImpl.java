@@ -172,10 +172,11 @@ public class StudentServiceImpl implements StudentService {
         return studentsPage.getContent().stream().filter(studentResponse -> studentResponse.status().equals(status)).toList();
     }
 
-    public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+    @Override
+    public Page<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status, Pageable pageable) {
         return studentRepository
                 .findById(studentId)
-                .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status))
+                .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status, pageable))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
 

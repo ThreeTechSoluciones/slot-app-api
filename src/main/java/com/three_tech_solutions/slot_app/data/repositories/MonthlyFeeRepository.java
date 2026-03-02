@@ -4,6 +4,8 @@ import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,13 +26,13 @@ public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
             AND (:month IS NULL OR MONTH(mf.expirationDate) = :month)
             AND (:status IS NULL OR mf.currentStatus = :status)
             AND (:expirationDate IS NULL OR mf.expirationDate = :expirationDate)
-        ORDER BY mf.number DESC
     """)
-    List<MonthlyFee> findAllByStudentAndMonthAndStatusAndExpirationDate(
+    Page<MonthlyFee> findAllByStudentAndMonthAndStatusAndExpirationDate(
             @Param("student") Student student,
             @Param("month") Integer month,
             @Param("status") MonthlyFeeStatus status,
-            @Param("expirationDate") LocalDate expirationDate
+            @Param("expirationDate") LocalDate expirationDate,
+            Pageable pageable
     );
 
     Optional<MonthlyFee> findByPayment(Payment payment);
