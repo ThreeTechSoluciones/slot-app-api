@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUserCapacityPreference(UUID userId, UpdateUserCapacityRequest request) {
         User user = getUserByIdOrThrowException(userId);
-        byte newCapacity = request.capacity();
+        byte newCapacity = (byte) request.capacity();
 
         slotService.validateFutureSpecificSlotsCapacity(user, newCapacity);
         user.getUserPreferences().setSlotCapacity(newCapacity);
