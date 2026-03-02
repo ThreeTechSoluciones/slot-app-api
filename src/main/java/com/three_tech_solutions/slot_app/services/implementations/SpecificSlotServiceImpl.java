@@ -57,23 +57,16 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     public void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot) {
         SpecificSlot specificSlot = getSpecificSlotByIdOrThrowException(specificSlotId);
         validateIfSpecificSlotIsNotAlreadyCanceled(specificSlot);
-        List<SpecificSlotDetail> details = specificSlot.getSpecificSlotDetails();
-
-        if (studentsMustRecoverSlot && (details == null || details.isEmpty())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay estudiantes asignados para marcar con recuperación."
-            );
-        }
-
         if (studentsMustRecoverSlot) {
-            details.forEach(detail ->
-                    registerAbsenceForStudent(specificSlotId, detail)
-            );
+            specificSlot
+                    .getSpecificSlotDetails()
+                    .forEach(specificSlotDetail ->
+                            registerAbsenceForStudent(specificSlotId, specificSlotDetail)
+                    );
         }
 
         specificSlot.setStatus(CANCELED);
-        if (details != null) {
-            details.clear();
-        }
+        specificSlot.getSpecificSlotDetails().clear();
         specificSlotRepository.save(specificSlot);
     }
 
