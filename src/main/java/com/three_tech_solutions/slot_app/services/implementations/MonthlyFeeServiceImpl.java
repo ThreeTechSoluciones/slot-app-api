@@ -113,6 +113,17 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         return monthlyFee.getNumber();
     }
 
+    @Override
+    public MonthlyFee getMonthlyFeeById(UUID monthlyFeeId) {
+        return monthlyFeeRepository.findById(monthlyFeeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuota no existe"));
+    }
+
+    @Override
+    public void deleteMonthlyFee(MonthlyFee monthlyFee) {
+        monthlyFeeRepository.delete(monthlyFee);
+    }
+
     private static Integer getMonthValue(String month) {
         return Optional
                 .ofNullable(month)
@@ -122,11 +133,6 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
     private int getMonthlyFeeNumber() {
         return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
-    }
-
-    private MonthlyFee getMonthlyFeeById(UUID monthlyFeeId) {
-        return monthlyFeeRepository.findById(monthlyFeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuota no existe"));
     }
 
     private void validateNotAlreadyPaid(MonthlyFee monthlyFee) {

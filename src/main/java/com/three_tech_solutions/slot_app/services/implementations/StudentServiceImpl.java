@@ -252,6 +252,15 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
+    @Override
+    @Transactional
+    public void deleteStudentMonthlyFee(UUID studentId, UUID monthlyFeeId) {
+        getStudentByIdOrThrowExcepion(studentId);
+        MonthlyFee monthlyFee = monthlyFeeService.getMonthlyFeeById(monthlyFeeId);
+        validateIfMonthlyFeeCanBeDeleted(monthlyFee);
+        monthlyFeeService.deleteMonthlyFee(monthlyFee);
+    }
+
     private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
         Student student = getStudentByIdOrThrowExcepion(studentId);
         buildStudentAbsence(specificSlotDetail, student);
@@ -361,6 +370,17 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "No se puede recuperar en un turno en el que el estudiante ya está inscripto."
+            );
+        }
+    }
+
+    private void validateIfMonthlyFeeCanBeDeleted(MonthlyFee monthlyFee) {
+        if (monthlyFee.getCurrentStatus() == MonthlyFeeStatus.PAYED ||
+                monthlyFee.getCurrentStatus() == MonthlyFeeStatus.PAYED_OUT_OF_TIME) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar una cuota que ya fue pagada."
             );
         }
     }
