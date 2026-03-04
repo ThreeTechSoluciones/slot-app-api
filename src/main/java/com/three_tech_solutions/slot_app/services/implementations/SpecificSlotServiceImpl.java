@@ -57,7 +57,6 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     public void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot) {
         SpecificSlot specificSlot = getSpecificSlotByIdOrThrowException(specificSlotId);
         validateIfSpecificSlotIsNotAlreadyCanceled(specificSlot);
-
         if (studentsMustRecoverSlot) {
             specificSlot
                     .getSpecificSlotDetails()
@@ -67,7 +66,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
         }
 
         specificSlot.setStatus(CANCELED);
-        specificSlot.setSpecificSlotDetails(Collections.emptyList());
+        specificSlot.getSpecificSlotDetails().clear();
         specificSlotRepository.save(specificSlot);
     }
 

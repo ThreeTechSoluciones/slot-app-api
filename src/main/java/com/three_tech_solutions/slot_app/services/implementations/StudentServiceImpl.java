@@ -217,10 +217,11 @@ public class StudentServiceImpl implements StudentService {
         return studentsPage.getContent().stream().filter(studentResponse -> studentResponse.status().equals(status)).toList();
     }
 
-    public List<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+    @Override
+    public Page<StudentMonthlyFeeResponse> getStudentMonthlyFees(UUID studentId, String month, LocalDate expirationDate, MonthlyFeeStatus status, Pageable pageable) {
         return studentRepository
                 .findById(studentId)
-                .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status))
+                .map(student -> monthlyFeeService.getMonthlyFeesByStudent(student, month, expirationDate, status, pageable))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
     }
 
@@ -294,6 +295,15 @@ public class StudentServiceImpl implements StudentService {
         specificSlot.addStudent(student);
         specificSlotService.saveSpecificSlot(specificSlot);
         studentRepository.save(student);
+    }
+
+    @Override
+    @Transactional
+    public void deleteStudentMonthlyFee(UUID studentId, UUID monthlyFeeId) {
+        getStudentByIdOrThrowExcepion(studentId);
+        MonthlyFee monthlyFee = monthlyFeeService.getMonthlyFeeById(monthlyFeeId);
+        validateIfMonthlyFeeCanBeDeleted(monthlyFee);
+        monthlyFeeService.deleteMonthlyFee(monthlyFee);
     }
 
     private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
@@ -417,6 +427,17 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "No se puede recuperar en un turno en el que el estudiante ya está inscripto."
+            );
+        }
+    }
+
+    private void validateIfMonthlyFeeCanBeDeleted(MonthlyFee monthlyFee) {
+        if (monthlyFee.getCurrentStatus() == MonthlyFeeStatus.PAYED ||
+                monthlyFee.getCurrentStatus() == MonthlyFeeStatus.PAYED_OUT_OF_TIME) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar una cuota que ya fue pagada."
             );
         }
     }

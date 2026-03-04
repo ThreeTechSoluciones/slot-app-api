@@ -17,6 +17,8 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -87,12 +89,10 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Override
-    public List<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(Student student, String month, LocalDate expirationDate, MonthlyFeeStatus status) {
+    public Page<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(Student student, String month, LocalDate expirationDate, MonthlyFeeStatus status, Pageable pageable) {
         return monthlyFeeRepository
-                .findAllByStudentAndMonthAndStatusAndExpirationDate(student, getMonthValue(month), status, expirationDate)
-                .stream()
-                .map(MonthlyFeeMapper::toStudentMonthlyFeeResponse)
-                .toList();
+                .findAllByStudentAndMonthAndStatusAndExpirationDate(student, getMonthValue(month), status, expirationDate, pageable)
+                .map(MonthlyFeeMapper::toStudentMonthlyFeeResponse);
     }
 
     @Override
@@ -112,6 +112,17 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         return monthlyFee.getNumber();
     }
 
+    @Override
+    public MonthlyFee getMonthlyFeeById(UUID monthlyFeeId) {
+        return monthlyFeeRepository.findById(monthlyFeeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuota no existe"));
+    }
+
+    @Override
+    public void deleteMonthlyFee(MonthlyFee monthlyFee) {
+        monthlyFeeRepository.delete(monthlyFee);
+    }
+
     private static Integer getMonthValue(String month) {
         return Optional
                 .ofNullable(month)
@@ -121,11 +132,6 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
     private int getMonthlyFeeNumber() {
         return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
-    }
-
-    private MonthlyFee getMonthlyFeeById(UUID monthlyFeeId) {
-        return monthlyFeeRepository.findById(monthlyFeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuota no existe"));
     }
 
     private void validateNotAlreadyPaid(MonthlyFee monthlyFee) {
