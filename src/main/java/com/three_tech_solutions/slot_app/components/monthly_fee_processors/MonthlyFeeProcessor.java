@@ -1,6 +1,6 @@
 package com.three_tech_solutions.slot_app.components.monthly_fee_processors;
 
-import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.context.InitialPaymentContext;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
@@ -32,15 +32,15 @@ public abstract class MonthlyFeeProcessor {
      * selected by the student and the current date.
      * @param student Student registered
      * @param newMonthlyFeeNumber Number of the new payment
-     * @param createStudentRequest
+     * @param initialPaymentContext
      * @return The first monthly fee
      */
-    public MonthlyFee createInitialStudentPayment(Student student, int newMonthlyFeeNumber, CreateStudentRequest createStudentRequest) {
+    public MonthlyFee createInitialStudentPayment(Student student, int newMonthlyFeeNumber, InitialPaymentContext initialPaymentContext) {
         return createMonthlyFee(
                 getExpirationDate(student),
                 student,
                 newMonthlyFeeNumber,
-                getFirstPaymentAmount(student, createStudentRequest)
+                getFirstPaymentAmount(student, initialPaymentContext)
         );
     }
 
@@ -78,7 +78,7 @@ public abstract class MonthlyFeeProcessor {
 
     public abstract LocalDate getExpirationDate(Student student);
 
-    public abstract double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest);
+    public abstract double getFirstPaymentAmount(Student student, InitialPaymentContext initialPaymentContext);
 
     public abstract boolean studentHasTheCurrentMonthlyFee(Student student);
 

@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.StudentController;
+import com.three_tech_solutions.slot_app.controllers.requests.ActivateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
@@ -38,8 +39,8 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @Override
-    public void activateStudent(UUID studentId) {
-        studentService.activateStudent(studentId);
+    public StudentResponse activateStudent(UUID studentId, ActivateStudentRequest activateStudentRequest) {
+        return studentService.activateStudent(studentId, activateStudentRequest);
     }
 
     @Override

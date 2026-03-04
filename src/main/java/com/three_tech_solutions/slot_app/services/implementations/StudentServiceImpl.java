@@ -1,5 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.context.InitialPaymentContext;
+import com.three_tech_solutions.slot_app.controllers.requests.ActivateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
@@ -71,13 +73,18 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     @Override
     public StudentResponse createStudent(CreateStudentRequest studentDTO) {
-        validateCreateStudentRequest(studentDTO);
+        validatePlanAndPaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
 
         try{
-            Student student = studentMapper.toStudent(studentDTO, buildStudentPaymentPlan(studentDTO), getUserByIdOrThrowException(studentDTO.getUserId()));
+            Student student = studentMapper.toStudent(
+                    studentDTO,
+                    buildStudentPaymentPlan(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getPlanId()),
+                    getUserByIdOrThrowException(studentDTO.getUserId())
+            );
+
             studentRepository.save(student);
-            createInitialMonthlyFee(studentDTO, student);
-            addStudentToSlots(studentDTO, student);
+            createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
+            addStudentToSlots(studentDTO.getSlotIds(), student);
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
@@ -97,12 +104,50 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void activateStudent(UUID studentId) {
+    @Transactional
+    public StudentResponse activateStudent(UUID studentId, ActivateStudentRequest activateStudentRequest) {
+        validatePlanAndPaymentDay(
+                activateStudentRequest.paymentPlanName(),
+                activateStudentRequest.paymentDay(),
+                activateStudentRequest.extraClasses(),
+                activateStudentRequest.classPrice()
+        );
+
+        return studentMapper.toStudentResponse(
+                studentRepository.save(
+                        getStudentAndSetNewPaymentInformationAndSlots(studentId, activateStudentRequest)
+                )
+        );
+    }
+
+    private Student getStudentAndSetNewPaymentInformationAndSlots(UUID studentId, ActivateStudentRequest activateStudentRequest) {
+        Student student = getStudentAndValidateIfIsNotAlreadyActivated(studentId);
+        setNewPaymentInfoAndSlotsToStudent(activateStudentRequest, student);
+        return student;
+    }
+
+    private Student getStudentAndValidateIfIsNotAlreadyActivated(UUID studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe"));
+        validateStudentIsNotAlreadyActivated(student);
+        return student;
+    }
 
+    private void setNewPaymentInfoAndSlotsToStudent(ActivateStudentRequest activateStudentRequest, Student student) {
+        student.setPaymentPlan(buildStudentPaymentPlan(activateStudentRequest.paymentPlanName(), activateStudentRequest.paymentDay(), activateStudentRequest.planId()));
+        addStudentToSlots(activateStudentRequest.slotIds(), student);
+        createInitialMonthlyFee(student, getInitialPaymentContext(activateStudentRequest.classPrice(), activateStudentRequest.extraClasses()));
         student.setEnabled(true);
-        studentRepository.save(student);
+    }
+
+    private static InitialPaymentContext getInitialPaymentContext(Double classPrice, Byte extraClasses) {
+        return new InitialPaymentContext(classPrice, extraClasses);
+    }
+
+    private static void validateStudentIsNotAlreadyActivated(Student student) {
+        if(student.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estudiante ya se encuentra activo.");
+        }
     }
 
     @Override
@@ -207,12 +252,12 @@ public class StudentServiceImpl implements StudentService {
                 .orElse(null);
     }
 
-    private void createInitialMonthlyFee(CreateStudentRequest studentDTO, Student student) {
-        monthlyFeeService.createInitialMonthlyFee(student, studentDTO);
+    private void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext) {
+        monthlyFeeService.createInitialMonthlyFee(student, initialPaymentContext);
     }
 
-    private void addStudentToSlots(CreateStudentRequest studentDTO, Student student) {
-        studentDTO.getSlotIds().forEach(slotId -> slotService.addStudentToSlot(slotId, student));
+    private void addStudentToSlots(List<UUID> slotIds, Student student) {
+        slotIds.forEach(slotId -> slotService.addStudentToSlot(slotId, student));
     }
 
     private User getUserByIdOrThrowException(UUID userId) {
@@ -342,21 +387,33 @@ public class StudentServiceImpl implements StudentService {
     }
 
 
-    private void validateCreateStudentRequest(CreateStudentRequest studentDTO) {
-        validatePlanDetail(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay(), studentDTO.getExtraClasses(), studentDTO.getClassPrice());
-        validatePaymentDay(studentDTO.getPaymentPlanName(), studentDTO.getPaymentDay());
+    private void validatePlanAndPaymentDay(
+            PaymentPlanName paymentPlanName,
+            Byte paymentDay,
+            Byte extraClasses,
+            Double classPrice
+    ) {
+        validatePlanDetail(paymentPlanName, paymentDay, extraClasses, classPrice);
+        validatePaymentDay(paymentPlanName, paymentDay);
     }
 
-    private PaymentPlan buildStudentPaymentPlan(CreateStudentRequest studentDTO) {
+    private PaymentPlan buildStudentPaymentPlan(
+            PaymentPlanName paymentPlanName,
+            Byte paymentDay,
+            UUID planId
+    ) {
         return new PaymentPlan(
-                getPaymentDay(studentDTO),
-                studentDTO.getPaymentPlanName(),
-                getPlanByIdOrThrowException(studentDTO.getPlanId())
+                getPaymentDay(paymentPlanName, paymentDay),
+                paymentPlanName,
+                getPlanByIdOrThrowException(planId)
         );
     }
 
-    private static Byte getPaymentDay(CreateStudentRequest studentDTO) {
-        return studentDTO.getPaymentPlanName() == PaymentPlanName.SPECIFIC_DAY ? studentDTO.getPaymentDay() : BEGINNING_OF_MONTH_EXPIRATION_DATE;
+    private static Byte getPaymentDay(
+            PaymentPlanName paymentPlanName,
+            Byte paymentDay
+    ) {
+        return paymentPlanName == PaymentPlanName.SPECIFIC_DAY ? paymentDay : BEGINNING_OF_MONTH_EXPIRATION_DATE;
     }
 
     private void validateRecoverySlotIsNotRegularSlot(Student student, SpecificSlot specificSlot) {

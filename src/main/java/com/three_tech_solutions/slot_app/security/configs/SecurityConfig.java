@@ -50,8 +50,9 @@ public class SecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests((authorizationManager) ->
                     authorizationManager
-                            .requestMatchers("/auth/sign-in").authenticated()
-                            .anyRequest().permitAll()
+                            .requestMatchers("/auth/sign-up", "/ping").permitAll()
+                            .requestMatchers("/docs", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                            .anyRequest().authenticated()
                 )
                 .addFilterBefore(bearerTokenFilter, BasicAuthenticationFilter.class)
                 .httpBasic(httpSecurityHttpBasicConfigurer ->

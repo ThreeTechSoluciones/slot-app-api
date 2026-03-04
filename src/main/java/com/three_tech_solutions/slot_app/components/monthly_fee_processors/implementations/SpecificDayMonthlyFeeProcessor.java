@@ -1,7 +1,7 @@
 package com.three_tech_solutions.slot_app.components.monthly_fee_processors.implementations;
 
 import com.three_tech_solutions.slot_app.components.monthly_fee_processors.MonthlyFeeProcessor;
-import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.components.monthly_fee_processors.context.InitialPaymentContext;
 import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class SpecificDayMonthlyFeeProcessor extends MonthlyFeeProcessor {
     }
 
     @Override
-    public double getFirstPaymentAmount(Student student, CreateStudentRequest createStudentRequest) {
+    public double getFirstPaymentAmount(Student student, InitialPaymentContext initialPaymentContext) {
         return getStudentPlanPrice(student);
     }
 
