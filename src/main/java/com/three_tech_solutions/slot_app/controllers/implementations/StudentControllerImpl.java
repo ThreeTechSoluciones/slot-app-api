@@ -71,4 +71,9 @@ public class StudentControllerImpl implements StudentController {
     public void recoverSlot(UUID studentId, UUID specificSlotId) {
         studentService.recoverSlot(studentId, specificSlotId);
     }
+
+    @Override
+    public void deleteStudentMonthlyFee(UUID studentId, UUID monthlyFeeId) {
+        studentService.deleteStudentMonthlyFee(studentId, monthlyFeeId);
+    }
 }

@@ -64,4 +64,8 @@ public interface StudentController {
             @PathVariable UUID studentId,
             @PathVariable UUID specificSlotId
     );
+
+    @DeleteMapping("/{studentId}/monthly-fees/{monthlyFeeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteStudentMonthlyFee(@PathVariable UUID studentId, @PathVariable UUID monthlyFeeId);
 }
