@@ -4,4 +4,6 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/slot_app?createDatabaseIfNotExist=true
 security:
+  cors:
+    allowed-origins: http://localhost:5173
   secret: D8B3B7BA8B42E5BFA6896FC4811127724A982FAF1446DB85BCFB89C82F
