@@ -1,0 +1,3 @@
+security:
+  cors:
+    allowed-origins: http://slotapp-dev.duckdns.org, https://slotapp-dev.duckdns.org, http://localhost:5173

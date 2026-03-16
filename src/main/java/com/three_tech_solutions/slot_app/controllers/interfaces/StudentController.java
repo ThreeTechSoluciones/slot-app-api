@@ -1,0 +1,72 @@
+package com.three_tech_solutions.slot_app.controllers.interfaces;
+
+import com.three_tech_solutions.slot_app.controllers.requests.ActivateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.CreateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.UpdateStudentRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
+import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import jakarta.validation.Valid;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+@RequestMapping("/students")
+public interface StudentController {
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    StudentResponse createStudent(@Valid @RequestBody CreateStudentRequest studentDTO);
+
+    @DeleteMapping("/{studentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteStudent(@PathVariable UUID studentId);
+
+    @GetMapping("/{studentId}")
+    StudentDetailsResponse getStudentDetails(@PathVariable UUID studentId);
+
+    @PatchMapping("/{studentId}")
+    StudentResponse updateStudent (@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
+
+    @PostMapping("/{studentId}/activate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    StudentResponse activateStudent(@PathVariable UUID studentId, @RequestBody ActivateStudentRequest activateStudentRequest);
+
+    @GetMapping("/{studentId}/monthly-fees")
+    Page<StudentMonthlyFeeResponse> getStudentMonthlyFees(
+            @PathVariable UUID studentId,
+            @RequestParam(required = false) String month,
+            @RequestParam(required = false) LocalDate expirationDate,
+            @RequestParam(required = false) MonthlyFeeStatus status,
+            @PageableDefault(size = 20) Pageable pageable
+    );
+
+    @PostMapping("/{studentId}/monthly-fees")
+    @ResponseStatus(HttpStatus.CREATED)
+    StudentMonthlyFeeResponse createStudentMonthlyFee(@PathVariable UUID studentId);
+
+    @PostMapping("/dni/{dni}/validate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void validateIfDniExists(@PathVariable String dni);
+
+    @PostMapping("/{studentId}/slots/specific-slot/{specificSlotId}/absence")
+    void registerStudentAbsenceForSpecificSlot(
+            @PathVariable UUID studentId,
+            @PathVariable UUID specificSlotId
+    );
+
+    @PostMapping("/{studentId}/slots/specific-slot/{specificSlotId}/recover")
+    void recoverSlot(
+            @PathVariable UUID studentId,
+            @PathVariable UUID specificSlotId
+    );
+
+    @DeleteMapping("/{studentId}/monthly-fees/{monthlyFeeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteStudentMonthlyFee(@PathVariable UUID studentId, @PathVariable UUID monthlyFeeId);
+}

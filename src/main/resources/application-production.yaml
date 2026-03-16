@@ -1,0 +1,3 @@
+security:
+  cors:
+    allowed-origins: http://slotapp.duckdns.org, https://slotapp.duckdns.org
