@@ -10,7 +10,7 @@ pipeline {
         }
 
         stage('Clone') {
-            when { branch 'development' }
+            when { branch 'dev' }
             steps {
                 git branch: 'dev',
                     url: 'https://github.com/ThreeTechSoluciones/slot-app-api'
@@ -18,7 +18,7 @@ pipeline {
         }
 
         stage('Get Version') {
-            when { branch 'development' }
+            when { branch 'dev' }
             steps {
                 script {
                     VERSION = sh(
@@ -33,7 +33,7 @@ pipeline {
 
 
         stage('Build Image') {
-            when { branch 'development' }
+            when { branch 'dev' }
             steps {
                 sh "docker build -t slotapp-api:${VERSION} ."
                 sh "docker tag slotapp-api:${VERSION} slotapp-api:latest"
@@ -41,7 +41,7 @@ pipeline {
         }
 
         stage('Deploy Dev') {
-            when { branch 'development' }
+            when { branch 'dev' }
             steps {
                 sh """
                 cd /SlotApp/backend/development
