@@ -15,6 +15,11 @@ spring:
 springdoc:
   swagger-ui:
     path: /docs
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info
 logging:
   level:
     org:

@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizationManager) ->
                     authorizationManager
                             .requestMatchers("/auth/sign-up", "/ping").permitAll()
-                            .requestMatchers("/docs", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                            .requestMatchers("/docs", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/info").permitAll()
                             .anyRequest().authenticated()
                 )
                 .addFilterBefore(bearerTokenFilter, BasicAuthenticationFilter.class)
