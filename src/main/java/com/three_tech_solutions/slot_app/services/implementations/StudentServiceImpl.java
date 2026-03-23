@@ -84,6 +84,7 @@ public class StudentServiceImpl implements StudentService {
 
             studentRepository.save(student);
             createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
+            validateStudentSlotAssignment(studentDTO.getSlotIds(), studentDTO.getPlanId());
             addStudentToSlots(studentDTO.getSlotIds(), student);
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
@@ -135,6 +136,7 @@ public class StudentServiceImpl implements StudentService {
 
     private void setNewPaymentInfoAndSlotsToStudent(ActivateStudentRequest activateStudentRequest, Student student) {
         student.setPaymentPlan(buildStudentPaymentPlan(activateStudentRequest.paymentPlanName(), activateStudentRequest.paymentDay(), activateStudentRequest.planId()));
+        validateStudentSlotAssignment(activateStudentRequest.slotIds(), activateStudentRequest.planId());
         addStudentToSlots(activateStudentRequest.slotIds(), student);
         createInitialMonthlyFee(student, getInitialPaymentContext(activateStudentRequest.classPrice(), activateStudentRequest.extraClasses()));
         student.setEnabled(true);
@@ -174,6 +176,7 @@ public class StudentServiceImpl implements StudentService {
                 .map(student -> {
                     removePaymentDayIfNewPlanIsBeginningOfMonth(request);
                     studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
+                    validateStudentSlotAssignment(request.getSlotIds(), request.getPlanId());
                     slotService.updateSlotsForStudent(request.getSlotIds(), student);
 
                     return studentMapper.toStudentResponse(studentRepository.save(student));
@@ -438,6 +441,18 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "No se puede eliminar una cuota que ya fue pagada."
+            );
+        }
+    }
+
+    private void validateStudentSlotAssignment(List<UUID> slotIds, UUID planId) {
+        Plan plan = getPlanByIdOrThrowException(planId);
+        int numberOfDays = plan.getNumberOfDays();
+
+        if (slotIds.size() != numberOfDays) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "La cantidad de turnos seleccionados debe coincidir con los días del plan (" + numberOfDays + ")"
             );
         }
     }
