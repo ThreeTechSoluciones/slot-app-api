@@ -49,4 +49,6 @@ public interface UserController {
     @GetMapping("/{userId}/userPreferences")
     UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
 
+    @PostMapping("/password/recover")
+    void recoverPassword(@RequestBody RecoverPasswordRequest recoverPasswordRequest);
 }
