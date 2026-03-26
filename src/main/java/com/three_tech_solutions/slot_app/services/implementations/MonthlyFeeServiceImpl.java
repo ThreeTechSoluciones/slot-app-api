@@ -62,6 +62,25 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         });
     }
 
+    @Transactional
+    @Scheduled(cron = "0 0 2 * * *")
+    public void expireMonthlyFees() {
+        log.info("Iniciando proceso de expiración de cuotas");
+
+        List<MonthlyFee> expiredFees = monthlyFeeRepository.findExpiredMonthlyFees(LocalDate.now());
+
+        expiredFees.forEach(monthlyFee -> {
+            try {
+                updateToOutOfTime(monthlyFee);
+                monthlyFeeRepository.save(monthlyFee);
+            } catch (Exception e) {
+                log.error("Error expirando cuota {}", monthlyFee.getId(), e);
+            }
+        });
+
+        log.info("Finalizó proceso de expiración");
+    }
+
     @Override
     public void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
@@ -153,6 +172,20 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         monthlyFee.setCurrentStatus(newStatus);
 
         MonthlyFeeStatusHistory newStatusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
+        monthlyFee.getStatusHistory().add(newStatusHistory);
+    }
+
+    private void updateToOutOfTime(MonthlyFee monthlyFee) {
+        monthlyFee.getStatusHistory().stream()
+                .filter(h -> h.getEndDate() == null)
+                .findFirst()
+                .ifPresent(h -> h.setEndDate(LocalDateTime.now()));
+
+        monthlyFee.setCurrentStatus(MonthlyFeeStatus.OUT_OF_TIME);
+
+        MonthlyFeeStatusHistory newStatusHistory =
+                new MonthlyFeeStatusHistory(MonthlyFeeStatus.OUT_OF_TIME, LocalDateTime.now());
+
         monthlyFee.getStatusHistory().add(newStatusHistory);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,4 +37,12 @@ public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
     );
 
     Optional<MonthlyFee> findByPayment(Payment payment);
+
+    @Query("""
+        SELECT mf
+        FROM MonthlyFee mf
+        WHERE mf.currentStatus = 'PENDING'
+            AND mf.expirationDate < :today
+    """)
+    List<MonthlyFee> findExpiredMonthlyFees(@Param("today") LocalDate today);
 }
