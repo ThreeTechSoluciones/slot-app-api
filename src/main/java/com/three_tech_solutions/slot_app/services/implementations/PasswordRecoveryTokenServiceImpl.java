@@ -29,7 +29,7 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
                 .findByUsernameAndToken(username, token)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Token inválido"));
 
-        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {post
+        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(BAD_REQUEST, "Token expirado");
         }
 
