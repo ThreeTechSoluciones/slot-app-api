@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.UserController;
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
@@ -88,4 +89,9 @@ public class UserControllerImpl implements UserController {
     public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId){
         return userService.getUserPreferences(userId);
     };
+
+    @Override
+    public void recoverPassword(RecoverPasswordRequest request) {
+        userService.recoverPassword(request);
+    }
 }

@@ -1,11 +1,13 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
+import com.three_tech_solutions.slot_app.data.models.PasswordRecoveryToken;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final PlanService planService;
     private final CalendarService calendarService;
     private final UserPreferencesMapper userPreferencesMapper;
+    private final PasswordRecoveryTokenService tokenService;
 
 
     @Override
@@ -119,8 +122,34 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
     }
 
+    @Override
+    @Transactional
+    public void recoverPassword(RecoverPasswordRequest request) {
+        User user = getUserByUsername(request.username());
+        validatePasswords(request.password(), request.repeatedPassword());
+        PasswordRecoveryToken token = tokenService.getValidToken(request.username(), request.token());
+        updateUserPassword(user, request.password());
+        tokenService.deleteToken(token);
+    }
+
     private void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
         slotService.updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
+    }
+
+    private User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Usuario no encontrado"));
+    }
+
+    private void validatePasswords(String password, String repeatedPassword) {
+        if (!password.equals(repeatedPassword)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Las contraseñas no coinciden");
+        }
+    }
+
+    private void updateUserPassword(User user, String rawPassword) {
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        userRepository.save(user);
     }
 
 }
