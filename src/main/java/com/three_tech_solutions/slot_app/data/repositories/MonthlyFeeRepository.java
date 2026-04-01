@@ -25,7 +25,6 @@ public interface MonthlyFeeRepository extends JpaRepository<MonthlyFee, UUID> {
             AND (:month IS NULL OR MONTH(mf.expirationDate) = :month)
             AND (:status IS NULL OR mf.currentStatus = :status)
             AND (:expirationDate IS NULL OR mf.expirationDate = :expirationDate)
-        ORDER BY mf.expirationDate DESC
     """)
     Page<MonthlyFee> findAllByStudentAndMonthAndStatusAndExpirationDate(
             @Param("student") Student student,
