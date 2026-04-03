@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.data.models.PasswordRecoveryToken;
+import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.PasswordRecoveryTokenRepository;
 import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
@@ -23,21 +24,21 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
     }
 
     @Override
-    public PasswordRecoveryToken getValidToken(String username, int token) {
+    public void validateTokenAndDisableIt(User user, int token) {
 
         PasswordRecoveryToken tokenEntity = passwordRecoverytokenRepository
-                .findByUsernameAndToken(username, token)
+                .findByUserAndToken(user, token)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Token inválido"));
 
-        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (tokenEntity.isExpired()) {
             throw new ResponseStatusException(BAD_REQUEST, "Token expirado");
         }
 
-        return tokenEntity;
-    }
+        if (tokenEntity.isDisabled()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Token ya utilizado");
+        }
 
-    @Override
-    public void deleteToken(PasswordRecoveryToken token) {
-        passwordRecoverytokenRepository.delete(token);
+        tokenEntity.setDisabled(true);
+        passwordRecoverytokenRepository.save(tokenEntity);
     }
 }

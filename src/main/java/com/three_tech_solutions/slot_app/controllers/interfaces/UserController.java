@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -51,5 +52,6 @@ public interface UserController {
     UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
 
     @PostMapping("/password/recover")
-    void recoverPassword(@RequestBody RecoverPasswordRequest recoverPasswordRequest);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void recoverPassword(@Valid @RequestBody RecoverPasswordRequest recoverPasswordRequest);
 }

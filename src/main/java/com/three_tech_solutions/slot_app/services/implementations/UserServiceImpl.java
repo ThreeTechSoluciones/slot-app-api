@@ -7,12 +7,12 @@ import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
-import com.three_tech_solutions.slot_app.data.models.PasswordRecoveryToken;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +30,7 @@ import java.util.UUID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private final PlanService planService;
     private final CalendarService calendarService;
     private final UserPreferencesMapper userPreferencesMapper;
-    private final PasswordRecoveryTokenService tokenService;
+    private final PasswordRecoveryTokenService PasswordRecoverytokenService;
 
 
     @Override
@@ -54,13 +55,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<StudentResponse> getUserStudents(UUID userId, String filter, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable) {
         return studentService.getStudentsByUserAndNameAndLastNameAndDni(
-                        getUserByIdOrThrowException(userId),
-                        filter,
-                        filterByAbsences,
-                        status,
-                        isActive,
-                        pageable
-                );
+                getUserByIdOrThrowException(userId),
+                filter,
+                filterByAbsences,
+                status,
+                isActive,
+                pageable
+        );
     }
 
     @Override
@@ -125,26 +126,27 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void recoverPassword(RecoverPasswordRequest request) {
-        User user = getUserByUsername(request.username());
-        validatePasswords(request.password(), request.repeatedPassword());
-        PasswordRecoveryToken token = tokenService.getValidToken(request.username(), request.token());
-        updateUserPassword(user, request.password());
-        tokenService.deleteToken(token);
+
+        try {
+            User user = loadUserByUsername(request.username());
+
+            updateUserPassword(user, request.password());
+
+            PasswordRecoverytokenService.validateTokenAndDisableIt(user, request.token());
+
+        } catch (ResponseStatusException e) {
+            log.info("Error al recuperar contraseña para el usuario {}: {}", request.username(), e.getReason());
+            throw e;
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+                    "Ocurrió un error al recuperar la contraseña. Por favor, contacte con el administrador.");
+        }
     }
+
 
     private void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {
         slotService.updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
-    }
-
-    private User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Usuario no encontrado"));
-    }
-
-    private void validatePasswords(String password, String repeatedPassword) {
-        if (!password.equals(repeatedPassword)) {
-            throw new ResponseStatusException(BAD_REQUEST, "Las contraseñas no coinciden");
-        }
     }
 
     private void updateUserPassword(User user, String rawPassword) {

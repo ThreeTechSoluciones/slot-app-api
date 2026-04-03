@@ -7,10 +7,12 @@ import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -91,7 +93,7 @@ public class UserControllerImpl implements UserController {
     };
 
     @Override
-    public void recoverPassword(RecoverPasswordRequest request) {
+    public void recoverPassword(@Valid @RequestBody RecoverPasswordRequest request) {
         userService.recoverPassword(request);
     }
 }
