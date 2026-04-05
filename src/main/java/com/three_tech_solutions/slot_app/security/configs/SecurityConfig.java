@@ -69,7 +69,7 @@ public class SecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests((authorizationManager) ->
                     authorizationManager
-                            .requestMatchers("/auth/sign-up", "/ping").permitAll()
+                            .requestMatchers("/auth/sign-up", "/auth/restore-password", "/users/password/recover","/ping").permitAll()
                             .requestMatchers("/docs", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/info").permitAll()
                             .anyRequest().authenticated()
                 )

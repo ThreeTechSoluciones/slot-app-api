@@ -22,6 +22,8 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String username;
     private String password;
+    @Column(unique = true)
+    private String email;
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Student> students = Collections.emptyList();
