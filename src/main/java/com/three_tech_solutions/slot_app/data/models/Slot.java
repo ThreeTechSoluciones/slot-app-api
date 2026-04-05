@@ -1,11 +1,13 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Entity
@@ -30,13 +32,12 @@ public class Slot {
     @Id
     private UUID id = UUID.randomUUID();
 
-    public Slot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, byte capacity, User user, List<SpecificSlot> specificSlots) {
+    public Slot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, byte capacity, User user) {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.endTime = endTime;
         this.capacity = capacity;
         this.user = user;
-        this.specificSlots = specificSlots;
     }
 
     public void removeStudent(Student student) {
@@ -96,5 +97,74 @@ public class Slot {
         this.capacity = capacity;
         this.getFutureSpecificSlots()
                 .forEach(specificSlot -> specificSlot.setCapacity(capacity));
+    }
+
+
+    /**
+     * Method to add specific slots from a start date to an end date with a specific time and duration.
+     * It will create specific slots for each week between the start and end date.
+     * @param slotDurationMinutes duration of the slot in minutes
+     * @param slotCapacity capacity of the slot
+     * @param user the user owner of the slot
+     * @param startDate the start date of the slot creation period
+     * @param endDate the end date of the slot creation period
+     * @param startTime the start time of the slot
+     */
+    public void addSpecificSlots(
+            long slotDurationMinutes,
+            byte slotCapacity,
+            User user,
+            LocalDate startDate,
+            LocalDate endDate,
+            LocalTime startTime
+    ) {
+        List<SpecificSlot> newSpecificSlots = new ArrayList<>();
+        LocalDate date = getNextOrSameDateOfDayOfWeek(startDate);
+
+        while (dateIsWithinSlotCreationPeriod(date, endDate)) {
+            /*
+             * This is to evict create slots with a start time
+             * before now when the day of week is the same as today
+             */
+            if (slotTimeIsBeforeNow(startTime, date)) {
+                date = date.plusWeeks(1);
+                continue;
+            }
+
+            newSpecificSlots.add(buildSpecificSlot(startTime, date, slotCapacity, slotDurationMinutes, user));
+            date = date.plusWeeks(1);
+        }
+
+        this.specificSlots.addAll(newSpecificSlots);
+    }
+
+
+    private static boolean dateIsWithinSlotCreationPeriod(LocalDate date, LocalDate endDate) {
+        return date.isBefore(endDate) || date.isEqual(endDate);
+    }
+
+    private static boolean slotTimeIsBeforeNow(LocalTime startTime, LocalDate date) {
+        return date.isEqual(LocalDate.now()) && startTime.isBefore(LocalTime.now());
+    }
+
+    private SpecificSlot buildSpecificSlot(
+            LocalTime startTime,
+            LocalDate startDate,
+            byte slotCapacity,
+            long slotDurationMinutes,
+            User user
+    ) {
+        return new SpecificSlot(
+                startDate,
+                slotCapacity,
+                startTime,
+                startTime.plusMinutes(slotDurationMinutes),
+                user,
+                SpecificSlotStatus.CREATED
+        );
+    }
+
+    private static LocalDate getNextOrSameDateOfDayOfWeek(LocalDate date) {
+        return LocalDate.now().with(TemporalAdjusters.nextOrSame(date.getDayOfWeek()));
     }
 }
