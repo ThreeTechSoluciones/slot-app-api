@@ -16,6 +16,7 @@ import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -216,17 +218,15 @@ public class SlotServiceImpl implements SlotService {
                 user
         );
 
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusMonths(2);
-        LocalTime startTime = request.startTime();
+        LocalDate startDate = DateUtils.getNextOrSameDateOfDayOfWeek(request.dayOfWeek());
+        LocalDate endDate = startDate.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
 
         slot.addSpecificSlots(
             user.getUserPreferences().getSlotDurationMinutes(),
             user.getUserPreferences().getSlotCapacity(),
             user,
             startDate,
-            endDate,
-            startTime
+            endDate
         );
 
         return slot;

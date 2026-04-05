@@ -35,4 +35,8 @@ public interface UserService extends UserDetailsService {
     CalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
 
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
+
+    List<User> getUsers();
+
+    void saveUser(User user);
 }

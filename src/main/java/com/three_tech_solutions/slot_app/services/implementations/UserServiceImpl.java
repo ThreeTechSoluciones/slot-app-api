@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUser(String username, String password) {
         try {
-            userRepository.save(new User(
+            saveUser(new User(
                     username,
                     passwordEncoder.encode(password)
             ));
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
         slotService.validateFutureSpecificSlotsCapacity(user, newCapacity);
         user.getUserPreferences().setSlotCapacity(newCapacity);
         updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
-        userRepository.save(user);
+        saveUser(user);
     }
 
     @Override
@@ -117,6 +117,16 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.findById(userId)
                 .map(userPreferencesMapper::toUserPreferencesResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Hubo un error al encontrar el usuario"));
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return this.userRepository.findAll();
+    }
+
+    @Override
+    public void saveUser(User user) {
+        this.userRepository.save(user);
     }
 
     private void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity) {

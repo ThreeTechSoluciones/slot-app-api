@@ -7,7 +7,6 @@ import lombok.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Entity
@@ -108,18 +107,16 @@ public class Slot {
      * @param user the user owner of the slot
      * @param startDate the start date of the slot creation period
      * @param endDate the end date of the slot creation period
-     * @param startTime the start time of the slot
      */
     public void addSpecificSlots(
             long slotDurationMinutes,
             byte slotCapacity,
             User user,
             LocalDate startDate,
-            LocalDate endDate,
-            LocalTime startTime
+            LocalDate endDate
     ) {
         List<SpecificSlot> newSpecificSlots = new ArrayList<>();
-        LocalDate date = getNextOrSameDateOfDayOfWeek(startDate);
+        LocalDate date = startDate;
 
         while (dateIsWithinSlotCreationPeriod(date, endDate)) {
             /*
@@ -164,7 +161,11 @@ public class Slot {
         );
     }
 
-    private static LocalDate getNextOrSameDateOfDayOfWeek(LocalDate date) {
-        return LocalDate.now().with(TemporalAdjusters.nextOrSame(date.getDayOfWeek()));
+    public LocalDate getLastSpecificSlotDate() {
+        return this.specificSlots
+                .stream()
+                .map(SpecificSlot::getSlotDate)
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.now());
     }
 }
