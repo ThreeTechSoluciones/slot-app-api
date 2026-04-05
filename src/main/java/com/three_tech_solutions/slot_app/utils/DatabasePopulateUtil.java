@@ -21,7 +21,7 @@ public class DatabasePopulateUtil {
                 User user = new User();
                 user.setUsername("admin");
                 user.setPassword(passwordEncoder.encode("admin"));
-                user.setEmail("federicosan140200@gmail.com");
+                user.setEmail("threetechsoluciones@gmail.com");
                 userRepository.save(user);
             }
         };
