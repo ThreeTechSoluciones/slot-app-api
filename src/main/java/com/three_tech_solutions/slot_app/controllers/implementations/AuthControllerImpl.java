@@ -2,6 +2,7 @@ package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.AuthController;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.AuthService;
@@ -30,4 +31,11 @@ public class AuthControllerImpl implements AuthController {
     public void restorePassword(RestorePasswordRequest restorePasswordRequest) {
         authService.restorePassword(restorePasswordRequest);
     }
+
+    @Override
+    public void recoverPassword(RecoverPasswordRequest recoverPasswordRequest) {
+        authService.confirmRecoverPassword(recoverPasswordRequest);
+    }
+
+
 }

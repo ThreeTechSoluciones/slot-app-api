@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -49,6 +50,11 @@ class AuthServiceImpl implements AuthService {
                     getGenerateRestorePasswordCode(user)
             )
         );
+    }
+
+    @Override
+    public void confirmRecoverPassword(RecoverPasswordRequest recoverPasswordRequest) {
+        userService.recoverPassword(recoverPasswordRequest);
     }
 
     private String getGenerateRestorePasswordCode(User user) {

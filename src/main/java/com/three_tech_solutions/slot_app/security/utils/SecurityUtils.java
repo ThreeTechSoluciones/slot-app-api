@@ -15,7 +15,7 @@ public class SecurityUtils {
     public static String[] AUTHENTICATION_WHITELIST = {
             "/auth/sign-up",
             "/auth/restore-password",
-            "/users/password/recover",
+            "/auth/restore-password/confirm",
             "/ping"
     };
 
