@@ -84,8 +84,7 @@ public class StudentServiceImpl implements StudentService {
 
             studentRepository.save(student);
             createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
-            validateStudentSlotAssignment(studentDTO.getSlotIds(), studentDTO.getPlanId());
-            addStudentToSlots(studentDTO.getSlotIds(), student);
+            addStudentToSlots(studentDTO.getSlotIds(), student, studentDTO.getPlanId());
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
@@ -136,8 +135,7 @@ public class StudentServiceImpl implements StudentService {
 
     private void setNewPaymentInfoAndSlotsToStudent(ActivateStudentRequest activateStudentRequest, Student student) {
         student.setPaymentPlan(buildStudentPaymentPlan(activateStudentRequest.paymentPlanName(), activateStudentRequest.paymentDay(), activateStudentRequest.planId()));
-        validateStudentSlotAssignment(activateStudentRequest.slotIds(), activateStudentRequest.planId());
-        addStudentToSlots(activateStudentRequest.slotIds(), student);
+        addStudentToSlots(activateStudentRequest.slotIds(), student, activateStudentRequest.planId());
         createInitialMonthlyFee(student, getInitialPaymentContext(activateStudentRequest.classPrice(), activateStudentRequest.extraClasses()));
         student.setEnabled(true);
     }
@@ -259,7 +257,8 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.createInitialMonthlyFee(student, initialPaymentContext);
     }
 
-    private void addStudentToSlots(List<UUID> slotIds, Student student) {
+    private void addStudentToSlots(List<UUID> slotIds, Student student, UUID planId) {
+        validateStudentSlotAssignment(slotIds, planId);
         slotIds.forEach(slotId -> slotService.addStudentToSlot(slotId, student));
     }
 
