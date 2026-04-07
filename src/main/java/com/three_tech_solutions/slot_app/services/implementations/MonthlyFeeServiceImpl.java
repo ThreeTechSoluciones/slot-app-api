@@ -61,7 +61,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 */3 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void expireMonthlyFees() {
         log.info("Iniciando proceso de expiración de cuotas");
 
