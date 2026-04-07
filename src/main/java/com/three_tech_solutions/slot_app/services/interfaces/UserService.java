@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
@@ -35,4 +36,6 @@ public interface UserService extends UserDetailsService {
     CalendarResponse getCalendar(UUID userId, CalendarViewType viewType, LocalDate date);
 
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
+
+    void recoverPassword(RecoverPasswordRequest request);
 }
