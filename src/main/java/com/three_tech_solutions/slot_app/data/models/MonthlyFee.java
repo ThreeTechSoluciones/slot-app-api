@@ -50,4 +50,23 @@ public class MonthlyFee {
         this.student = student;
     }
 
+    public void updateStatus(MonthlyFeeStatus newStatus) {
+        if (this.currentStatus == newStatus) return;
+
+        if (this.currentStatus == MonthlyFeeStatus.PAYED || this.currentStatus == MonthlyFeeStatus.PAYED_OUT_OF_TIME) {
+            throw new IllegalStateException("No se puede cambiar una cuota ya pagada");
+        }
+
+        this.getStatusHistory().stream()
+                .filter(h -> h.getEndDate() == null)
+                .findFirst()
+                .ifPresent(h -> h.setEndDate(LocalDateTime.now()));
+
+        this.setCurrentStatus(newStatus);
+
+        MonthlyFeeStatusHistory newStatusHistory =
+                new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
+
+        this.getStatusHistory().add(newStatusHistory);
+    }
 }
