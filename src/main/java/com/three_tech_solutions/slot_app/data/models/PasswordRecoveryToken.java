@@ -1,6 +1,9 @@
 package com.three_tech_solutions.slot_app.data.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,16 +18,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PasswordRecoveryToken {
-    @Id
-    @GeneratedValue
-    private UUID id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private int token;
-    private LocalDateTime createdAt;
+    private String token;
     private LocalDateTime expiresAt;
-    private boolean disabled;
+    @Id
+    private UUID id = UUID.randomUUID();
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private boolean disabled = false;
+
+    public PasswordRecoveryToken(User user, String token, LocalDateTime expiresAt) {
+        this.user = user;
+        this.token = token;
+        this.expiresAt = expiresAt;
+    }
 
     public boolean isExpired() {
         return expiresAt.isBefore(LocalDateTime.now());
