@@ -90,7 +90,6 @@ public class PlanServiceImpl implements PlanService {
                         }
 
                         plan.setName(updatePlanRequest.name());
-                        plan.setNumberOfDays(updatePlanRequest.numberOfDays());
                         return buildPlanResponse(planRepository.save(plan));
                     } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plan con el nombre ingresado ya existe");

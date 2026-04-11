@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -49,4 +51,7 @@ public interface UserController {
     @GetMapping("/{userId}/userPreferences")
     UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
 
+    @PostMapping("/password/recover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void recoverPassword(@Valid @RequestBody RecoverPasswordRequest recoverPasswordRequest);
 }
