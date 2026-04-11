@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.utils.PaymentPlanUtils.*;
+import static com.three_tech_solutions.slot_app.constants.PaymentPlanConstants.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 

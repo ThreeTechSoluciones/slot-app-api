@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
+import static com.three_tech_solutions.slot_app.constants.SlotConstants.MONTHS_AHEAD;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class CreateUpcomingSpecificSlots {
     private final UserService userService;
 
     @Transactional
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "0 0 1 1 * *")
     void createUpcomingSpecificSlots() {
         log.info("Iniciando proceso de creación de slots específicos próximos");
         List<User> users = userService.getUsers();
@@ -31,7 +33,7 @@ public class CreateUpcomingSpecificSlots {
                 List<Slot> userSlots = user.getSlots();
                 userSlots.forEach(slot -> {
                     LocalDate startDate = DateUtils.getNextDateWithSameDayOfWeek(slot.getLastSpecificSlotDate());
-                    LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
+                    LocalDate endDate = LocalDate.now().plusMonths(MONTHS_AHEAD).with(TemporalAdjusters.lastDayOfMonth());
 
                     slot.addSpecificSlots(
                             user.getUserPreferences().getSlotDurationMinutes(),
