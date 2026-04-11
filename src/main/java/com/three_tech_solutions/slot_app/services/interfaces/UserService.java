@@ -38,4 +38,6 @@ public interface UserService extends UserDetailsService {
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
 
     void recoverPassword(RecoverPasswordRequest request);
+
+    String generateRestorePasswordCode(String username);
 }

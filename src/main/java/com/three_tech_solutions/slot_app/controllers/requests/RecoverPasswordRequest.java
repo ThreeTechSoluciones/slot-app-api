@@ -13,6 +13,6 @@ public record RecoverPasswordRequest(
         @NotBlank(message = "Debe repetir la contraseña")
         String repeatedPassword,
         @NotNull(message = "El token es obligatorio")
-        Integer token
+        String token
 ) {
 }

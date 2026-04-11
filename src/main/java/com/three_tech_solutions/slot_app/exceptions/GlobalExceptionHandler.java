@@ -41,6 +41,14 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage);
 
+        List<String> globalErrores = ex.getBindingResult()
+                .getGlobalErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .toList();
+
+        errores.addAll(globalErrores);
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiError.builder()
