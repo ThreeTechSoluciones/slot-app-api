@@ -1,6 +1,3 @@
-services:
-  email:
-    active: true
 spring:
   jpa:
     show-sql: true

@@ -1,3 +1,6 @@
+services:
+  email:
+    active: ${EMAIL_SERVICE_ACTIVE:false}
 spring:
   mail:
     host: smtp.gmail.com
