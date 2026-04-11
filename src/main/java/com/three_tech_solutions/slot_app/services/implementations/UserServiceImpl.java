@@ -9,6 +9,7 @@ import com.three_tech_solutions.slot_app.data.mappers.StudentMapper;
 import com.three_tech_solutions.slot_app.data.mappers.UserPreferencesMapper;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.UserRepository;
+import com.three_tech_solutions.slot_app.security.components.CodeGenerator;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private final PlanService planService;
     private final CalendarService calendarService;
     private final UserPreferencesMapper userPreferencesMapper;
-    private final PasswordRecoveryTokenService PasswordRecoverytokenService;
+    private final PasswordRecoveryTokenService passwordRecoverytokenService;
 
 
     @Override
@@ -132,7 +133,7 @@ public class UserServiceImpl implements UserService {
 
             updateUserPassword(user, request.password());
 
-            PasswordRecoverytokenService.validateTokenAndDisableIt(user, request.token());
+            passwordRecoverytokenService.validateTokenAndDisableIt(user, request.token());
 
         } catch (ResponseStatusException e) {
             log.info("Error al recuperar contraseña para el usuario {}: {}", request.username(), e.getReason());
@@ -142,6 +143,14 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
                     "Ocurrió un error al recuperar la contraseña. Por favor, contacte con el administrador.");
         }
+    }
+
+    @Override
+    public String generateRestorePasswordCode(String username) {
+        String code = CodeGenerator.generate(6);
+        passwordRecoverytokenService
+                .savePasswordRecoveryTokenForUser(loadUserByUsername(username), code);
+        return code;
     }
 
 

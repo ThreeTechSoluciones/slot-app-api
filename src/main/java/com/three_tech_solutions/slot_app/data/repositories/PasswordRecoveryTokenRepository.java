@@ -9,7 +9,9 @@ import java.util.UUID;
 
 public interface PasswordRecoveryTokenRepository extends JpaRepository<PasswordRecoveryToken, UUID> {
 
-    Optional<PasswordRecoveryToken> findByUserAndToken(User user, int token);
+    Optional<PasswordRecoveryToken> findByUserAndToken(User user, String token);
 
-    Optional<PasswordRecoveryToken> findByToken(int token);
+    Optional<PasswordRecoveryToken> findByUserAndDisabledFalse(User user);
+
+    Optional<PasswordRecoveryToken> findByToken(String token);
 }

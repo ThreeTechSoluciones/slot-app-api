@@ -1,18 +1,14 @@
 package com.three_tech_solutions.slot_app.controllers.implementations;
 
 import com.three_tech_solutions.slot_app.controllers.interfaces.UserController;
-import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -88,12 +84,8 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId){
+    public UserPreferencesResponse getUserPreferences(UUID userId){
         return userService.getUserPreferences(userId);
-    };
-
-    @Override
-    public void recoverPassword(@Valid @RequestBody RecoverPasswordRequest request) {
-        userService.recoverPassword(request);
     }
+
 }
