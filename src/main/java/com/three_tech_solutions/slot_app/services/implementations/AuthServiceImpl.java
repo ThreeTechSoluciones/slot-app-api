@@ -3,12 +3,10 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
-import com.three_tech_solutions.slot_app.services.interfaces.AuthService;
-import com.three_tech_solutions.slot_app.services.interfaces.JsonWebTokenService;
-import com.three_tech_solutions.slot_app.services.interfaces.MailSenderService;
-import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.services.interfaces.*;
 import com.three_tech_solutions.slot_app.utils.EmailUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,7 @@ class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final MailSenderService mailSenderService;
     private final JsonWebTokenService jsonWebTokenService;
+    private final PasswordRecoveryTokenService passwordRecoveryTokenService;
 
     @Override
     public SignInResponse signIn(String username) {
@@ -55,6 +54,11 @@ class AuthServiceImpl implements AuthService {
     @Override
     public void confirmRecoverPassword(RecoverPasswordRequest recoverPasswordRequest) {
         userService.recoverPassword(recoverPasswordRequest);
+    }
+
+    @Override
+    public void validateToken(ValidateTokenRequest request) {
+        this.passwordRecoveryTokenService.validateToken(request);
     }
 
     private String getGenerateRestorePasswordCode(User user) {

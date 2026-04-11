@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenService {
 
     private final PasswordRecoveryTokenRepository passwordRecoverytokenRepository;
-    private final long TOKEN_EXPIRATION_MINUTES = 10L;
+    private static final long TOKEN_EXPIRATION_MINUTES = 10L;
 
     public PasswordRecoveryTokenServiceImpl(PasswordRecoveryTokenRepository passwordRecoverytokenRepository) {
         this.passwordRecoverytokenRepository = passwordRecoverytokenRepository;
@@ -51,7 +51,7 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
     public void validateToken(ValidateTokenRequest validateTokenRequest) {
         this.passwordRecoverytokenRepository
                 .findByToken(validateTokenRequest.token())
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El token ingreso es inválido."));
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El token ingresado es inválido."));
     }
 
 

@@ -16,6 +16,7 @@ public class SecurityUtils {
             "/auth/sign-up",
             "/auth/restore-password",
             "/auth/restore-password/confirm",
+            "/auth/restore-password/token/validate",
             "/ping"
     };
 

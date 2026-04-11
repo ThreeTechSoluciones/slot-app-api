@@ -2,13 +2,14 @@ package com.three_tech_solutions.slot_app.exceptions;
 
 import com.three_tech_solutions.slot_app.exceptions.responses.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,14 +41,6 @@ public class GlobalExceptionHandler {
                 .getGlobalErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage);
-
-        List<String> globalErrores = ex.getBindingResult()
-                .getGlobalErrors()
-                .stream()
-                .map(error -> error.getDefaultMessage())
-                .toList();
-
-        errores.addAll(globalErrores);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
