@@ -1,16 +1,12 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
 import com.three_tech_solutions.slot_app.data.models.PasswordRecoveryToken;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.PasswordRecoveryTokenRepository;
-import com.three_tech_solutions.slot_app.data.repositories.PaymentRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.PasswordRecoveryTokenService;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -40,5 +36,10 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
 
         tokenEntity.setDisabled(true);
         passwordRecoverytokenRepository.save(tokenEntity);
+    }
+
+    @Override
+    public void validateToken(ValidateTokenRequest validateTokenRequest) {
+        this.passwordRecoverytokenRepository.findByToken(123);
     }
 }
