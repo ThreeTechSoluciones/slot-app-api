@@ -12,4 +12,6 @@ public interface PasswordRecoveryTokenRepository extends JpaRepository<PasswordR
     Optional<PasswordRecoveryToken> findByUserAndToken(User user, String token);
 
     Optional<PasswordRecoveryToken> findByUserAndDisabledFalse(User user);
+
+    Optional<PasswordRecoveryToken> findByToken(String token);
 }

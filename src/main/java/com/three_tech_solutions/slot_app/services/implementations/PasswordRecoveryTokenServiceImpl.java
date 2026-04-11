@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
+import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
 import com.three_tech_solutions.slot_app.data.models.PasswordRecoveryToken;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.PasswordRecoveryTokenRepository;
@@ -15,7 +16,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenService {
 
     private final PasswordRecoveryTokenRepository passwordRecoverytokenRepository;
-    private final long TOKEN_EXPIRATION_MINUTES = 10L;
+    private static final long TOKEN_EXPIRATION_MINUTES = 10L;
 
     public PasswordRecoveryTokenServiceImpl(PasswordRecoveryTokenRepository passwordRecoverytokenRepository) {
         this.passwordRecoverytokenRepository = passwordRecoverytokenRepository;
@@ -45,6 +46,14 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
         deactivateTokenIfUserAlreadyHasOne(user);
         saveNewToken(user, code);
     }
+
+    @Override
+    public void validateToken(ValidateTokenRequest validateTokenRequest) {
+        this.passwordRecoverytokenRepository
+                .findByToken(validateTokenRequest.token())
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El token ingresado es inválido."));
+    }
+
 
     private void saveNewToken(User user, String code) {
         passwordRecoverytokenRepository.save(new PasswordRecoveryToken(
