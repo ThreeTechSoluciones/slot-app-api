@@ -22,6 +22,7 @@ import java.util.*;
 public class Student {
      private String name;
      private String lastname;
+     private String email;
      @Column(unique = true)
      String dni;
      String phoneNumber;
@@ -46,9 +47,20 @@ public class Student {
      @Id
      private UUID id = UUID.randomUUID();
 
-    public Student(String name, String lastname, String dni, String phoneNumber, LocalDate birthday, String pathologies, User user, PaymentPlan paymentPlan) {
+    public Student(
+            String name,
+            String lastname,
+            String email,
+            String dni,
+            String phoneNumber,
+            LocalDate birthday,
+            String pathologies,
+            User user,
+            PaymentPlan paymentPlan
+    ) {
         this.name = name;
         this.lastname = lastname;
+        this.email = email;
         this.dni = dni;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
