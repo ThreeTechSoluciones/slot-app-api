@@ -8,11 +8,11 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFee
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public interface StudentController {
     StudentDetailsResponse getStudentDetails(@PathVariable UUID studentId);
 
     @PatchMapping("/{studentId}")
-    StudentResponse updateStudent (@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
+    StudentResponse updateStudent(@PathVariable UUID studentId, @RequestBody @Valid UpdateStudentRequest studentUpdated);
 
     @PostMapping("/{studentId}/activate")
     @ResponseStatus(HttpStatus.NO_CONTENT)

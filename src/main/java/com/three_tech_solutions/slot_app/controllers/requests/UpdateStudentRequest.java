@@ -14,6 +14,9 @@ public class UpdateStudentRequest {
     String name;
     @NotBlank(message = "El apellido no puede estar vacío")
     String lastName;
+    @Size(min = 1, message = "El email no puede estar vacío")
+    @Email(message = "El email debe ser válido")
+    private String email;
     @NotBlank(message = "El DNI es obligatorio")
     @Size(max = 8, message = "El DNI no puede tener más de 8 números")
     @Pattern(regexp = "\\d+", message = "El DNI debe contener solo números")
