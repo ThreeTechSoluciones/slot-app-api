@@ -1,4 +1,4 @@
-package com.three_tech_solutions.slot_app.services.implementations;
+package com.three_tech_solutions.slot_app.cron_jobs;
 
 import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.models.Absence;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class AbsenceServiceImpl implements AbsenceService {
+public class ExpirePendingAbsences implements AbsenceService {
 
     private final AbsenceRepository absenceRepository;
 

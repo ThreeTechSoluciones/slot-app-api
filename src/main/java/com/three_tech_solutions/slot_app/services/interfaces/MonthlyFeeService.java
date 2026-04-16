@@ -10,12 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public interface MonthlyFeeService {
 
-    void createStudentsMonthlyFee();
     void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext);
     void payMonthlyFee(UUID monthlyFeeId);
     Page<StudentMonthlyFeeResponse> getMonthlyFeesByStudent(
@@ -30,4 +28,8 @@ public interface MonthlyFeeService {
     int findAssociatedMonthlyFeeNumber(Payment payment);
     MonthlyFee getMonthlyFeeById(UUID monthlyFeeId);
     void deleteMonthlyFee(MonthlyFee monthlyFee);
+
+    int getLastMonthlyFeeNumber();
+
+    MonthlyFee saveMonthlyFee(MonthlyFee monthlyFee);
 }

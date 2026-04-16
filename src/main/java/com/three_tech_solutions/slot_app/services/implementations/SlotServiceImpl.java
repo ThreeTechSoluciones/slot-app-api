@@ -16,6 +16,7 @@ import com.three_tech_solutions.slot_app.services.interfaces.SlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import com.three_tech_solutions.slot_app.services.interfaces.UserService;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -27,12 +28,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.three_tech_solutions.slot_app.constants.SlotConstants.MONTHS_AHEAD;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -210,75 +211,26 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private Slot buildSlot(CreateSlotRequest request, User user) {
-        return new Slot(
+        Slot slot = new Slot(
                 request.dayOfWeek(),
                 request.startTime(),
                 calculateEndTime(user, request.startTime()),
                 user.getUserPreferences().getSlotCapacity(),
-                user,
-                createSpecificSlots(
-                        request,
-                        user.getUserPreferences().getSlotDurationMinutes(),
-                        user.getUserPreferences().getSlotCapacity(),
-                        user
-                )
+                user
         );
-    }
 
-    private List<SpecificSlot> createSpecificSlots(
-            CreateSlotRequest request,
-            long slotDurationMinutes,
-            byte slotCapacity,
-            User user
-    ) {
-        List<SpecificSlot> specificSlots = new ArrayList<>();
-        LocalDate date = getNextOrSameDateOfDayOfWeek(request);
-        LocalDate endDate = date.plusMonths(2);
+        LocalDate startDate = DateUtils.getNextOrSameDateOfDayOfWeek(request.dayOfWeek());
+        LocalDate endDate = startDate.plusMonths(MONTHS_AHEAD).with(TemporalAdjusters.lastDayOfMonth());
 
-        while (dateIsWithinSlotCreationPeriod(date, endDate)) {
-            /*
-             * This is to evict create slots with a start time
-             * before now when the day of week is the same as today
-             */
-            if (slotTimeIsBeforeNow(request, date)) {
-                date = date.plusWeeks(1);
-                continue;
-            }
-
-            specificSlots.add(buildSpecificSlot(request, date, slotCapacity, slotDurationMinutes, user));
-            date = date.plusWeeks(1);
-        }
-
-        return specificSlots;
-    }
-
-    private static boolean dateIsWithinSlotCreationPeriod(LocalDate date, LocalDate endDate) {
-        return date.isBefore(endDate) || date.isEqual(endDate);
-    }
-
-    private static boolean slotTimeIsBeforeNow(CreateSlotRequest request, LocalDate date) {
-        return date.isEqual(LocalDate.now()) && request.startTime().isBefore(LocalTime.now());
-    }
-
-    private SpecificSlot buildSpecificSlot(
-            CreateSlotRequest request,
-            LocalDate startDate,
-            byte slotCapacity,
-            long slotDurationMinutes,
-            User user
-    ) {
-        return new SpecificSlot(
-                startDate,
-                slotCapacity,
-                request.startTime(),
-                request.startTime().plusMinutes(slotDurationMinutes),
-                user,
-                SpecificSlotStatus.CREATED
+        slot.addSpecificSlots(
+            user.getUserPreferences().getSlotDurationMinutes(),
+            user.getUserPreferences().getSlotCapacity(),
+            user,
+            startDate,
+            endDate
         );
-    }
 
-    private static LocalDate getNextOrSameDateOfDayOfWeek(CreateSlotRequest request) {
-        return LocalDate.now().with(TemporalAdjusters.nextOrSame(request.dayOfWeek()));
+        return slot;
     }
 
     private User getUserByIdOrThrowException(UUID userId) {

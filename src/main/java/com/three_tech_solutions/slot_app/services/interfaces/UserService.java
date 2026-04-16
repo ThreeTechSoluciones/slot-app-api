@@ -37,6 +37,10 @@ public interface UserService extends UserDetailsService {
 
     UserPreferencesResponse getUserPreferences(@PathVariable UUID userId);
 
+    List<User> getUsers();
+
+    void saveUser(User user);
+
     void recoverPassword(RecoverPasswordRequest request);
 
     String generateRestorePasswordCode(String username);

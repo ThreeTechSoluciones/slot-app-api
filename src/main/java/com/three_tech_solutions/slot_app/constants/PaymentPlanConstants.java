@@ -1,7 +1,7 @@
-package com.three_tech_solutions.slot_app.utils;
+package com.three_tech_solutions.slot_app.constants;
 
-public class PaymentPlanUtils {
-    private PaymentPlanUtils() {}
+public class PaymentPlanConstants {
+    private PaymentPlanConstants() {}
 
     public static final int BEGINNING_OF_MONTH_EXPIRATION_DATE = 10;
     public static final int SPECIFIC_DAY_MINIMUM_DAY = 10;

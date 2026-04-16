@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUser(String username, String password) {
         try {
-            userRepository.save(new User(
+            saveUser(new User(
                     username,
                     passwordEncoder.encode(password)
             ));
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         slotService.validateFutureSpecificSlotsCapacity(user, newCapacity);
         user.getUserPreferences().setSlotCapacity(newCapacity);
         updateSlotsAndSpecificSlotsCapacity(user, newCapacity);
-        userRepository.save(user);
+        saveUser(user);
     }
 
     @Override
@@ -125,6 +125,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getUsers() {
+        return this.userRepository.findAll();
+    }
+
+    @Override
+    public void saveUser(User user) {
+        this.userRepository.save(user);
+    }
+
     @Transactional
     public void recoverPassword(RecoverPasswordRequest request) {
 
