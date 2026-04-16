@@ -7,7 +7,6 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFee
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
 import com.three_tech_solutions.slot_app.data.mappers.MonthlyFeeMapper;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
-import com.three_tech_solutions.slot_app.data.models.MonthlyFeeStatusHistory;
 import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.repositories.MonthlyFeeRepository;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,7 +55,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
         monthlyFee.setPayment(payment);
 
-        updateStatus(monthlyFee);
+        updateStatusToPaid(monthlyFee);
 
         saveMonthlyFee(monthlyFee);
     }
@@ -120,19 +118,12 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         }
     }
 
-    private void updateStatus(MonthlyFee monthlyFee) {
-        monthlyFee.getStatusHistory().stream()
-                .filter(h -> h.getEndDate() == null)
-                .findFirst()
-                .ifPresent(h -> h.setEndDate(LocalDateTime.now()));
-
+    private void updateStatusToPaid(MonthlyFee monthlyFee) {
         MonthlyFeeStatus newStatus = LocalDate.now().isAfter(monthlyFee.getExpirationDate())
                 ? MonthlyFeeStatus.PAYED_OUT_OF_TIME
                 : MonthlyFeeStatus.PAYED;
 
-        monthlyFee.setCurrentStatus(newStatus);
-
-        MonthlyFeeStatusHistory newStatusHistory = new MonthlyFeeStatusHistory(newStatus, LocalDateTime.now());
-        monthlyFee.getStatusHistory().add(newStatusHistory);
+        monthlyFee.updateStatus(newStatus);
     }
+
 }

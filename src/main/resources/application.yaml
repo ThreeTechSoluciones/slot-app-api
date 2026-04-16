@@ -1,4 +1,18 @@
+services:
+  email:
+    active: ${EMAIL_SERVICE_ACTIVE:false}
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_SERVER_USERNAME:""}
+    password: ${SMTP_SERVER_PASSWORD:""}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: SlotApp
   profiles:

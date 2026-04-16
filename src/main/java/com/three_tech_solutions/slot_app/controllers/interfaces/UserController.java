@@ -48,5 +48,4 @@ public interface UserController {
 
     @GetMapping("/{userId}/userPreferences")
     UserPreferencesResponse getUserPreferences (@PathVariable UUID userId);
-
 }

@@ -23,6 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.List;
 
+import static com.three_tech_solutions.slot_app.security.utils.SecurityUtils.AUTHENTICATION_WHITELIST;
+import static com.three_tech_solutions.slot_app.security.utils.SecurityUtils.ENDPOINTS_WHITELIST;
+
 @Configuration
 public class SecurityConfig {
 
@@ -69,8 +72,8 @@ public class SecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests((authorizationManager) ->
                     authorizationManager
-                            .requestMatchers("/auth/sign-up", "/ping").permitAll()
-                            .requestMatchers("/docs", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/info").permitAll()
+                            .requestMatchers(AUTHENTICATION_WHITELIST).permitAll()
+                            .requestMatchers(ENDPOINTS_WHITELIST).permitAll()
                             .anyRequest().authenticated()
                 )
                 .addFilterBefore(bearerTokenFilter, BasicAuthenticationFilter.class)

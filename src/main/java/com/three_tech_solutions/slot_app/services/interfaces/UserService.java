@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdateUserCapacityRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.*;
 import com.three_tech_solutions.slot_app.data.enums.CalendarViewType;
@@ -39,4 +40,8 @@ public interface UserService extends UserDetailsService {
     List<User> getUsers();
 
     void saveUser(User user);
+
+    void recoverPassword(RecoverPasswordRequest request);
+
+    String generateRestorePasswordCode(String username);
 }
