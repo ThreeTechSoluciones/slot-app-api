@@ -1,6 +1,9 @@
 package com.three_tech_solutions.slot_app.controllers.interfaces;
 
 import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
+import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.exceptions.responses.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,10 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Authentication")
 @RequestMapping("/auth")
@@ -58,4 +60,16 @@ public interface AuthController {
             @RequestBody
             CreateUserRequest createUserRequest
     );
+
+    @PostMapping("/restore-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void restorePassword(@Valid @RequestBody RestorePasswordRequest restorePasswordRequest);
+
+    @PostMapping("/restore-password/confirm")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void recoverPassword(@Valid @RequestBody RecoverPasswordRequest recoverPasswordRequest);
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/restore-password/token/validate")
+    void validateTokenAndDisableIt(@RequestBody ValidateTokenRequest request);
 }

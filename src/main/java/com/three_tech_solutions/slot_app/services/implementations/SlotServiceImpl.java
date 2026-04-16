@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.three_tech_solutions.slot_app.constants.SlotConstants.MONTHS_AHEAD;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -219,7 +220,7 @@ public class SlotServiceImpl implements SlotService {
         );
 
         LocalDate startDate = DateUtils.getNextOrSameDateOfDayOfWeek(request.dayOfWeek());
-        LocalDate endDate = startDate.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
+        LocalDate endDate = startDate.plusMonths(MONTHS_AHEAD).with(TemporalAdjusters.lastDayOfMonth());
 
         slot.addSpecificSlots(
             user.getUserPreferences().getSlotDurationMinutes(),

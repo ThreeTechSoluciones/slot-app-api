@@ -9,7 +9,6 @@ import com.three_tech_solutions.slot_app.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -85,7 +84,8 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public UserPreferencesResponse getUserPreferences(@PathVariable UUID userId){
+    public UserPreferencesResponse getUserPreferences(UUID userId){
         return userService.getUserPreferences(userId);
-    };
+    }
+
 }

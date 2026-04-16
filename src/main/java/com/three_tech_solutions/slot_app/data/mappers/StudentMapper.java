@@ -22,6 +22,7 @@ public class StudentMapper {
         return new Student(
                 studentDTO.getName(),
                 studentDTO.getLastName(),
+                studentDTO.getEmail(),
                 studentDTO.getDni(),
                 studentDTO.getCellphoneNumber(),
                 studentDTO.getBirthday(),
@@ -84,6 +85,7 @@ public class StudentMapper {
     public void updateStudent(Student student, UpdateStudentRequest request, Plan plan) {
         student.setName(request.getName());
         student.setLastname(request.getLastName());
+        student.setEmail(request.getEmail());
         student.setDni(request.getDni());
         student.setPhoneNumber(request.getCellphoneNumber());
         student.getPaymentPlan().setPaymentPlanName(request.getPaymentPlanName());

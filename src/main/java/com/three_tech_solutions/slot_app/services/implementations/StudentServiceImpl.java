@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.utils.PaymentPlanUtils.*;
+import static com.three_tech_solutions.slot_app.constants.PaymentPlanConstants.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -84,7 +84,7 @@ public class StudentServiceImpl implements StudentService {
 
             studentRepository.save(student);
             createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
-            addStudentToSlots(studentDTO.getSlotIds(), student);
+            addStudentToSlots(studentDTO.getSlotIds(), student, studentDTO.getPlanId());
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
@@ -135,7 +135,7 @@ public class StudentServiceImpl implements StudentService {
 
     private void setNewPaymentInfoAndSlotsToStudent(ActivateStudentRequest activateStudentRequest, Student student) {
         student.setPaymentPlan(buildStudentPaymentPlan(activateStudentRequest.paymentPlanName(), activateStudentRequest.paymentDay(), activateStudentRequest.planId()));
-        addStudentToSlots(activateStudentRequest.slotIds(), student);
+        addStudentToSlots(activateStudentRequest.slotIds(), student, activateStudentRequest.planId());
         createInitialMonthlyFee(student, getInitialPaymentContext(activateStudentRequest.classPrice(), activateStudentRequest.extraClasses()));
         student.setEnabled(true);
     }
@@ -174,6 +174,7 @@ public class StudentServiceImpl implements StudentService {
                 .map(student -> {
                     removePaymentDayIfNewPlanIsBeginningOfMonth(request);
                     studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
+                    validateStudentSlotAssignment(request.getSlotIds(), request.getPlanId());
                     slotService.updateSlotsForStudent(request.getSlotIds(), student);
 
                     return studentMapper.toStudentResponse(studentRepository.save(student));
@@ -256,7 +257,8 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.createInitialMonthlyFee(student, initialPaymentContext);
     }
 
-    private void addStudentToSlots(List<UUID> slotIds, Student student) {
+    private void addStudentToSlots(List<UUID> slotIds, Student student, UUID planId) {
+        validateStudentSlotAssignment(slotIds, planId);
         slotIds.forEach(slotId -> slotService.addStudentToSlot(slotId, student));
     }
 
@@ -438,6 +440,18 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "No se puede eliminar una cuota que ya fue pagada."
+            );
+        }
+    }
+
+    private void validateStudentSlotAssignment(List<UUID> slotIds, UUID planId) {
+        Plan plan = getPlanByIdOrThrowException(planId);
+        int numberOfDays = plan.getNumberOfDays();
+
+        if (slotIds.size() != numberOfDays) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "La cantidad de turnos seleccionados debe coincidir con los días del plan (" + numberOfDays + ")"
             );
         }
     }
