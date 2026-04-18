@@ -3,6 +3,8 @@ package com.three_tech_solutions.slot_app.services.implementations;
 import com.three_tech_solutions.slot_app.controllers.requests.CreatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.UpdatePlanRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.PlanResponse;
+import com.three_tech_solutions.slot_app.controllers.responses.PriceResponse;
+import com.three_tech_solutions.slot_app.data.mappers.PriceMapper;
 import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -28,10 +31,13 @@ public class PlanServiceImpl implements PlanService {
 
     private final UserService userService;
     private final PlanRepository planRepository;
+    private final PriceMapper priceMapper;
 
-    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository) {
+
+    public PlanServiceImpl(@Lazy UserService userService, PlanRepository planRepository, PriceMapper priceMapper) {
         this.userService = userService;
         this.planRepository = planRepository;
+        this.priceMapper = priceMapper;
     }
 
     @Override
@@ -135,11 +141,15 @@ public class PlanServiceImpl implements PlanService {
         );
     }
 
-    private static PlanResponse buildPlanResponse(Plan plan) {
+    private PlanResponse buildPlanResponse(Plan plan) {
         return new PlanResponse(
                 plan.getId(),
                 plan.getName(),
                 plan.getCurrentPrice().getAmount(),
+                plan.getNextPrice()
+                        .map(priceMapper::toPriceResponse)
+                        .orElse(null),
+                priceMapper.toPriceResponseList(plan.getFuturePrices()),
                 plan.getNumberOfDays()
         );
     }
@@ -161,7 +171,7 @@ public class PlanServiceImpl implements PlanService {
     private Page<PlanResponse> getPlansFromRepository(User user, String planName, Pageable pageable, List<Sort.Order> sorts) {
         return this.planRepository
                 .findAllByUserAndPlanName(user, planName, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sorts)))
-                .map(PlanServiceImpl::buildPlanResponse);
+                .map(this::buildPlanResponse);
     }
 
     private List<Sort.Order> removePriceSortFromPageableSorts(Pageable pageable) {
@@ -189,10 +199,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     private Stream<PlanResponse> getPlansSortedByPriceDesc(Stream<PlanResponse> plansSortedByPrice) {
-        return plansSortedByPrice.sorted(Comparator.comparingDouble(PlanResponse::price).reversed());
+        return plansSortedByPrice.sorted(Comparator.comparingDouble(PlanResponse::currentPrice).reversed());
     }
 
     private Stream<PlanResponse> getPlansSortedByPriceAsc(Stream<PlanResponse> plansSortedByPrice) {
-        return plansSortedByPrice.sorted(Comparator.comparingDouble(PlanResponse::price));
+        return plansSortedByPrice.sorted(Comparator.comparingDouble(PlanResponse::currentPrice));
     }
+
 }
