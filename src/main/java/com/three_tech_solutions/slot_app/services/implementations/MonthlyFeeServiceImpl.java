@@ -11,6 +11,7 @@ import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.repositories.MonthlyFeeRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
+import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import jakarta.transaction.Transactional;
@@ -38,6 +39,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     private final StudentService studentService;
     private final MonthlyFeeProcessorFactory monthlyFeeProcessorFactory;
     private final PaymentService paymentService;
+    private final NotificationService notificationService;
 
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
@@ -49,11 +51,13 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
             try {
                 MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
                 Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
-                monthlyFee
-                        .ifPresentOrElse(
-                                monthlyFeeRepository::save,
-                                () -> log.info("No se creó pago para el estudiante {}", student)
-                        );
+                monthlyFee.ifPresentOrElse(
+                        fee -> {
+                            monthlyFeeRepository.save(fee);
+                            notificationService.notifyNewMonthlyFee(student, fee);
+                        },
+                        () -> log.info("No se creó pago para el estudiante {}", student)
+                );
             } catch (Exception e) {
                 log.error("Hubo un error al crear el pago para el estudiante ", e);
             }
@@ -88,6 +92,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
                 initialPaymentContext
         );
         monthlyFeeRepository.save(monthlyFee);
+        notificationService.notifyNewMonthlyFee(student, monthlyFee);
     }
 
     @Override
