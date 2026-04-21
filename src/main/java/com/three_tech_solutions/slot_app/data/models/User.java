@@ -22,6 +22,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String username;
     private String password;
+    private String businessName;
     @Column(unique = true)
     private String email;
     @OneToMany
@@ -57,8 +58,13 @@ public class User implements UserDetails {
         return this.username;
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, String businessName) {
         this.username = username;
         this.password = password;
+        this.businessName = businessName;
+    }
+
+    public String getBusinessName() {
+        return businessName != null ? businessName : "nuestro equipo";
     }
 }

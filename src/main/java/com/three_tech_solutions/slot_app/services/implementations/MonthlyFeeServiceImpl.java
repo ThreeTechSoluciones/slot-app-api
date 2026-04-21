@@ -92,7 +92,6 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
                 initialPaymentContext
         );
         monthlyFeeRepository.save(monthlyFee);
-        notificationService.notifyNewMonthlyFee(student, monthlyFee);
     }
 
     @Override

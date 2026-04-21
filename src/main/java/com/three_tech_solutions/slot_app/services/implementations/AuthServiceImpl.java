@@ -19,9 +19,9 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
-    private final MailSenderService mailSenderService;
     private final JsonWebTokenService jsonWebTokenService;
     private final PasswordRecoveryTokenService passwordRecoveryTokenService;
+    private final NotificationService notificationService;
 
     @Override
     public SignInResponse signIn(String username) {
@@ -35,19 +35,17 @@ class AuthServiceImpl implements AuthService {
     @Override
     public void createUser(CreateUserRequest createUserRequest) {
         validatePasswords(createUserRequest);
-        userService.createUser(createUserRequest.username(), createUserRequest.password());
+        userService.createUser(createUserRequest.username(), createUserRequest.password(), createUserRequest.businessName());
     }
 
     @Override
     public void restorePassword(RestorePasswordRequest restorePasswordRequest) {
         User user = userService.loadUserByUsername(restorePasswordRequest.username());
-        mailSenderService.sendHtmlMessage(
-            user.getEmail(),
-            EmailUtils.RESTORE_PASSWORD_SUBJECT,
-            EmailUtils.getRestorePasswordEmailContent(
-                    user.getUsername(),
-                    getGenerateRestorePasswordCode(user)
-            )
+
+        notificationService.notifyRestorePassword(
+                user.getEmail(),
+                user.getUsername(),
+                getGenerateRestorePasswordCode(user)
         );
     }
 

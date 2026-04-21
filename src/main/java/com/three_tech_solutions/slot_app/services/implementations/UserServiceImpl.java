@@ -72,11 +72,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(String username, String password) {
+    public void createUser(String username, String password, String businessName) {
         try {
             userRepository.save(new User(
                     username,
-                    passwordEncoder.encode(password)
+                    passwordEncoder.encode(password),
+                    businessName
             ));
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(BAD_REQUEST, "El usuario ya existe.");
