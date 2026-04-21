@@ -11,22 +11,17 @@ import com.three_tech_solutions.slot_app.data.models.Payment;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.repositories.MonthlyFeeRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
-import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.services.interfaces.PaymentService;
-import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,62 +31,18 @@ import java.util.UUID;
 public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
     private final MonthlyFeeRepository monthlyFeeRepository;
-    private final StudentService studentService;
     private final MonthlyFeeProcessorFactory monthlyFeeProcessorFactory;
     private final PaymentService paymentService;
-    private final NotificationService notificationService;
-
-    @Transactional
-    @Scheduled(cron = "0 0 1 * * *")
-    @Override
-    public void createStudentsMonthlyFee() {
-        log.info("Iniciando proceso de creacion de pagos");
-        List<Student> students = studentService.getStudents();
-        students.forEach(student -> {
-            try {
-                MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
-                Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createStudentMonthlyFee(student, getMonthlyFeeNumber());
-                monthlyFee.ifPresentOrElse(
-                        fee -> {
-                            monthlyFeeRepository.save(fee);
-                            notificationService.notifyNewMonthlyFee(student, fee);
-                        },
-                        () -> log.info("No se creó pago para el estudiante {}", student)
-                );
-            } catch (Exception e) {
-                log.error("Hubo un error al crear el pago para el estudiante ", e);
-            }
-        });
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0 2 * * *")
-    public void expireMonthlyFees() {
-        log.info("Iniciando proceso de expiración de cuotas");
-
-        List<MonthlyFee> expiredFees = monthlyFeeRepository.findExpiredMonthlyFees(LocalDate.now());
-
-        expiredFees.forEach(monthlyFee -> {
-            try {
-                monthlyFee.updateStatus(MonthlyFeeStatus.OUT_OF_TIME);
-            } catch (Exception e) {
-                log.error("Error expirando cuota {}", monthlyFee.getId(), e);
-            }
-        });
-
-        monthlyFeeRepository.saveAll(expiredFees);
-        log.info("Finalizó proceso de expiración");
-    }
 
     @Override
     public void createInitialMonthlyFee(Student student, InitialPaymentContext initialPaymentContext) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
         MonthlyFee monthlyFee = monthlyFeeProcessor.createInitialStudentPayment(
                 student,
-                getMonthlyFeeNumber(),
+                getLastMonthlyFeeNumber(),
                 initialPaymentContext
         );
-        monthlyFeeRepository.save(monthlyFee);
+        saveMonthlyFee(monthlyFee);
     }
 
     @Override
@@ -106,7 +57,7 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
 
         updateStatusToPaid(monthlyFee);
 
-        monthlyFeeRepository.save(monthlyFee);
+        saveMonthlyFee(monthlyFee);
     }
 
     @Override
@@ -119,9 +70,9 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     @Override
     public StudentMonthlyFeeResponse createMonthlyFeeForStudent(Student student) {
         MonthlyFeeProcessor monthlyFeeProcessor = monthlyFeeProcessorFactory.getPaymentProcessor(student.getPaymentPlan().getPaymentPlanName());
-        Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createNextStudentMonthlyFee(student, getMonthlyFeeNumber());
+        Optional<MonthlyFee> monthlyFee = monthlyFeeProcessor.createNextStudentMonthlyFee(student, getLastMonthlyFeeNumber());
         MonthlyFee savedMonthlyFee = monthlyFee
-                .map(monthlyFeeRepository::save)
+                .map(this::saveMonthlyFee)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo crear la cuota para el estudiante"));
         return MonthlyFeeMapper.toStudentMonthlyFeeResponse(savedMonthlyFee);
     }
@@ -144,15 +95,21 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
         monthlyFeeRepository.delete(monthlyFee);
     }
 
+    @Override
+    public int getLastMonthlyFeeNumber() {
+        return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
+    }
+
+    @Override
+    public MonthlyFee saveMonthlyFee(MonthlyFee monthlyFee) {
+        return monthlyFeeRepository.save(monthlyFee);
+    }
+
     private static Integer getMonthValue(String month) {
         return Optional
                 .ofNullable(month)
                 .map(m -> Month.valueOf(m.toUpperCase()).getValue())
                 .orElse(null);
-    }
-
-    private int getMonthlyFeeNumber() {
-        return monthlyFeeRepository.getLastMonthlyFeeNumber().orElse(0) + 1;
     }
 
     private void validateNotAlreadyPaid(MonthlyFee monthlyFee) {
