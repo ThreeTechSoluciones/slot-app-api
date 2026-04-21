@@ -50,7 +50,7 @@ public class PasswordRecoveryTokenServiceImpl implements PasswordRecoveryTokenSe
     @Override
     public void validateToken(ValidateTokenRequest validateTokenRequest) {
         this.passwordRecoverytokenRepository
-                .findByToken(validateTokenRequest.token())
+                .findByTokenAndDisabledFalse(validateTokenRequest.token())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "El token ingresado es inválido."));
     }
 
