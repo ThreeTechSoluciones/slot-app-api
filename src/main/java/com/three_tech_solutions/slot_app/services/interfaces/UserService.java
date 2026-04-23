@@ -25,7 +25,7 @@ public interface UserService extends UserDetailsService {
 
     User getUserByIdOrThrowException(UUID id) ;
 
-    void createUser(String username, String password);
+    void createUser(String username, String password, String businessName);
 
     Page<PlanResponse> getUserPlans(UUID userId, String planName, Pageable pageable);
 

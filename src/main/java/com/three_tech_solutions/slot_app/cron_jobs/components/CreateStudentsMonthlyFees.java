@@ -8,6 +8,7 @@ import com.three_tech_solutions.slot_app.cron_jobs.services.interfaces.CronJobAu
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
+import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class CreateStudentsMonthlyFees {
     private final MonthlyFeeProcessorFactory monthlyFeeProcessorFactory;
     private final MonthlyFeeService monthlyFeeService;
     private final CronJobAuditoryService cronJobAuditoryService;
+    private final NotificationService notificationService;
 
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
@@ -42,6 +44,7 @@ public class CreateStudentsMonthlyFees {
                         .ifPresentOrElse(
                                 mf -> {
                                     monthlyFeeService.saveMonthlyFee(mf);
+                                    notificationService.notifyNewMonthlyFee(student, mf);
                                     log.info("Pago creado para el estudiante {}", student);
                                 },
                                 () -> log.info("No se creó pago para el estudiante {}", student)
