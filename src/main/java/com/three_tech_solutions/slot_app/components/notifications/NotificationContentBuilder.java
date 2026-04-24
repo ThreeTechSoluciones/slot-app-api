@@ -46,4 +46,22 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildMonthlyFeeExpirationMessage(Student student, MonthlyFee monthlyFee, String businessName){
+        return """
+                Hola %s 👋
+
+                Desde %s queremos informarte que tu cuota mensual ya se encuentra vencida.
+
+                💳 Monto: $%.2f
+                
+                Cuando tengas un momento, podés ponerte al día para seguir disfrutando de las clases sin interrupciones 😉
+
+                ¡Te esperamos en clase! 🚲💪
+                """.formatted(
+                student.getName(),
+                businessName,
+                monthlyFee.getAmount()
+        );
+    }
+
 }

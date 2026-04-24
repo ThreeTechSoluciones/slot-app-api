@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public interface MonthlyFeeService {
@@ -32,4 +33,8 @@ public interface MonthlyFeeService {
     int getLastMonthlyFeeNumber();
 
     MonthlyFee saveMonthlyFee(MonthlyFee monthlyFee);
+
+    void saveAllMonthlyFees(List<MonthlyFee> monthlyFees);
+
+    List<MonthlyFee> findExpiredMonthlyFees(LocalDate today);
 }

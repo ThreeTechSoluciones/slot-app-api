@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.components.notifications.NotificationCo
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.services.interfaces.MailSenderService;
+import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.utils.EmailUtils;
 import lombok.AllArgsConstructor;
@@ -45,4 +46,19 @@ public class NotificationServiceImpl implements NotificationService {
         String html = EmailUtils.formatEmail(subject, message);
         mailSenderService.sendHtmlMessage(student.getEmail(), subject, html);
     }
+
+    @Override
+    public void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee){
+        String subject = "Cuota vencida";
+
+        String message = NotificationContentBuilder.buildMonthlyFeeExpirationMessage(
+                monthlyFee.getStudent(),
+                monthlyFee,
+                monthlyFee.getStudent().getUser().getBusinessName()
+        );
+
+        String html = EmailUtils.formatEmail(subject, message);
+        mailSenderService.sendHtmlMessage(monthlyFee.getStudent().getEmail(), subject, html);
+    }
+
 }
