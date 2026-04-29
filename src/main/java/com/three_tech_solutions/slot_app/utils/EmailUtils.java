@@ -2,7 +2,17 @@ package com.three_tech_solutions.slot_app.utils;
 
 public class EmailUtils {
 
+    private static final int VISIBLE_CHARACTERS = 3;
+
     private EmailUtils() {}
+
+    public static String ofuscateEmail(String email) {
+        int atIndex = email.indexOf("@");
+        String localPart = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+
+        return email.substring(0, VISIBLE_CHARACTERS).concat("*".repeat(localPart.length() - VISIBLE_CHARACTERS)).concat(domain);
+    }
 
     public static String formatEmail(String title, String content) {
         return String.format("""

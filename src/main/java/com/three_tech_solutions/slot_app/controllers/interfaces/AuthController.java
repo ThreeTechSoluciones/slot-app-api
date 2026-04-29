@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.RestorePasswordResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.exceptions.responses.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,8 +63,8 @@ public interface AuthController {
     );
 
     @PostMapping("/restore-password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void restorePassword(@Valid @RequestBody RestorePasswordRequest restorePasswordRequest);
+    @ResponseStatus(HttpStatus.OK)
+    RestorePasswordResponse restorePassword(@Valid @RequestBody RestorePasswordRequest restorePasswordRequest);
 
     @PostMapping("/restore-password/confirm")
     @ResponseStatus(HttpStatus.NO_CONTENT)

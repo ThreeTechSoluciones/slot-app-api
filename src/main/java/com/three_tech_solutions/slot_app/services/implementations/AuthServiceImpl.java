@@ -4,16 +4,18 @@ import com.three_tech_solutions.slot_app.controllers.requests.CreateUserRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RecoverPasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.RestorePasswordRequest;
 import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenRequest;
+import com.three_tech_solutions.slot_app.controllers.responses.RestorePasswordResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.services.interfaces.*;
-import com.three_tech_solutions.slot_app.utils.EmailUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 class AuthServiceImpl implements AuthService {
@@ -39,14 +41,19 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void restorePassword(RestorePasswordRequest restorePasswordRequest) {
-        User user = userService.loadUserByUsername(restorePasswordRequest.username());
-
-        notificationService.notifyRestorePassword(
-                user.getEmail(),
-                user.getUsername(),
-                getGenerateRestorePasswordCode(user)
-        );
+    public RestorePasswordResponse restorePassword(RestorePasswordRequest restorePasswordRequest) {
+        try {
+            User user = userService.loadUserByUsername(restorePasswordRequest.username());
+            notificationService.notifyRestorePassword(
+                    user.getEmail(),
+                    user.getUsername(),
+                    getGenerateRestorePasswordCode(user)
+            );
+            return new RestorePasswordResponse(user.getEmail());
+        } catch (Exception e) {
+            log.error("Error restoring password for user {}: {}", restorePasswordRequest.username(), e.getMessage());
+            throw e;
+        }
     }
 
     @Override
