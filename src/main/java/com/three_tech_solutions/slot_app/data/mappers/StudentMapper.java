@@ -68,6 +68,7 @@ public class StudentMapper {
                 student.getDni(),
                 student.getPhoneNumber(),
                 student.getBirthday(),
+                student.getEmail(),
                 age,
                 student.getPathologies(),
                 student.getAdmissionDate(),
