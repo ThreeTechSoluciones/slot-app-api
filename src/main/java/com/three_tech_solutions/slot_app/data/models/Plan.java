@@ -62,6 +62,10 @@ public class Plan {
                 .orElse(List.of());
     }
 
+    public int calculateTotalFuturePrices(List<Price> futurePrices, Optional<Price> nextPrice) {
+        return nextPrice.map(np -> futurePrices.size() + 1).orElse(0);
+    }
+
     private static boolean priceEndDateIsNullOrIsAfterToday(Price price, LocalDate today) {
         /*
             We validate endDate as null because the first price of the plan when we create it

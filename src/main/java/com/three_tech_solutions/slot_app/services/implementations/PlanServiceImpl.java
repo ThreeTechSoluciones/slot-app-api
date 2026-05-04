@@ -150,7 +150,8 @@ public class PlanServiceImpl implements PlanService {
                         .map(priceMapper::toPriceResponse)
                         .orElse(null),
                 priceMapper.toPriceResponseList(plan.getFuturePrices()),
-                plan.getNumberOfDays()
+                plan.getNumberOfDays(),
+                plan.calculateTotalFuturePrices(plan.getFuturePrices(), plan.getNextPrice())
         );
     }
 
@@ -178,12 +179,12 @@ public class PlanServiceImpl implements PlanService {
         return pageable
                 .getSort()
                 .stream()
-                .filter(order -> !order.getProperty().equalsIgnoreCase("price"))
+                .filter(order -> !order.getProperty().equalsIgnoreCase("currentPrice"))
                 .toList();
     }
 
     private List<PlanResponse> sortPlansByPriceIfNecessary(Pageable pageable, Stream<PlanResponse> plansSortedByPrice) {
-        Sort.Order priceSortOrder = pageable.getSort().getOrderFor("price");
+        Sort.Order priceSortOrder = pageable.getSort().getOrderFor("currentPrice");
         if (mustSortByPrice(priceSortOrder)) {
             plansSortedByPrice = sortPriceIsDesc(priceSortOrder) ? getPlansSortedByPriceDesc(plansSortedByPrice) : getPlansSortedByPriceAsc(plansSortedByPrice);
         }

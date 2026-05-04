@@ -9,5 +9,6 @@ public record PlanResponse(
         double currentPrice,
         PriceResponse nextPrice,
         List<PriceResponse> futurePrices,
-        int numberOfDays
+        int numberOfDays,
+        int totalFuturePrices
 ) { }
