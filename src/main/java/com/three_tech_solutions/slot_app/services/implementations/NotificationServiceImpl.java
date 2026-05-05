@@ -1,64 +1,63 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.notifications.NotificationContentBuilder;
+import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.Notification;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.repositories.NotificationRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.MailSenderService;
-import com.three_tech_solutions.slot_app.services.interfaces.MonthlyFeeService;
 import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.utils.EmailUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final MailSenderService mailSenderService;
+    private final NotificationRepository notificationRepository;
+
+    private void send(String to, String message, NotificationType type, User user) {
+        String subject = type.getSubject();
+        String html = EmailUtils.formatEmail(subject, message);
+        mailSenderService.sendHtmlMessage(to, subject, html);
+        saveNotification(message, type, user);
+    }
 
     @Override
     public void notifyRestorePassword(String email, String username, String code) {
-        String subject = "Restablecimiento de contraseña";
-
-        String message = NotificationContentBuilder.buildRestorePasswordMessage(
-                username,
-                code
-        );
-
-        String html = EmailUtils.formatEmail(subject, message);
-        mailSenderService.sendHtmlMessage(email, subject, html);
+        String message = NotificationContentBuilder.buildRestorePasswordMessage(username, code);
+        send(email, message, NotificationType.RESTORE_PASSWORD,null);
     }
 
     @Override
     public void notifyNewMonthlyFee(Student student, MonthlyFee monthlyFee) {
-        String subject = "Nueva cuota generada";
-
-        String businessName = student.getUser() != null
-                ? student.getUser().getBusinessName()
-                : null;
-
-        String message = NotificationContentBuilder.buildNewMonthlyFeeMessage(
-                student,
-                monthlyFee,
-                businessName
-        );
-
-        String html = EmailUtils.formatEmail(subject, message);
-        mailSenderService.sendHtmlMessage(student.getEmail(), subject, html);
+        String message = NotificationContentBuilder.buildNewMonthlyFeeMessage(student, monthlyFee, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.NEW_MONTHLY_FEE, student.getUser());
     }
 
     @Override
     public void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee){
-        String subject = "Cuota vencida";
-
-        String message = NotificationContentBuilder.buildMonthlyFeeExpirationMessage(
-                monthlyFee.getStudent(),
-                monthlyFee,
-                monthlyFee.getStudent().getUser().getBusinessName()
-        );
-
-        String html = EmailUtils.formatEmail(subject, message);
-        mailSenderService.sendHtmlMessage(monthlyFee.getStudent().getEmail(), subject, html);
+        Student student = monthlyFee.getStudent();
+        String message = NotificationContentBuilder.buildMonthlyFeeExpirationMessage(student, monthlyFee, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.MONTHLY_FEE_EXPIRATION, student.getUser());
     }
 
+    private void saveNotification(String message, NotificationType type, User user) {
+
+        Notification notification = new Notification();
+        notification.setId(UUID.randomUUID());
+        notification.setSendDate(LocalDate.now());
+        notification.setMessage(message);
+        notification.setType(type);
+        notification.setUser(user);
+
+        notificationRepository.save(notification);
+    }
 }

@@ -36,13 +36,21 @@ public class ExpireStudentsMonthlyFees {
             expiredFees.forEach(monthlyFee -> {
                 try {
                     monthlyFee.updateStatus(MonthlyFeeStatus.OUT_OF_TIME);
-                    notificationService.notifyMonthlyFeeExpiration(monthlyFee);
                 } catch (Exception e) {
                     log.error("Error expirando cuota {}", monthlyFee.getId(), e);
                 }
             });
 
             monthlyFeeService.saveAllMonthlyFees(expiredFees);
+
+            expiredFees.forEach(monthlyFee -> {
+                try {
+                    notificationService.notifyMonthlyFeeExpiration(monthlyFee);
+                } catch (Exception e) {
+                    log.error("Error notificando cuota {}", monthlyFee.getId(), e);
+                }
+            });
+
             cronJobAuditoryService.setCronJobExecutionSuccess(cronJobAuditory);
             log.info("Finalizó proceso de expiración");
         } catch (Exception e) {

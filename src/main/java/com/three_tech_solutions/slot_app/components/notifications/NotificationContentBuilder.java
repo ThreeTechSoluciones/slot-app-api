@@ -53,6 +53,7 @@ public class NotificationContentBuilder {
                 Desde %s queremos informarte que tu cuota mensual ya se encuentra vencida.
 
                 💳 Monto: $%.2f
+                📅 Fecha de vencimiento: %s
                 
                 Cuando tengas un momento, podés ponerte al día para seguir disfrutando de las clases sin interrupciones 😉
 
@@ -60,7 +61,8 @@ public class NotificationContentBuilder {
                 """.formatted(
                 student.getName(),
                 businessName,
-                monthlyFee.getAmount()
+                monthlyFee.getAmount(),
+                monthlyFee.getExpirationDate().format(FORMATTER)
         );
     }
 
