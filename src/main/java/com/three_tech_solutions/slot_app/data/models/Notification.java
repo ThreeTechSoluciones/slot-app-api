@@ -1,9 +1,7 @@
 package com.three_tech_solutions.slot_app.data.models;
 
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +14,7 @@ import java.util.UUID;
 public class Notification {
         LocalDate sendDate;
         String message;
+        @Enumerated(EnumType.STRING)
         NotificationType type;
         @ManyToOne
         User user;
