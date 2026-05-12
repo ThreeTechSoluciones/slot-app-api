@@ -308,7 +308,11 @@ public class SlotServiceImpl implements SlotService {
     }
 
     private void logicallyDeleteSpecificSlots(Slot slot) {
+        specificSlotService.finishPastSpecificSlots(slot.getSpecificSlots());
+
         slot.getSpecificSlots()
+                .stream()
+                .filter(specificSlot -> !specificSlot.hasFinished())
                 .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
     }
 

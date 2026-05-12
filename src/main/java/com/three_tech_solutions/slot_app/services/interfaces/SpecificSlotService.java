@@ -20,4 +20,6 @@ public interface SpecificSlotService {
     List<SpecificSlotResponse.Student> getStudentsInSpecificSlot(UUID specificSlotId, String filter);
 
     void deleteSpecificSlots(List<SpecificSlot> specificSlots);
+
+    void finishPastSpecificSlots(List<SpecificSlot> specificSlots);
 }

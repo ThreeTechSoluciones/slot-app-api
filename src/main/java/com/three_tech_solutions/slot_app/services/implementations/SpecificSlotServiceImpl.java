@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus.CANCELED;
+import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus.*;
 
 @Slf4j
 @Service
@@ -79,6 +79,20 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
                 .toList();
     }
 
+    @Override
+    public void finishPastSpecificSlots(List<SpecificSlot> specificSlots) {
+        List<SpecificSlot> specificSlotsToFinish = getSpecificSlotsToFinish(specificSlots);
+
+        if (specificSlotsToFinish.isEmpty()) {
+            return;
+        }
+
+        specificSlotsToFinish
+                .forEach(specificSlot -> specificSlot.setStatus(FINISHED));
+
+        specificSlotRepository.saveAll(specificSlotsToFinish);
+    }
+
     private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {
         if (specificSlot.getStatus() == CANCELED) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El turno ya se encuentra cancelado");
@@ -97,5 +111,13 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
                     specificSlotId
             );
         }
+    }
+
+    private List<SpecificSlot> getSpecificSlotsToFinish(List<SpecificSlot> specificSlots) {
+
+        return specificSlots.stream()
+                .filter(specificSlot -> specificSlot.getStatus() == CREATED)
+                .filter(SpecificSlot::hasFinished)
+                .toList();
     }
 }
