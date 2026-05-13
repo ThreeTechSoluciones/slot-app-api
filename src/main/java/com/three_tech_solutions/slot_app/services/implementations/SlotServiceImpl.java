@@ -5,7 +5,6 @@ import com.three_tech_solutions.slot_app.controllers.requests.UpdateSlotRequest;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.UserSlotsByDayResponse;
-import com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus;
 import com.three_tech_solutions.slot_app.data.mappers.SlotMapper;
 import com.three_tech_solutions.slot_app.data.models.Slot;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
