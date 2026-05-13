@@ -66,4 +66,24 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildMonthlyFeeExpiringSoonMessage(Student student, MonthlyFee monthlyFee, String businessName){
+        String expirationDate = monthlyFee
+                .getExpirationDate()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        return """
+            Hola %s 👋
+
+            Desde %s queremos recordarte que tu cuota mensual todavía se encuentra pendiente y vence pronto📅
+
+            ⏰ Tenés tiempo para abonarla hasta el %s.
+
+            ¡Te esperamos en clase! 🚲💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                expirationDate
+        );
+    }
+
 }

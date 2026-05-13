@@ -27,7 +27,7 @@ public class EmailUtils {
                 <table align='center' width='520' cellpadding='0' cellspacing='0' style='max-width:520px;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);background-color:#ffffff;'>
                     <tr>
                         <td style='background-color:#f0e21e;padding:25px;text-align:center;'>
-                            <h2 style='margin:0;color:#000000;font-size:20px;'>%s</h2>
+                            <h2 style='margin:0;color:#000000;font-size:17px;font-weight:700;text-transform:uppercase;'>%s</h2>
                         </td>
                     </tr>
     

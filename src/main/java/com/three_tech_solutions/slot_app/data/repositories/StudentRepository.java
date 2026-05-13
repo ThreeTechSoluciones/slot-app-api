@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.data.repositories;
 
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface StudentRepository extends JpaRepository<Student, UUID> {
@@ -35,4 +37,6 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     );
 
     boolean existsByDni(String dni);
+
+    List<Student> findByPaymentPlan_PaymentPlanName(PaymentPlanName paymentPlanName);
 }
