@@ -9,4 +9,5 @@ public interface NotificationService {
 
     void notifyNewMonthlyFee(Student student, MonthlyFee monthlyFee);
 
+    void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee);
 }

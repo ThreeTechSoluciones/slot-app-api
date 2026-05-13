@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -103,6 +104,16 @@ public class MonthlyFeeServiceImpl implements MonthlyFeeService {
     @Override
     public MonthlyFee saveMonthlyFee(MonthlyFee monthlyFee) {
         return monthlyFeeRepository.save(monthlyFee);
+    }
+
+    @Override
+    public void saveAllMonthlyFees(List<MonthlyFee> monthlyFees){
+        monthlyFeeRepository.saveAll(monthlyFees);
+    }
+
+    @Override
+    public List<MonthlyFee> findExpiredMonthlyFees(LocalDate today){
+        return monthlyFeeRepository.findExpiredMonthlyFees(today);
     }
 
     private static Integer getMonthValue(String month) {
