@@ -101,7 +101,7 @@ public class SlotServiceImpl implements SlotService {
         Slot slot = getSlotByIdOrThrowException(slotId);
         validateSlotHasNoStudents(slot);
         deleteFutureSpecificSlotsPhysically(slot);
-        logicallyDeleteSpecificSlots(slot);
+        finishPastSpecificSlots(slot);
         unlinkSpecificSlots(slot);
         slotRepository.delete(slot);
     }
@@ -307,13 +307,8 @@ public class SlotServiceImpl implements SlotService {
         slot.getSpecificSlots().removeAll(toDelete);
     }
 
-    private void logicallyDeleteSpecificSlots(Slot slot) {
+    private void finishPastSpecificSlots(Slot slot) {
         specificSlotService.finishPastSpecificSlots(slot.getSpecificSlots());
-
-        slot.getSpecificSlots()
-                .stream()
-                .filter(specificSlot -> !specificSlot.hasFinished())
-                .forEach(specificSlot -> specificSlot.setStatus(SpecificSlotStatus.DELETED));
     }
 
     private void unlinkSpecificSlots(Slot slot) {
