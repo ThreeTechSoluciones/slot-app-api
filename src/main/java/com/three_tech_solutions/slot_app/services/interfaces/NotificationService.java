@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
@@ -13,6 +14,8 @@ public interface NotificationService {
     void notifyNewMonthlyFee(Student student, MonthlyFee monthlyFee);
 
     void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee);
+
+    void notifySlotRecovery(Student student, SpecificSlot specificSlot);
 
     void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery);
 }

@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
@@ -68,6 +69,24 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildSlotRecoveryMessage(Student student, SpecificSlot specificSlot, String businessName){
+        return """
+        Hola %s 👋
+
+        Desde %s queremos informarte que fuiste inscripto en un nuevo turno para recuperar una clase perdida.
+
+        📅 Fecha del turno: %s
+        🕒 Horario: %s a %s
+
+        Te esperamos 💪🚲
+        """.formatted(
+                student.getName(),
+                businessName,
+                specificSlot.getSlotDate().format(FORMATTER),
+                specificSlot.getStartTime().format(TIME_FORMATTER),
+                specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
     public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, LocalTime startTime, boolean hasRecovery) {
         String recoveryMessage = hasRecovery
                 ? "Se te ha acreditado una clase de recuperación ✅"
