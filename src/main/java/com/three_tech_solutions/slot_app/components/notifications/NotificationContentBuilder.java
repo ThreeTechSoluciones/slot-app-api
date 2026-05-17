@@ -76,7 +76,7 @@ public class NotificationContentBuilder {
         📅 Fecha del turno: %s
         🕒 Horario: %s a %s
 
-        Te esperamos para que puedas ponerte al día con la clase 💪🚲
+        Te esperamos 💪🚲
         """.formatted(
                 student.getName(),
                 businessName,
