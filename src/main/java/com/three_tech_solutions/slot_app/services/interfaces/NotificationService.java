@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.interfaces;
 
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 public interface NotificationService {
@@ -10,6 +11,8 @@ public interface NotificationService {
     void notifyNewMonthlyFee(Student student, MonthlyFee monthlyFee);
 
     void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee);
+
+    void notifySlotRecovery(Student student, SpecificSlot specificSlot);
 
     void notifyMonthlyFeeExpiringSoon(MonthlyFee monthlyFee);
 }

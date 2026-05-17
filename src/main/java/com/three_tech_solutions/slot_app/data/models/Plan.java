@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
+import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Entity
@@ -43,12 +44,38 @@ public class Plan {
                 .orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Hubo un error al obtener los precios de los planes"));
     }
 
+    public Optional<Price> getNextPrice(){
+        Price current = getCurrentPrice();
+        return this.getPrices()
+                .stream()
+                .filter(price -> startsAfter(current, price))
+                .min(Comparator.comparing(price -> price.startDate));
+    }
+
+    public List<Price> getFuturePrices(){
+        return getNextPrice()
+                .map(nextPrice -> this.getPrices()
+                        .stream()
+                        .filter(price -> startsAfter(nextPrice, price))
+                        .sorted(Comparator.comparing(price -> price.startDate))
+                        .collect(Collectors.toList()))
+                .orElse(List.of());
+    }
+
+    public int calculateTotalFuturePrices(List<Price> futurePrices, Optional<Price> nextPrice) {
+        return nextPrice.map(np -> futurePrices.size() + 1).orElse(0);
+    }
+
     private static boolean priceEndDateIsNullOrIsAfterToday(Price price, LocalDate today) {
         /*
             We validate endDate as null because the first price of the plan when we create it
             will not have an end date until a new price is created for that plan.
          */
         return price.endDate == null || today.isBefore(price.endDate);
+    }
+
+    private boolean startsAfter(Price first, Price second){
+        return first.startDate.isBefore(second.startDate);
     }
 
     private static boolean priceStartDateIsBeforeOrEqualThanToday(Price price, LocalDate today) {

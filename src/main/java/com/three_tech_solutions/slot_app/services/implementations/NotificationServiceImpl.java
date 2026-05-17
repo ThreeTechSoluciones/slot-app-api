@@ -2,10 +2,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.notifications.NotificationContentBuilder;
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
-import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
-import com.three_tech_solutions.slot_app.data.models.Notification;
-import com.three_tech_solutions.slot_app.data.models.Student;
-import com.three_tech_solutions.slot_app.data.models.User;
+import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.NotificationRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.MailSenderService;
 import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
@@ -47,6 +44,13 @@ public class NotificationServiceImpl implements NotificationService {
         Student student = monthlyFee.getStudent();
         String message = NotificationContentBuilder.buildMonthlyFeeExpirationMessage(student, monthlyFee, student.getUser().getBusinessName());
         send(student.getEmail(), message, NotificationType.MONTHLY_FEE_EXPIRATION, student.getUser());
+    }
+
+    @Override
+    public void notifySlotRecovery(Student student, SpecificSlot specificSlot) {
+        String message = NotificationContentBuilder.buildSlotRecoveryMessage(student, specificSlot, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.SLOT_RECOVERY, student.getUser());
+        saveNotification(message, NotificationType.SLOT_RECOVERY, student.getUser());
     }
 
     @Override
