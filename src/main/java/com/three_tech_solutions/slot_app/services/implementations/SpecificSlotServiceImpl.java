@@ -63,7 +63,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
             if (studentsMustRecoverSlot) {
                 registerAbsenceForStudent(specificSlotId, detail);
             }
-            notificationService.notifySlotCanceled(detail.getStudent(), specificSlot.getSlotDate(), studentsMustRecoverSlot);
+            notificationService.notifySlotCanceled(detail.getStudent(), specificSlot.getSlotDate(), specificSlot.getStartTime(), studentsMustRecoverSlot);
         });
         specificSlot.setStatus(CANCELED);
         specificSlot.getSpecificSlotDetails().clear();

@@ -4,11 +4,13 @@ import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NotificationContentBuilder {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String buildRestorePasswordMessage(String username, String code) {
         return """
@@ -66,7 +68,7 @@ public class NotificationContentBuilder {
         );
     }
 
-    public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, boolean hasRecovery) {
+    public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, LocalTime startTime, boolean hasRecovery) {
         String recoveryMessage = hasRecovery
                 ? "Se te ha acreditado una clase de recuperación ✅"
                 : "Esta clase no podrá recuperarse.";
@@ -74,7 +76,7 @@ public class NotificationContentBuilder {
         return """
         Hola %s 👋
 
-        Queríamos avisarte que la clase del día %s fue cancelada.
+        Desde %s queríamos avisarte que la clase del día %s a las %s fue cancelada.
         %s
 
         Ante cualquier duda, podés comunicarte con nosotros.
@@ -82,7 +84,9 @@ public class NotificationContentBuilder {
         ¡Nos vemos la próxima clase! 💪
         """.formatted(
                 student.getName(),
+                businessName,
                 date.format(FORMATTER),
+                startTime.format(TIME_FORMATTER),
                 recoveryMessage
         );
     }

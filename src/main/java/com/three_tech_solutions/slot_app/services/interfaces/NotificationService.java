@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public interface NotificationService {
 
@@ -13,5 +14,5 @@ public interface NotificationService {
 
     void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee);
 
-    void notifySlotCanceled(Student student, LocalDate date, boolean hasRecovery);
+    void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery);
 }
