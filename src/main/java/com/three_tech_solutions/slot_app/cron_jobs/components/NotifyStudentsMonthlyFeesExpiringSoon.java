@@ -27,7 +27,7 @@ public class NotifyStudentsMonthlyFeesExpiringSoon {
     private final CronJobAuditoryService cronJobAuditoryService;
 
     @Transactional
-    @Scheduled(cron = "0 */3 * * * *")
+    @Scheduled(cron = "0 0 2 8 * *")
     public void notifyStudentsAboutExpiringFees() {
         log.info("Iniciando proceso de notificación de cuotas por vencer");
         CronJobAuditory cronJobAuditory = cronJobAuditoryService.createCronJobExecution(CronJobType.NOTIFY_STUDENTS_MONTHLY_FEES_EXPIRING_SOON);
