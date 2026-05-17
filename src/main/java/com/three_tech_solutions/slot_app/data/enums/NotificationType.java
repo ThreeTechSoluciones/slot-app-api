@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum NotificationType {
     NEW_MONTHLY_FEE("Nueva cuota generada"),
     MONTHLY_FEE_EXPIRATION("Cuota vencida"),
-    RESTORE_PASSWORD("Restablecimiento de contraseña");
+    RESTORE_PASSWORD("Restablecimiento de contraseña"),
+    REGISTER_STUDENT_ABSENCE("Registro de ausencia para una clase");
 
     private final String subject;
 
