@@ -76,7 +76,7 @@ public class NotificationContentBuilder {
         return """
         Hola %s 👋
 
-        Desde %s queríamos avisarte que la clase del día %s a las %s fue cancelada.
+        Desde %s queríamos avisarte que la clase del día %s a las %s hs. fue cancelada.
         %s
 
         Ante cualquier duda, podés comunicarte con nosotros.
