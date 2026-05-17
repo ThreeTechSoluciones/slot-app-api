@@ -49,6 +49,12 @@ public class NotificationServiceImpl implements NotificationService {
         send(student.getEmail(), message, NotificationType.MONTHLY_FEE_EXPIRATION, student.getUser());
     }
 
+    @Override
+    public void notifySlotCanceled(Student student, LocalDate date, boolean hasRecovery) {
+        String message = NotificationContentBuilder.buildSlotCanceledMessage(student, student.getUser().getBusinessName(), date, hasRecovery);
+        send(student.getEmail(), message, NotificationType.SPECIFIC_SLOT_CANCELED, student.getUser());
+    }
+
     private void saveNotification(String message, NotificationType type, User user) {
 
         Notification notification = new Notification();

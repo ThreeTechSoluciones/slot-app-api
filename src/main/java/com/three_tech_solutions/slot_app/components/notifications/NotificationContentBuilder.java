@@ -66,4 +66,25 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, boolean hasRecovery) {
+        String recoveryMessage = hasRecovery
+                ? "Se te ha acreditado una clase de recuperación ✅"
+                : "Esta clase no podrá recuperarse.";
+
+        return """
+        Hola %s 👋
+
+        Queríamos avisarte que la clase del día %s fue cancelada.
+        %s
+
+        Ante cualquier duda, podés comunicarte con nosotros.
+
+        ¡Nos vemos la próxima clase! 💪
+        """.formatted(
+                student.getName(),
+                date.format(FORMATTER),
+                recoveryMessage
+        );
+    }
+
 }
