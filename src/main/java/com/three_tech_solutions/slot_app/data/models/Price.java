@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
@@ -24,5 +25,9 @@ public class Price {
     public Price(double amount, LocalDate startDate) {
         this.amount = amount;
         this.startDate = startDate;
+    }
+
+    public int getDaysUntilActive() {
+        return (int) ChronoUnit.DAYS.between(LocalDate.now(), this.startDate);
     }
 }
