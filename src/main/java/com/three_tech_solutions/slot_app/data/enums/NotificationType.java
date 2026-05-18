@@ -7,7 +7,8 @@ public enum NotificationType {
     NEW_MONTHLY_FEE("Nueva cuota generada"),
     MONTHLY_FEE_EXPIRATION("Cuota vencida"),
     RESTORE_PASSWORD("Restablecimiento de contraseña"),
-    SLOT_RECOVERY("Recuperación de turno");
+    SLOT_RECOVERY("Recuperación de turno"),
+    PRICE_UPDATE("Actualización de precio");
 
     private final String subject;
 
