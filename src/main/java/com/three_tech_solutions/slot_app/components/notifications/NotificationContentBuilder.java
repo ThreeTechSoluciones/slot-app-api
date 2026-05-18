@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
@@ -83,6 +84,27 @@ public class NotificationContentBuilder {
                 specificSlot.getSlotDate().format(FORMATTER),
                 specificSlot.getStartTime().format(TIME_FORMATTER),
                 specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
+
+    public static String buildNewPriceMessage(Student student, Price price, String businessName, String planName) {
+        return """
+            Hola %s 👋
+
+            Desde %s queremos informarte que tu plan (%s) tendrá un nuevo precio.
+
+            💳 Nuevo monto: $%.2f
+            📅 Entra en vigencia el: %s
+
+            Ante cualquier duda, podés consultarnos 😉
+
+            ¡Te esperamos en clase! 🚲💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                planName,
+                price.getAmount(),
+                price.getStartDate().format(FORMATTER)
         );
     }
 }

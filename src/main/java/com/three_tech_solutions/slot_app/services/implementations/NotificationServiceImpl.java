@@ -53,6 +53,18 @@ public class NotificationServiceImpl implements NotificationService {
         saveNotification(message, NotificationType.SLOT_RECOVERY, student.getUser());
     }
 
+    @Override
+    public void notifyNewPrice(Student student, Price price) {
+        String message = NotificationContentBuilder.buildNewPriceMessage(
+                student,
+                price,
+                student.getUser().getBusinessName(),
+                student.getPaymentPlan().getPlan().getName()
+        );
+
+        send(student.getEmail(), message, NotificationType.PRICE_UPDATE, student.getUser());
+    }
+
     private void saveNotification(String message, NotificationType type, User user) {
 
         Notification notification = new Notification();
