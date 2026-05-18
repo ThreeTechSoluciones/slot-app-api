@@ -37,7 +37,7 @@ public class NotificationContentBuilder {
             🕒 Tus turnos:
             %s
 
-            ¡Te esperamos en clase! 🚲🙌
+            ¡Te esperamos! 🙌
             """,
                 student.getName(),
                 businessName,
