@@ -30,7 +30,7 @@ public class NotifyUpcomingPrices {
     private final NotificationService notificationService;
 
     @Transactional
-    @Scheduled(cron = "0 */4 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void notifyUpcomingPrices() {
         log.info("Iniciando notificación de precios próximos");
         CronJobAuditory cronJobAuditory = cronJobAuditoryService.createCronJobExecution(CronJobType.NOTIFY_UPCOMING_PRICES);
