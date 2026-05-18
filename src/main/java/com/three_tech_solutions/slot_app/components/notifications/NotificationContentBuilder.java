@@ -4,6 +4,8 @@ import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NotificationContentBuilder {
@@ -85,6 +87,29 @@ public class NotificationContentBuilder {
                 specificSlot.getEndTime().format(TIME_FORMATTER)
         );
     }
+    public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, LocalTime startTime, boolean hasRecovery) {
+        String recoveryMessage = hasRecovery
+                ? "Se te ha acreditado una clase de recuperación ✅"
+                : "Esta clase no podrá recuperarse.";
+
+        return """
+        Hola %s 👋
+
+        Desde %s queríamos avisarte que la clase del día %s a las %s hs. fue cancelada.
+        %s
+
+        Ante cualquier duda, podés comunicarte con nosotros.
+
+        ¡Nos vemos la próxima clase! 💪
+        """.formatted(
+                student.getName(),
+                businessName,
+                date.format(FORMATTER),
+                startTime.format(TIME_FORMATTER),
+                recoveryMessage
+        );
+    }
+
     public static String buildMonthlyFeeExpiringSoonMessage(Student student, MonthlyFee monthlyFee, String businessName){
         String expirationDate = monthlyFee
                 .getExpirationDate()
