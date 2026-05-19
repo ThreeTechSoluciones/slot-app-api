@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum NotificationType {
+    REACTIVATION("Reactivación de alumno"),
     NEW_MONTHLY_FEE("Nueva cuota generada"),
     MONTHLY_FEE_EXPIRATION("Cuota vencida"),
     RESTORE_PASSWORD("Restablecimiento de contraseña"),
