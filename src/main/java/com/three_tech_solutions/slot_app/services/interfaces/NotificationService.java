@@ -18,4 +18,6 @@ public interface NotificationService {
     void notifySlotRecovery(Student student, SpecificSlot specificSlot);
 
     void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery);
+
+    void notifyRecoveryAboutToExpire(Student student, LocalDate expirationDate);
 }

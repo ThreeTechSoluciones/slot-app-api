@@ -60,6 +60,12 @@ public class NotificationServiceImpl implements NotificationService {
         send(student.getEmail(), message, NotificationType.SPECIFIC_SLOT_CANCELED, student.getUser());
     }
 
+    @Override
+    public void notifyRecoveryAboutToExpire(Student student, LocalDate expirationDate) {
+        String message = NotificationContentBuilder.buildRecoveryAboutToExpireMessage(student, student.getUser().getBusinessName(), expirationDate);
+        send(student.getEmail(), message, NotificationType.NOTIFY_ABOUT_EXPIRING_RECOVERIES, student.getUser());
+    }
+
     private void saveNotification(String message, NotificationType type, User user) {
 
         Notification notification = new Notification();
