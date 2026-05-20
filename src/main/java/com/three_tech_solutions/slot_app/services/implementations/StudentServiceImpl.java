@@ -302,6 +302,7 @@ public class StudentServiceImpl implements StudentService {
         specificSlot.addStudent(student);
         specificSlotService.saveSpecificSlot(specificSlot);
         studentRepository.save(student);
+        notificationService.notifySlotRecovery(student, specificSlot);
     }
 
     @Override
