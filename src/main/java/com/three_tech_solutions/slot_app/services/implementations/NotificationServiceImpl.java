@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.notifications.NotificationContentBuilder;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.NotificationRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,13 +22,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final MailSenderService mailSenderService;
     private final NotificationRepository notificationRepository;
-
-    private void send(String to, String message, NotificationType type, User user) {
-        String subject = type.getSubject();
-        String html = EmailUtils.formatEmail(subject, message);
-        mailSenderService.sendHtmlMessage(to, subject, html);
-        saveNotification(message, type, user);
-    }
 
     @Override
     public void notifyRestorePassword(String email, String username, String code) {
@@ -60,6 +55,18 @@ public class NotificationServiceImpl implements NotificationService {
         send(student.getEmail(), message, NotificationType.SPECIFIC_SLOT_CANCELED, student.getUser());
     }
 
+    @Override
+    public void notifyStudentSlotsUpdated(Student student, List<StudentSlotResponse> slots) {
+        String message = NotificationContentBuilder.buildStudentSlotsUpdateMessage(student, student.getUser().getBusinessName(), slots);
+        send(student.getEmail(), message, NotificationType.STUDENT_SLOTS_UPDATED, student.getUser());
+    }
+
+    private void send(String to, String message, NotificationType type, User user) {
+        String subject = type.getSubject();
+        String html = EmailUtils.formatEmail(subject, message);
+        mailSenderService.sendHtmlMessage(to, subject, html);
+        saveNotification(message, type, user);
+    }
     private void saveNotification(String message, NotificationType type, User user) {
 
         Notification notification = new Notification();

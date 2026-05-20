@@ -175,12 +175,14 @@ public class StudentServiceImpl implements StudentService {
         validatePaymentDay(request.getPaymentPlanName(), request.getPaymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
+                    List<StudentSlotResponse> previousSlots = slotService.getSlotsByStudent(student);
                     removePaymentDayIfNewPlanIsBeginningOfMonth(request);
                     studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
                     validateStudentSlotAssignment(request.getSlotIds(), request.getPlanId());
                     slotService.updateSlotsForStudent(request.getSlotIds(), student);
-
-                    return studentMapper.toStudentResponse(studentRepository.save(student));
+                    Student updatedStudent = studentRepository.save(student);
+                    notifyIfStudentSlotsChanged(updatedStudent, previousSlots);
+                    return studentMapper.toStudentResponse(updatedStudent);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
@@ -460,4 +462,15 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+    private void notifyIfStudentSlotsChanged(Student updatedStudent, List<StudentSlotResponse> previousSlots) {
+        List<StudentSlotResponse> updatedSlots = slotService.getSlotsByStudent(updatedStudent);
+
+        if (!previousSlots.equals(updatedSlots)) {
+            try {
+                notificationService.notifyStudentSlotsUpdated(updatedStudent, updatedSlots);
+            } catch (Exception e) {
+                log.error("Error notificando cambio de turnos del estudiante {}", updatedStudent.getId(), e);
+            }
+        }
+    }
 }
