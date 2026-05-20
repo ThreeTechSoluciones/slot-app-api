@@ -281,7 +281,9 @@ public class StudentServiceImpl implements StudentService {
                         specificSlotDetail -> {
                             validateIfStudentIsNotAlreadyRegisteredAsAbsent(specificSlotDetail);
                             changeStatusToAbsence(specificSlotDetail);
-                            registerNewStudentAbsence(studentId, specificSlotDetail);
+                            Student student = getStudentByIdOrThrowExcepion(studentId);
+                            registerNewStudentAbsence(student, specificSlotDetail);
+                            notificationService.notifyStudentAbsenceForSpecificSlot(student, specificSlotDetail.getSpecificSlot());
                         },
                         () -> {
                             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no está registrado en el turno especificado.");
@@ -312,8 +314,7 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.deleteMonthlyFee(monthlyFee);
     }
 
-    private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
-        Student student = getStudentByIdOrThrowExcepion(studentId);
+    private void registerNewStudentAbsence(Student student, SpecificSlotDetail specificSlotDetail) {
         buildStudentAbsence(specificSlotDetail, student);
         studentRepository.save(student);
     }

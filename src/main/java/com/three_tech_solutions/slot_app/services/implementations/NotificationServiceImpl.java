@@ -60,6 +60,12 @@ public class NotificationServiceImpl implements NotificationService {
         send(student.getEmail(), message, NotificationType.SPECIFIC_SLOT_CANCELED, student.getUser());
     }
 
+    @Override
+    public void notifyStudentAbsenceForSpecificSlot(Student student, SpecificSlot specificSlot) {
+        String message = NotificationContentBuilder.buildStudentAbsenceForSpecificSlotMessage(student, specificSlot, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.REGISTER_STUDENT_ABSENCE, student.getUser());
+    }
+
     private void saveNotification(String message, NotificationType type, User user) {
 
         Notification notification = new Notification();
