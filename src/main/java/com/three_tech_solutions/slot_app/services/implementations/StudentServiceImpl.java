@@ -314,6 +314,12 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.deleteMonthlyFee(monthlyFee);
     }
 
+
+    @Override
+    public List<Student> findByPaymentPlanName(PaymentPlanName paymentPlanName) {
+        return studentRepository.findByPaymentPlan_PaymentPlanName(paymentPlanName);
+    }
+
     private void registerNewStudentAbsence(Student student, SpecificSlotDetail specificSlotDetail) {
         buildStudentAbsence(specificSlotDetail, student);
         studentRepository.save(student);
