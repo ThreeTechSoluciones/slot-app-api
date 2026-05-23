@@ -16,6 +16,6 @@ public class FuturePricesControllerImpl implements FuturePricesController {
 
     private final FuturePricesService futurePricesService;
 
-     public void deleteFuturePrice (UUID futurePriceId){
+     public void deleteFuturePrice(UUID futurePriceId){
         futurePricesService.deleteFuturePrice (futurePriceId);
 }}
