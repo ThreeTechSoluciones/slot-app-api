@@ -61,6 +61,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void notifyStudentAbsenceForSpecificSlot(Student student, SpecificSlot specificSlot) {
+        String message = NotificationContentBuilder.buildStudentAbsenceForSpecificSlotMessage(student, specificSlot, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.REGISTER_STUDENT_ABSENCE, student.getUser());
+    }
+
+    @Override
     public void notifyMonthlyFeeExpiringSoon(MonthlyFee monthlyFee) {
         Student student = monthlyFee.getStudent();
         String message = NotificationContentBuilder.buildMonthlyFeeExpiringSoonMessage(student, monthlyFee, student.getUser().getBusinessName());
