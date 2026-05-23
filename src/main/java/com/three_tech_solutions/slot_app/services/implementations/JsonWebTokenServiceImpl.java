@@ -29,7 +29,7 @@ public class JsonWebTokenServiceImpl implements JsonWebTokenService {
     public String getAccessToken(String subject) {
         return buildJwt(
                 subject,
-                Instant.now().plus(accessTokenExpiration, ChronoUnit.SECONDS)
+                Instant.now().plus(accessTokenExpiration, ChronoUnit.MINUTES)
         );
     }
 
@@ -37,7 +37,7 @@ public class JsonWebTokenServiceImpl implements JsonWebTokenService {
     public String getRefreshToken(String subject) {
         return buildJwt(
                 subject,
-                Instant.now().plus(refreshTokenExpiration, ChronoUnit.SECONDS)
+                Instant.now().plus(refreshTokenExpiration, ChronoUnit.MINUTES)
         );
     }
 
