@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.data.models.SpecificSlotDetail;
 import com.three_tech_solutions.slot_app.data.models.User;
 import com.three_tech_solutions.slot_app.data.repositories.SpecificSlotRepository;
 import com.three_tech_solutions.slot_app.exceptions.custom_exceptions.StudentAlreadyRegisteredException;
+import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotDetailService;
 import com.three_tech_solutions.slot_app.services.interfaces.SpecificSlotService;
 import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
@@ -30,6 +31,7 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     private final SpecificSlotRepository specificSlotRepository;
     private final StudentService studentService;
     private final SpecificSlotDetailService specificSlotDetailService;
+    private final NotificationService notificationService;
 
     @Override
     public List<SpecificSlot> getAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate) {
@@ -56,14 +58,12 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
     public void cancelSpecificSlot(UUID specificSlotId, boolean studentsMustRecoverSlot) {
         SpecificSlot specificSlot = getSpecificSlotByIdOrThrowException(specificSlotId);
         validateIfSpecificSlotIsNotAlreadyCanceled(specificSlot);
-        if (studentsMustRecoverSlot) {
-            specificSlot
-                    .getSpecificSlotDetails()
-                    .forEach(specificSlotDetail ->
-                            registerAbsenceForStudent(specificSlotId, specificSlotDetail)
-                    );
-        }
-
+        specificSlot.getSpecificSlotDetails().forEach(detail -> {
+            if (studentsMustRecoverSlot) {
+                registerAbsenceForStudent(specificSlotId, detail);
+            }
+            notificationService.notifySlotCanceled(detail.getStudent(), specificSlot.getSlotDate(), specificSlot.getStartTime(), studentsMustRecoverSlot);
+        });
         specificSlot.setStatus(CANCELED);
         specificSlot.getSpecificSlotDetails().clear();
         specificSlotRepository.save(specificSlot);

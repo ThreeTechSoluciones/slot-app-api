@@ -1,14 +1,17 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NotificationContentBuilder {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String buildRestorePasswordMessage(String username, String code) {
         return """
@@ -43,6 +46,88 @@ public class NotificationContentBuilder {
                 fee.getAmount(),
                 fee.getExpirationDate().format(FORMATTER)
 
+        );
+    }
+
+    public static String buildMonthlyFeeExpirationMessage(Student student, MonthlyFee monthlyFee, String businessName){
+        return """
+                Hola %s 👋
+
+                Desde %s queremos informarte que tu cuota mensual ya se encuentra vencida.
+
+                💳 Monto: $%.2f
+                📅 Fecha de vencimiento: %s
+                
+                Cuando tengas un momento, podés ponerte al día para seguir disfrutando de las clases sin interrupciones 😉
+
+                ¡Te esperamos en clase! 🚲💪
+                """.formatted(
+                student.getName(),
+                businessName,
+                monthlyFee.getAmount(),
+                monthlyFee.getExpirationDate().format(FORMATTER)
+        );
+    }
+
+    public static String buildStudentAbsenceForSpecificSlotMessage(Student student, SpecificSlot specificSlot, String businessName) {
+        return """
+        Hola %s 👋
+
+        Desde %s queremos confirmarte que registramos correctamente tu ausencia al turno al que estabas inscripto.
+
+        📅 Fecha del turno: %s
+        🕒 Horario: %s a %s
+
+        Gracias por avisarnos con anticipación 🙌
+        Esto nos ayuda a organizar mejor los turnos y dar lugar a otros estudiantes.
+
+        ¡Te esperamos en una próxima clase! 🚲💪
+        """.formatted(
+                student.getName(),
+                businessName,
+                specificSlot.getSlotDate().format(FORMATTER),
+                specificSlot.getStartTime().format(TIME_FORMATTER),
+                specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
+    public static String buildSlotRecoveryMessage(Student student, SpecificSlot specificSlot, String businessName){
+        return """
+        Hola %s 👋
+
+        Desde %s queremos informarte que fuiste inscripto en un nuevo turno para recuperar una clase perdida.
+
+        📅 Fecha del turno: %s
+        🕒 Horario: %s a %s
+
+        Te esperamos 💪🚲
+        """.formatted(
+                student.getName(),
+                businessName,
+                specificSlot.getSlotDate().format(FORMATTER),
+                specificSlot.getStartTime().format(TIME_FORMATTER),
+                specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
+    public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, LocalTime startTime, boolean hasRecovery) {
+        String recoveryMessage = hasRecovery
+                ? "Se te ha acreditado una clase de recuperación ✅"
+                : "Esta clase no podrá recuperarse.";
+
+        return """
+        Hola %s 👋
+
+        Desde %s queríamos avisarte que la clase del día %s a las %s hs. fue cancelada.
+        %s
+
+        Ante cualquier duda, podés comunicarte con nosotros.
+
+        ¡Nos vemos la próxima clase! 💪
+        """.formatted(
+                student.getName(),
+                businessName,
+                date.format(FORMATTER),
+                startTime.format(TIME_FORMATTER),
+                recoveryMessage
         );
     }
 

@@ -49,6 +49,7 @@ public class StudentServiceImpl implements StudentService {
     private final PlanService planService;
     private final SpecificSlotDetailService specificSlotDetailService;
     private final SpecificSlotService specificSlotService;
+    private final NotificationService notificationService;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
@@ -58,7 +59,8 @@ public class StudentServiceImpl implements StudentService {
             @Lazy PlanService planService,
             @Lazy SlotService slotService,
             SpecificSlotDetailService specificSlotDetailService,
-            @Lazy SpecificSlotService specificSlotService
+            @Lazy SpecificSlotService specificSlotService,
+            NotificationService notificationService
     ) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
@@ -68,6 +70,7 @@ public class StudentServiceImpl implements StudentService {
         this.slotService = slotService;
         this.specificSlotDetailService = specificSlotDetailService;
         this.specificSlotService = specificSlotService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -278,7 +281,9 @@ public class StudentServiceImpl implements StudentService {
                         specificSlotDetail -> {
                             validateIfStudentIsNotAlreadyRegisteredAsAbsent(specificSlotDetail);
                             changeStatusToAbsence(specificSlotDetail);
-                            registerNewStudentAbsence(studentId, specificSlotDetail);
+                            Student student = getStudentByIdOrThrowExcepion(studentId);
+                            registerNewStudentAbsence(student, specificSlotDetail);
+                            notificationService.notifyStudentAbsenceForSpecificSlot(student, specificSlotDetail.getSpecificSlot());
                         },
                         () -> {
                             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no está registrado en el turno especificado.");
@@ -297,6 +302,7 @@ public class StudentServiceImpl implements StudentService {
         specificSlot.addStudent(student);
         specificSlotService.saveSpecificSlot(specificSlot);
         studentRepository.save(student);
+        notificationService.notifySlotRecovery(student, specificSlot);
     }
 
     @Override
@@ -308,8 +314,7 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.deleteMonthlyFee(monthlyFee);
     }
 
-    private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
-        Student student = getStudentByIdOrThrowExcepion(studentId);
+    private void registerNewStudentAbsence(Student student, SpecificSlotDetail specificSlotDetail) {
         buildStudentAbsence(specificSlotDetail, student);
         studentRepository.save(student);
     }
