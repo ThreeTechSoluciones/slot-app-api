@@ -17,4 +17,6 @@ public interface AuthService {
     void confirmRecoverPassword(RecoverPasswordRequest recoverPasswordRequest);
 
     void validateToken(ValidateTokenRequest request);
+
+    SignInResponse refreshToken(String refreshToken);
 }

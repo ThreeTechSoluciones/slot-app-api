@@ -9,11 +9,12 @@ import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import static com.three_tech_solutions.slot_app.utils.AuthUtils.BEARER_PREFIX;
+
 @Component
 public class BearerTokenConverter implements AuthenticationConverter {
 
     private final JsonWebTokenService jsonWebTokenService;
-    private final String BEARER_PREFIX = "Bearer ";
 
     public BearerTokenConverter(JsonWebTokenService jsonWebTokenService) {
         this.jsonWebTokenService = jsonWebTokenService;
