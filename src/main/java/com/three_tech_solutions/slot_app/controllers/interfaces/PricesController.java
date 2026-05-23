@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.UUID;
 
-public interface FuturePricesController {
+public interface PricesController {
 
-    @DeleteMapping("/futurePrice/{futurePriceId}")
+    @DeleteMapping("/prices/{futurePriceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFuturePrice(@PathVariable UUID futurePriceId);
 }

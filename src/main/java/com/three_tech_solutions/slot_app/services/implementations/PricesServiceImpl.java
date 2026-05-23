@@ -2,7 +2,7 @@ package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.data.models.Price;
 import com.three_tech_solutions.slot_app.data.repositories.PriceRepository;
-import com.three_tech_solutions.slot_app.services.interfaces.FuturePricesService;
+import com.three_tech_solutions.slot_app.services.interfaces.PricesService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Service
-public class FuturePricesServiceImpl implements FuturePricesService {
+public class PricesServiceImpl implements PricesService {
 
     private final PriceRepository priceRepository;
 
