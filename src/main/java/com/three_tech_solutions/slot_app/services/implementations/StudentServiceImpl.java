@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -193,32 +191,17 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Page<StudentResponse> getStudentsByUserAndNameAndLastNameAndDni(User user, String filters, boolean filterByAbsences, StudentSituation status, Boolean isActive, Pageable pageable) {
-        Page<StudentResponse> studentsPage = studentRepository
-                .getStudentsByUserAndFilters(user, filters, filterByAbsences, isActive, pageable)
+        return studentRepository
+                .getStudentsByUserAndFilters(user, filters, filterByAbsences, isActive, getStudentSituationFilter(status), pageable)
                 .map(studentMapper::toStudentResponse);
-        List<StudentResponse> filteredContent = getContentByStudentSituationFilter(status, studentsPage);
-
-        return new PageImpl<>(
-                filteredContent,
-                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
-                getContentSize(status, studentsPage, filteredContent)
-        );
     }
 
-    private static long getContentSize(StudentSituation status, Page<StudentResponse> studentsPage, List<StudentResponse> filteredContent) {
-        // This is because when we apply the student situation filter,
-        // we are filtering the content of the page, but the total elements of the page
-        // still corresponds to the total elements without applying the student situation filter.
-        // So we need to adjust the total elements of the page to correspond to the filtered content size.
-        return status == null ? studentsPage.getTotalElements() : filteredContent.size();
-    }
-
-    private static List<StudentResponse> getContentByStudentSituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
-        return status != null ? filterStudentPageBySituationFilter(status, studentsPage) : studentsPage.getContent();
-    }
-
-    private static List<StudentResponse> filterStudentPageBySituationFilter(StudentSituation status, Page<StudentResponse> studentsPage) {
-        return studentsPage.getContent().stream().filter(studentResponse -> studentResponse.status().equals(status)).toList();
+    private static Boolean getStudentSituationFilter(StudentSituation status) {
+        if (status == null) {
+            return null;
+        } else {
+            return StudentSituation.CON_DEUDA.equals(status);
+        }
     }
 
     @Override
@@ -466,5 +449,4 @@ public class StudentServiceImpl implements StudentService {
             );
         }
     }
-
 }
