@@ -31,6 +31,6 @@ public class Price {
     }
 
     public boolean cantBeDeleted() {
-        return LocalDate.now().isAfter(this.startDate) || LocalDate.now().isEqual(this.startDate) ;
+        return LocalDate.now().isAfter(this.startDate) || LocalDate.now().isEqual(this.startDate);
     }
 }

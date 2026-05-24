@@ -14,6 +14,6 @@ public class PricesControllerImpl implements PricesController {
     private final PricesService pricesService;
 
     public void deletePrice(UUID priceId) {
-        pricesService.deletePrice (priceId);
+        pricesService.deletePrice(priceId);
     }
 }
