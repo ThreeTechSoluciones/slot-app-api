@@ -2,7 +2,6 @@ package com.three_tech_solutions.slot_app.data.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OrderBy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +28,9 @@ public class Price {
 
     public int getDaysUntilActive() {
         return (int) ChronoUnit.DAYS.between(LocalDate.now(), this.startDate);
+    }
+
+    public boolean cantBeDeleted() {
+        return LocalDate.now().isAfter(this.startDate) || LocalDate.now().isEqual(this.startDate) ;
     }
 }

@@ -4,5 +4,5 @@ import java.util.UUID;
 
 
 public interface PricesService {
-    public void deleteFuturePrice(UUID futurePriceId);
+    public void deletePrice(UUID priceId);
 }

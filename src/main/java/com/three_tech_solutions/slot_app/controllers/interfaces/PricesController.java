@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface PricesController {
 
-    @DeleteMapping("/prices/{futurePriceId}")
+    @DeleteMapping("/prices/{priceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFuturePrice(@PathVariable UUID futurePriceId);
+    public void deletePrice(@PathVariable UUID priceId);
 }

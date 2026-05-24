@@ -9,11 +9,11 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
-
 public class PricesControllerImpl implements PricesController {
 
-    private final PricesService futurePricesService;
+    private final PricesService pricesService;
 
-     public void deleteFuturePrice(UUID futurePriceId){
-        futurePricesService.deleteFuturePrice (futurePriceId);
-}}
+    public void deletePrice(UUID priceId) {
+        pricesService.deletePrice (priceId);
+    }
+}
