@@ -4,6 +4,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotRespon
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -137,23 +138,11 @@ public class NotificationContentBuilder {
         return slots.stream()
                 .map(slot -> String.format(
                         "- %s de %s a %s hs.",
-                        translateDay(slot.dayOfWeek()),
+                        DateUtils.translateDay(slot.dayOfWeek()),
                         slot.startTime().format(TIME_FORMATTER),
                         slot.endTime().format(TIME_FORMATTER)
                 ))
                 .collect(Collectors.joining("\n"));
-    }
-
-    private static String translateDay(java.time.DayOfWeek day) {
-        return switch (day) {
-            case MONDAY -> "Lunes";
-            case TUESDAY -> "Martes";
-            case WEDNESDAY -> "Miércoles";
-            case THURSDAY -> "Jueves";
-            case FRIDAY -> "Viernes";
-            case SATURDAY -> "Sábado";
-            case SUNDAY -> "Domingo";
-        };
     }
 
 }

@@ -35,4 +35,6 @@ public interface SlotService {
     void removeStudentFromAllSlots(Student student);
 
     void updateSlotsAndSpecificSlotsCapacity(User user, byte newCapacity);
+
+    List<StudentSlotResponse> getSlotsByIds(List<UUID> slotIds);
 }

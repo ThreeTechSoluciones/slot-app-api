@@ -179,9 +179,14 @@ public class StudentServiceImpl implements StudentService {
                     removePaymentDayIfNewPlanIsBeginningOfMonth(request);
                     studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
                     validateStudentSlotAssignment(request.getSlotIds(), request.getPlanId());
-                    slotService.updateSlotsForStudent(request.getSlotIds(), student);
+                    List<StudentSlotResponse> requestedSlots = slotService.getSlotsByIds(request.getSlotIds());
+
+                    if (!previousSlots.equals(requestedSlots)) {
+                        slotService.updateSlotsForStudent(request.getSlotIds(), student);
+                        notifyStudentSlotsUpdated(student, requestedSlots);
+                    }
+
                     Student updatedStudent = studentRepository.save(student);
-                    notifyIfStudentSlotsChanged(updatedStudent, previousSlots);
                     return studentMapper.toStudentResponse(updatedStudent);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
@@ -462,15 +467,11 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    private void notifyIfStudentSlotsChanged(Student updatedStudent, List<StudentSlotResponse> previousSlots) {
-        List<StudentSlotResponse> updatedSlots = slotService.getSlotsByStudent(updatedStudent);
-
-        if (!previousSlots.equals(updatedSlots)) {
-            try {
-                notificationService.notifyStudentSlotsUpdated(updatedStudent, updatedSlots);
-            } catch (Exception e) {
-                log.error("Error notificando cambio de turnos del estudiante {}", updatedStudent.getId(), e);
-            }
+    private void notifyStudentSlotsUpdated(Student student, List<StudentSlotResponse> updatedSlots) {
+        try {
+            notificationService.notifyStudentSlotsUpdated(student, updatedSlots);
+        } catch (Exception e) {
+            log.error("Error notificando cambio de turnos del estudiante {}", student.getId(), e);
         }
     }
 }
