@@ -73,6 +73,27 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildStudentAbsenceForSpecificSlotMessage(Student student, SpecificSlot specificSlot, String businessName) {
+        return """
+        Hola %s 👋
+
+        Desde %s queremos confirmarte que registramos correctamente tu ausencia al turno al que estabas inscripto.
+
+        📅 Fecha del turno: %s
+        🕒 Horario: %s a %s
+
+        Gracias por avisarnos con anticipación 🙌
+        Esto nos ayuda a organizar mejor los turnos y dar lugar a otros estudiantes.
+
+        ¡Te esperamos en una próxima clase! 🚲💪
+        """.formatted(
+                student.getName(),
+                businessName,
+                specificSlot.getSlotDate().format(FORMATTER),
+                specificSlot.getStartTime().format(TIME_FORMATTER),
+                specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
     public static String buildSlotRecoveryMessage(Student student, SpecificSlot specificSlot, String businessName){
         return """
         Hola %s 👋
@@ -112,6 +133,26 @@ public class NotificationContentBuilder {
                 date.format(FORMATTER),
                 startTime.format(TIME_FORMATTER),
                 recoveryMessage
+        );
+    }
+
+    public static String buildMonthlyFeeExpiringSoonMessage(Student student, MonthlyFee monthlyFee, String businessName){
+        String expirationDate = monthlyFee
+                .getExpirationDate()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        return """
+            Hola %s 👋
+
+            Desde %s queremos recordarte que tu cuota mensual todavía se encuentra pendiente y vence pronto📅
+
+            ⏰ Tenés tiempo para abonarla hasta el %s.
+
+            ¡Te esperamos en clase! 🚲💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                expirationDate
         );
     }
 

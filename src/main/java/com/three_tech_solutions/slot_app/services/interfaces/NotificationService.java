@@ -17,9 +17,13 @@ public interface NotificationService {
 
     void notifyMonthlyFeeExpiration(MonthlyFee monthlyFee);
 
+    void notifyStudentAbsenceForSpecificSlot(Student student, SpecificSlot specificSlot);
+
     void notifySlotRecovery(Student student, SpecificSlot specificSlot);
 
     void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery);
+
+    void notifyMonthlyFeeExpiringSoon(MonthlyFee monthlyFee);
 
     void notifyStudentSlotsUpdated(Student student, List<StudentSlotResponse> slots);
 }
