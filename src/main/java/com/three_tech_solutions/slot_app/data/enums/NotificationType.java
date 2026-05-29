@@ -10,7 +10,8 @@ public enum NotificationType {
     REGISTER_STUDENT_ABSENCE("Registro de ausencia para una clase"),
     SLOT_RECOVERY("Recuperación de turno"),
     SPECIFIC_SLOT_CANCELED("Clase cancelada"),
-    MONTHLY_FEE_EXPIRING_SOON("Cuota por vencer");
+    MONTHLY_FEE_EXPIRING_SOON("Cuota por vencer"),
+    STUDENT_SLOTS_UPDATED("Actualización de turnos");
 
     private final String subject;
 

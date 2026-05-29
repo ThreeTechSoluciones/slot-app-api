@@ -151,6 +151,14 @@ public class SlotServiceImpl implements SlotService {
         user.getSlots().forEach(slot -> slot.setCapacity(newCapacity));
     }
 
+    @Override
+    public List<StudentSlotResponse> getSlotsByIds(List<UUID> slotIds) {
+        return slotRepository.findAllById(slotIds)
+                .stream()
+                .map(slotMapper::toStudentSlotResponse)
+                .toList();
+    }
+
     private boolean exceedsCapacity(SpecificSlot specificSlot, byte newCapacity) {
         int slotUsedCapacity = calculateUsedCapacity(specificSlot.getSlot());
         int specificSlotUsedCapacity = specificSlot.getSpecificSlotUsedCapacity();

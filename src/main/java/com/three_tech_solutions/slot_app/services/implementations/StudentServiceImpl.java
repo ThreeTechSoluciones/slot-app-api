@@ -175,12 +175,19 @@ public class StudentServiceImpl implements StudentService {
         validatePaymentDay(request.getPaymentPlanName(), request.getPaymentDay());
         return studentRepository.findById(studentId)
                 .map(student -> {
+                    List<StudentSlotResponse> previousSlots = slotService.getSlotsByStudent(student);
                     removePaymentDayIfNewPlanIsBeginningOfMonth(request);
                     studentMapper.updateStudent(student,request, getPlanByIdOrThrowException(request.getPlanId()));
                     validateStudentSlotAssignment(request.getSlotIds(), request.getPlanId());
-                    slotService.updateSlotsForStudent(request.getSlotIds(), student);
+                    List<StudentSlotResponse> requestedSlots = slotService.getSlotsByIds(request.getSlotIds());
 
-                    return studentMapper.toStudentResponse(studentRepository.save(student));
+                    if (!previousSlots.equals(requestedSlots)) {
+                        slotService.updateSlotsForStudent(request.getSlotIds(), student);
+                        notifyStudentSlotsUpdated(student, requestedSlots);
+                    }
+
+                    Student updatedStudent = studentRepository.save(student);
+                    return studentMapper.toStudentResponse(updatedStudent);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no existe."));
     }
@@ -467,4 +474,11 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+    private void notifyStudentSlotsUpdated(Student student, List<StudentSlotResponse> updatedSlots) {
+        try {
+            notificationService.notifyStudentSlotsUpdated(student, updatedSlots);
+        } catch (Exception e) {
+            log.error("Error notificando cambio de turnos del estudiante {}", student.getId(), e);
+        }
+    }
 }

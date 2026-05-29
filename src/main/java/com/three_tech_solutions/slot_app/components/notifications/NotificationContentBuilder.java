@@ -1,12 +1,16 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class NotificationContentBuilder {
 
@@ -108,6 +112,7 @@ public class NotificationContentBuilder {
                 specificSlot.getEndTime().format(TIME_FORMATTER)
         );
     }
+
     public static String buildSlotCanceledMessage(Student student, String businessName, LocalDate date, LocalTime startTime, boolean hasRecovery) {
         String recoveryMessage = hasRecovery
                 ? "Se te ha acreditado una clase de recuperación ✅"
@@ -149,6 +154,36 @@ public class NotificationContentBuilder {
                 businessName,
                 expirationDate
         );
+    }
+
+    public static String buildStudentSlotsUpdateMessage(Student student, String businessName, List<StudentSlotResponse> slots) {
+        String slotsDescription = buildSlotsDescription(slots);
+
+        return """
+            Hola %s 👋
+
+            Tus turnos fueron actualizados con éxito en %s 🎉
+
+            🕒 Nuevos turnos asignados:
+            %s
+
+            ¡Te esperamos en clase! 🚲💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                slotsDescription
+        );
+    }
+
+    private static String buildSlotsDescription(List<StudentSlotResponse> slots) {
+        return slots.stream()
+                .map(slot -> String.format(
+                        "- %s de %s a %s hs.",
+                        DateUtils.translateDay(slot.dayOfWeek()),
+                        slot.startTime().format(TIME_FORMATTER),
+                        slot.endTime().format(TIME_FORMATTER)
+                ))
+                .collect(Collectors.joining("\n"));
     }
 
 }
