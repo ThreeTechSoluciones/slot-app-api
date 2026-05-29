@@ -27,4 +27,6 @@ public interface NotificationService {
     void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery);
 
     void notifyMonthlyFeeExpiringSoon(MonthlyFee monthlyFee);
+
+    void notifyRecoveryAboutToExpire(Student student, LocalDate expirationDate);
 }

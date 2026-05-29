@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
+import com.three_tech_solutions.slot_app.data.models.Absence;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
 import com.three_tech_solutions.slot_app.data.models.Plan;
@@ -30,7 +31,7 @@ public class NotificationContentBuilder {
 
         return String.format("""
             Hola %s 👋
-            
+
             ¡Te damos la bienvenida a %s! 🎉
 
             Tu registro fue realizado con éxito y ya podés comenzar a disfrutar de tus clases 🚲💪
@@ -184,6 +185,24 @@ public class NotificationContentBuilder {
                 student.getName(),
                 businessName,
                 expirationDate
+        );
+    }
+
+    public static String buildRecoveryAboutToExpireMessage(Student student, String businessName, LocalDate expirationDate) {
+        return """
+            Hola %s 👋
+
+            Desde %s queremos recordarte que todavía tenés una clase disponible para recuperar 🚲
+
+            📅 Podés utilizarla hasta el %s
+
+            Si querés coordinar cuándo recuperarla, podés comunicarte con nosotros 😉
+
+            ¡Te esperamos en clase! 💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                expirationDate.format(FORMATTER)
         );
     }
 

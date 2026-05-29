@@ -7,6 +7,7 @@ import com.three_tech_solutions.slot_app.data.enums.AbsenceStatus;
 import com.three_tech_solutions.slot_app.data.models.Absence;
 import com.three_tech_solutions.slot_app.data.repositories.AbsenceRepository;
 import com.three_tech_solutions.slot_app.services.interfaces.AbsenceService;
+import com.three_tech_solutions.slot_app.services.interfaces.NotificationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +24,7 @@ public class ExpirePendingAbsences implements AbsenceService {
 
     private final CronJobAuditoryService cronJobAuditoryService;
     private final AbsenceRepository absenceRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     @Scheduled(cron = "0 0 2 * * *")
@@ -32,9 +34,14 @@ public class ExpirePendingAbsences implements AbsenceService {
         CronJobAuditory cronJobAuditory = cronJobAuditoryService.createCronJobExecution(CronJobType.EXPIRE_PENDING_ABSENCES);
         try {
             LocalDate today = LocalDate.now();
+            List<Absence> pendingAbsences = getPendingAbsences();
 
-            List<Absence> absencesToExpire = getPendingAbsences().stream()
-                    .filter(absence -> shouldExpireAbsence(absence, today))
+            pendingAbsences.stream()
+                    .filter(absence -> absence.isAboutToExpire(today))
+                    .forEach(this::notifyRecoveryAboutToExpire);
+
+            List<Absence> absencesToExpire = pendingAbsences.stream()
+                    .filter(absence -> absence.isExpired(today))
                     .peek(absence -> absence.setStatus(AbsenceStatus.OUT_OF_TIME))
                     .toList();
 
@@ -47,16 +54,14 @@ public class ExpirePendingAbsences implements AbsenceService {
         }
     }
 
-    private boolean shouldExpireAbsence(Absence absence, LocalDate today) {
-        byte daysToRecover = absence.getStudent()
-                .getUser()
-                .getUserPreferences()
-                .getDaysToRecoverAbsence();
-
-        LocalDate expirationDate = today.minusDays(daysToRecover);
-
-        return absence.getSlotDate().isBefore(expirationDate);
+    private void notifyRecoveryAboutToExpire(Absence absence) {
+        try {
+            notificationService.notifyRecoveryAboutToExpire(absence.getStudent(), absence.getExpirationDate());
+        } catch (Exception e) {
+            log.error("Error notificando recuperación próxima a vencer {}", absence.getId(), e);
+        }
     }
+
     private List<Absence> getPendingAbsences() {
         return absenceRepository.findByStatus(AbsenceStatus.PENDING);
     }

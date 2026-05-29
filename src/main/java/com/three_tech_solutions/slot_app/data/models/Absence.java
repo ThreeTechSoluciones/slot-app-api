@@ -33,4 +33,24 @@ public class Absence {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    public LocalDate getExpirationDate() {
+        byte daysToRecover = this.getStudent()
+                .getUser()
+                .getUserPreferences()
+                .getDaysToRecoverAbsence();
+
+        return this.slotDate.plusDays(daysToRecover);
+    }
+
+    public boolean isAboutToExpire(LocalDate today) {
+        return getExpirationDate()
+                .minusDays(3)
+                .isEqual(today);
+    }
+
+    public boolean isExpired(LocalDate today) {
+        return getExpirationDate()
+                .isBefore(today);
+    }
 }
