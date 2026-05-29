@@ -12,7 +12,6 @@ public enum NotificationType {
     SLOT_RECOVERY("Recuperación de turno"),
     SPECIFIC_SLOT_CANCELED("Clase cancelada"),
     NOTIFY_ABOUT_EXPIRING_RECOVERIES("Recuperación próxima a vencer"),
-    SPECIFIC_SLOT_CANCELED("Clase cancelada"),
     MONTHLY_FEE_EXPIRING_SOON("Cuota por vencer");
 
     private final String subject;
