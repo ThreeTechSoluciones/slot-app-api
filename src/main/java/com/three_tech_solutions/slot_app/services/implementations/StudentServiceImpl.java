@@ -86,6 +86,7 @@ public class StudentServiceImpl implements StudentService {
             studentRepository.save(student);
             createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
             addStudentToSlots(studentDTO.getSlotIds(), student, studentDTO.getPlanId());
+            sendWelcomeNotification(student);
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
@@ -447,6 +448,15 @@ public class StudentServiceImpl implements StudentService {
                     BAD_REQUEST,
                     "La cantidad de turnos seleccionados debe coincidir con los días del plan (" + numberOfDays + ")"
             );
+        }
+    }
+
+    private void sendWelcomeNotification(Student student) {
+        try {
+            List<StudentSlotResponse> slots = slotService.getSlotsByStudent(student);
+            notificationService.notifyWelcome(student, slots);
+        } catch (Exception e) {
+            log.error("Error notificando bienvenida {}", student.getId(), e);
         }
     }
 }

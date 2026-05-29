@@ -13,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
 @Service
@@ -28,7 +31,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     public SignInResponse signIn(String username) {
         return new SignInResponse(
-                userService.loadUserByUsername(username).getId(),
+                getUserIdByUsername(username),
                 jsonWebTokenService.getAccessToken(username),
                 jsonWebTokenService.getRefreshToken(username)
         );
@@ -64,6 +67,34 @@ class AuthServiceImpl implements AuthService {
     @Override
     public void validateToken(ValidateTokenRequest request) {
         this.passwordRecoveryTokenService.validateToken(request);
+    }
+
+    @Override
+    public SignInResponse refreshToken(String refreshToken) {
+        validateRefreshToken(refreshToken);
+
+        String subject = getSubject(refreshToken);
+        return new SignInResponse(
+                getUserIdByUsername(subject),
+                jsonWebTokenService.getAccessToken(subject),
+                jsonWebTokenService.getRefreshToken(subject)
+        );
+    }
+
+    private UUID getUserIdByUsername(String refreshToken) {
+        return userService.loadUserByUsername(
+                refreshToken
+        ).getId();
+    }
+
+    private String getSubject(String refreshToken) {
+        return jsonWebTokenService.getSubject(refreshToken);
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        if (!jsonWebTokenService.isValid(refreshToken)) {
+            throw new ResponseStatusException(UNAUTHORIZED, "Refresh token is invalid");
+        }
     }
 
     private String getGenerateRestorePasswordCode(User user) {
