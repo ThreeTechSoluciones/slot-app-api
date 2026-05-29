@@ -1,18 +1,54 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
 import com.three_tech_solutions.slot_app.data.models.Absence;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class NotificationContentBuilder {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    public static String buildWelcomeMessage(Student student, String businessName, List<StudentSlotResponse> slots) {
+        Plan plan = student.getPaymentPlan().getPlan();
+
+        String slotsDescription = slots.stream()
+                .map(slot -> String.format("- %s de %s a %s hs.",
+                        DateUtils.translateDay(slot.dayOfWeek()),
+                        slot.startTime().format(TIME_FORMATTER),
+                        slot.endTime().format(TIME_FORMATTER)))
+                .collect(Collectors.joining("\n"));
+
+        return String.format("""
+            Hola %s 👋
+
+            ¡Te damos la bienvenida a %s! 🎉
+
+            Tu registro fue realizado con éxito y ya podés comenzar a disfrutar de tus clases 🚲💪
+
+            📅 Plan elegido: %s
+
+            🕒 Tus turnos:
+            %s
+
+            ¡Te esperamos! 🙌
+            """,
+                student.getName(),
+                businessName,
+                plan.getName(),
+                slotsDescription
+        );
+    }
 
     public static String buildRestorePasswordMessage(String username, String code) {
         return """
@@ -70,6 +106,27 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildStudentAbsenceForSpecificSlotMessage(Student student, SpecificSlot specificSlot, String businessName) {
+        return """
+        Hola %s 👋
+
+        Desde %s queremos confirmarte que registramos correctamente tu ausencia al turno al que estabas inscripto.
+
+        📅 Fecha del turno: %s
+        🕒 Horario: %s a %s
+
+        Gracias por avisarnos con anticipación 🙌
+        Esto nos ayuda a organizar mejor los turnos y dar lugar a otros estudiantes.
+
+        ¡Te esperamos en una próxima clase! 🚲💪
+        """.formatted(
+                student.getName(),
+                businessName,
+                specificSlot.getSlotDate().format(FORMATTER),
+                specificSlot.getStartTime().format(TIME_FORMATTER),
+                specificSlot.getEndTime().format(TIME_FORMATTER)
+        );
+    }
     public static String buildSlotRecoveryMessage(Student student, SpecificSlot specificSlot, String businessName){
         return """
         Hola %s 👋
@@ -111,6 +168,26 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildMonthlyFeeExpiringSoonMessage(Student student, MonthlyFee monthlyFee, String businessName){
+        String expirationDate = monthlyFee
+                .getExpirationDate()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        return """
+            Hola %s 👋
+
+            Desde %s queremos recordarte que tu cuota mensual todavía se encuentra pendiente y vence pronto📅
+
+            ⏰ Tenés tiempo para abonarla hasta el %s.
+
+            ¡Te esperamos en clase! 🚲💪
+            """.formatted(
+                student.getName(),
+                businessName,
+                expirationDate
+        );
+    }
+
     public static String buildRecoveryAboutToExpireMessage(Student student, String businessName, LocalDate expirationDate) {
         return """
             Hola %s 👋
@@ -118,7 +195,7 @@ public class NotificationContentBuilder {
             Desde %s queremos recordarte que todavía tenés una clase disponible para recuperar 🚲
 
             📅 Podés utilizarla hasta el %s
-            
+
             Si querés coordinar cuándo recuperarla, podés comunicarte con nosotros 😉
 
             ¡Te esperamos en clase! 💪

@@ -8,6 +8,7 @@ import com.three_tech_solutions.slot_app.controllers.responses.StudentDetailsRes
 import com.three_tech_solutions.slot_app.controllers.responses.StudentMonthlyFeeResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.StudentResponse;
 import com.three_tech_solutions.slot_app.data.enums.MonthlyFeeStatus;
+import com.three_tech_solutions.slot_app.data.enums.PaymentPlanName;
 import com.three_tech_solutions.slot_app.data.enums.StudentSituation;
 import com.three_tech_solutions.slot_app.data.models.Student;
 import com.three_tech_solutions.slot_app.data.models.User;
@@ -47,4 +48,6 @@ public interface StudentService {
     void recoverSlot(UUID studentId, UUID specificSlotId);
 
     void deleteStudentMonthlyFee(UUID studentId, UUID monthlyFeeId);
+
+    List<Student> findByPaymentPlanName(PaymentPlanName paymentPlanName);
 }

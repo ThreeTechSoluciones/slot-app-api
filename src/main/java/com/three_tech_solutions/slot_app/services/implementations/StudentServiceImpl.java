@@ -88,6 +88,7 @@ public class StudentServiceImpl implements StudentService {
             studentRepository.save(student);
             createInitialMonthlyFee(student, getInitialPaymentContext(studentDTO.getClassPrice(), studentDTO.getExtraClasses()));
             addStudentToSlots(studentDTO.getSlotIds(), student, studentDTO.getPlanId());
+            sendWelcomeNotification(student);
             return studentMapper.toStudentResponse(student);
         } catch (DataIntegrityViolationException exception) {
             throw new ResponseStatusException(BAD_REQUEST, "El DNI ya existe");
@@ -281,7 +282,9 @@ public class StudentServiceImpl implements StudentService {
                         specificSlotDetail -> {
                             validateIfStudentIsNotAlreadyRegisteredAsAbsent(specificSlotDetail);
                             changeStatusToAbsence(specificSlotDetail);
-                            registerNewStudentAbsence(studentId, specificSlotDetail);
+                            Student student = getStudentByIdOrThrowExcepion(studentId);
+                            registerNewStudentAbsence(student, specificSlotDetail);
+                            notificationService.notifyStudentAbsenceForSpecificSlot(student, specificSlotDetail.getSpecificSlot());
                         },
                         () -> {
                             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El estudiante no está registrado en el turno especificado.");
@@ -312,8 +315,13 @@ public class StudentServiceImpl implements StudentService {
         monthlyFeeService.deleteMonthlyFee(monthlyFee);
     }
 
-    private void registerNewStudentAbsence(UUID studentId, SpecificSlotDetail specificSlotDetail) {
-        Student student = getStudentByIdOrThrowExcepion(studentId);
+
+    @Override
+    public List<Student> findByPaymentPlanName(PaymentPlanName paymentPlanName) {
+        return studentRepository.findByPaymentPlan_PaymentPlanName(paymentPlanName);
+    }
+
+    private void registerNewStudentAbsence(Student student, SpecificSlotDetail specificSlotDetail) {
         buildStudentAbsence(specificSlotDetail, student);
         studentRepository.save(student);
     }
@@ -457,6 +465,15 @@ public class StudentServiceImpl implements StudentService {
                     BAD_REQUEST,
                     "La cantidad de turnos seleccionados debe coincidir con los días del plan (" + numberOfDays + ")"
             );
+        }
+    }
+
+    private void sendWelcomeNotification(Student student) {
+        try {
+            List<StudentSlotResponse> slots = slotService.getSlotsByStudent(student);
+            notificationService.notifyWelcome(student, slots);
+        } catch (Exception e) {
+            log.error("Error notificando bienvenida {}", student.getId(), e);
         }
     }
 

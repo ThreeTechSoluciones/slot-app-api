@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.notifications.NotificationContentBuilder;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import com.three_tech_solutions.slot_app.data.models.*;
 import com.three_tech_solutions.slot_app.data.repositories.NotificationRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,6 +28,12 @@ public class NotificationServiceImpl implements NotificationService {
         String html = EmailUtils.formatEmail(subject, message);
         mailSenderService.sendHtmlMessage(to, subject, html);
         saveNotification(message, type, user);
+    }
+
+    @Override
+    public void notifyWelcome(Student student, List<StudentSlotResponse> slots) {
+        String message = NotificationContentBuilder.buildWelcomeMessage(student, student.getUser().getBusinessName(), slots);
+        send(student.getEmail(), message, NotificationType.WELCOME, student.getUser());
     }
 
     @Override
@@ -58,6 +66,19 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifySlotCanceled(Student student, LocalDate date, LocalTime startTime, boolean hasRecovery) {
         String message = NotificationContentBuilder.buildSlotCanceledMessage(student, student.getUser().getBusinessName(), date, startTime, hasRecovery);
         send(student.getEmail(), message, NotificationType.SPECIFIC_SLOT_CANCELED, student.getUser());
+    }
+
+    @Override
+    public void notifyStudentAbsenceForSpecificSlot(Student student, SpecificSlot specificSlot) {
+        String message = NotificationContentBuilder.buildStudentAbsenceForSpecificSlotMessage(student, specificSlot, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.REGISTER_STUDENT_ABSENCE, student.getUser());
+    }
+
+    @Override
+    public void notifyMonthlyFeeExpiringSoon(MonthlyFee monthlyFee) {
+        Student student = monthlyFee.getStudent();
+        String message = NotificationContentBuilder.buildMonthlyFeeExpiringSoonMessage(student, monthlyFee, student.getUser().getBusinessName());
+        send(student.getEmail(), message, NotificationType.MONTHLY_FEE_EXPIRING_SOON, student.getUser());
     }
 
     @Override

@@ -13,8 +13,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Notification {
         LocalDate sendDate;
+        @Column(length = 1000)
         String message;
         @Enumerated(EnumType.STRING)
+        @Column(length = 50)
         NotificationType type;
         @ManyToOne
         User user;
