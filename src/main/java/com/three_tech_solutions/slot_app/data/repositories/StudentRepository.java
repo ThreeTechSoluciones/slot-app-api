@@ -26,6 +26,27 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
            AND (:filterByAbsences = false OR EXISTS (
                    SELECT a FROM Absence a WHERE a.student = s AND a.status = 'PENDING'
            ))
+           AND (
+            :withDebt IS NULL
+            OR (
+                :withDebt = true
+                AND EXISTS (
+                    SELECT mf
+                    FROM MonthlyFee mf
+                    WHERE mf.student = s
+                      AND mf.currentStatus = 'OUT_OF_TIME'
+                )
+            )
+            OR (
+                :withDebt = false
+                AND NOT EXISTS (
+                    SELECT mf
+                    FROM MonthlyFee mf
+                    WHERE mf.student = s
+                      AND mf.currentStatus = 'OUT_OF_TIME'
+                )
+            )
+        )
         ORDER BY s.enabled DESC
     """)
     Page<Student> getStudentsByUserAndFilters(
@@ -33,6 +54,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
             @Param("filter") String filter,
             @Param("filterByAbsences") boolean filterByAbsences,
             @Param("isActive") Boolean isActive,
+            @Param("withDebt") Boolean withDebt,
             Pageable pageable
     );
 
