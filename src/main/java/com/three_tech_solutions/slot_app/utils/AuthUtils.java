@@ -2,11 +2,12 @@ package com.three_tech_solutions.slot_app.utils;
 
 import java.util.Base64;
 
-public class BasicAuthUtils {
+public class AuthUtils {
     private static String BASIC_PREFIX = "Basic ";
     private static String COLON_SYMBOL = ":";
+    public static final String BEARER_PREFIX = "Bearer ";
 
-    private BasicAuthUtils() {}
+    private AuthUtils() {}
 
     public static String extractUsername(String authorization) {
         return getCredentials(authorization)[0];
@@ -23,6 +24,10 @@ public class BasicAuthUtils {
                                 .substring(BASIC_PREFIX.length())
                 )
         );
+    }
+
+    public static String removeBearerPrefix(String jwtToken) {
+        return jwtToken.substring(BEARER_PREFIX.length());
     }
 
     private static byte[] decodeString(String encodedCredentials) {

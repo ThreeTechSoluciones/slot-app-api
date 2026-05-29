@@ -1,6 +1,7 @@
 package com.three_tech_solutions.slot_app.services.implementations;
 
 import com.three_tech_solutions.slot_app.components.notifications.NotificationContentBuilder;
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.enums.NotificationStatus;
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import com.three_tech_solutions.slot_app.data.models.*;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,6 +25,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final MailSenderService mailSenderService;
     private final NotificationRepository notificationRepository;
+
+    @Override
+    public void notifyWelcome(Student student, List<StudentSlotResponse> slots) {
+        String message = NotificationContentBuilder.buildWelcomeMessage(student, student.getUser().getBusinessName(), slots);
+        send(student.getEmail(), message, NotificationType.WELCOME, student.getUser());
+    }
 
     @Override
     public void notifyRestorePassword(String email, String username, String code) {

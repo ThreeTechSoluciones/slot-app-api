@@ -73,4 +73,8 @@ public interface AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/restore-password/token/validate")
     void validateTokenAndDisableIt(@RequestBody ValidateTokenRequest request);
+
+    @PostMapping("/refresh-token")
+    @ResponseStatus(HttpStatus.OK)
+    SignInResponse refreshToken(@RequestHeader(name = "Authorization") String refreshToken);
 }
