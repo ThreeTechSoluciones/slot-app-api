@@ -1,17 +1,53 @@
 package com.three_tech_solutions.slot_app.components.notifications;
 
+import com.three_tech_solutions.slot_app.controllers.responses.StudentSlotResponse;
 import com.three_tech_solutions.slot_app.data.models.MonthlyFee;
+import com.three_tech_solutions.slot_app.data.models.Plan;
 import com.three_tech_solutions.slot_app.data.models.SpecificSlot;
 import com.three_tech_solutions.slot_app.data.models.Student;
+import com.three_tech_solutions.slot_app.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class NotificationContentBuilder {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    public static String buildWelcomeMessage(Student student, String businessName, List<StudentSlotResponse> slots) {
+        Plan plan = student.getPaymentPlan().getPlan();
+
+        String slotsDescription = slots.stream()
+                .map(slot -> String.format("- %s de %s a %s hs.",
+                        DateUtils.translateDay(slot.dayOfWeek()),
+                        slot.startTime().format(TIME_FORMATTER),
+                        slot.endTime().format(TIME_FORMATTER)))
+                .collect(Collectors.joining("\n"));
+
+        return String.format("""
+            Hola %s 👋
+            
+            ¡Te damos la bienvenida a %s! 🎉
+
+            Tu registro fue realizado con éxito y ya podés comenzar a disfrutar de tus clases 🚲💪
+
+            📅 Plan elegido: %s
+
+            🕒 Tus turnos:
+            %s
+
+            ¡Te esperamos! 🙌
+            """,
+                student.getName(),
+                businessName,
+                plan.getName(),
+                slotsDescription
+        );
+    }
 
     public static String buildRestorePasswordMessage(String username, String code) {
         return """
