@@ -1,5 +1,6 @@
 package com.three_tech_solutions.slot_app.data.models;
 
+import com.three_tech_solutions.slot_app.data.enums.NotificationStatus;
 import com.three_tech_solutions.slot_app.data.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class Notification {
         @Enumerated(EnumType.STRING)
         @Column(length = 50)
         NotificationType type;
+        @Enumerated(EnumType.STRING)
+        NotificationStatus status;
         @ManyToOne
         User user;
         @Id

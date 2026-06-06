@@ -8,9 +8,11 @@ import com.three_tech_solutions.slot_app.controllers.requests.ValidateTokenReque
 import com.three_tech_solutions.slot_app.controllers.responses.RestorePasswordResponse;
 import com.three_tech_solutions.slot_app.controllers.responses.SignInResponse;
 import com.three_tech_solutions.slot_app.services.interfaces.AuthService;
-import com.three_tech_solutions.slot_app.utils.BasicAuthUtils;
+import com.three_tech_solutions.slot_app.utils.AuthUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.three_tech_solutions.slot_app.utils.AuthUtils.removeBearerPrefix;
 
 @RestController
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public SignInResponse signIn(String authorization) {
         return authService.signIn(
-                BasicAuthUtils.extractUsername(authorization)
+                AuthUtils.extractUsername(authorization)
         );
     }
 
@@ -43,6 +45,12 @@ public class AuthControllerImpl implements AuthController {
     public void validateTokenAndDisableIt(ValidateTokenRequest request) {
         authService.validateToken(request);
     }
+
+    @Override
+    public SignInResponse refreshToken(String refreshToken) {
+        return authService.refreshToken(removeBearerPrefix(refreshToken));
+    }
+
 
 
 }
