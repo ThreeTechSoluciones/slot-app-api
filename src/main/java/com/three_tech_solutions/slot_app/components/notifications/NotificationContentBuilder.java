@@ -51,13 +51,7 @@ public class NotificationContentBuilder {
 
     public static String buildReactivationMessage(Student student, String businessName, List<StudentSlotResponse> slots) {
         Plan plan = student.getPaymentPlan().getPlan();
-
-        String slotsDescription = slots.stream()
-                .map(slot -> String.format("- %s de %s a %s hs.",
-                        translateDay(slot.dayOfWeek()),
-                        slot.startTime().format(TIME_FORMATTER),
-                        slot.endTime().format(TIME_FORMATTER)))
-                .collect(Collectors.joining("\n"));
+        String slotsDescription = buildSlotsDescription(slots);
 
         return String.format("""
         Hola %s 👋
@@ -216,6 +210,17 @@ public class NotificationContentBuilder {
                 businessName,
                 expirationDate
         );
+    }
+
+    private static String buildSlotsDescription(List<StudentSlotResponse> slots) {
+        return slots.stream()
+                .map(slot -> String.format(
+                        "- %s de %s a %s hs.",
+                        DateUtils.translateDay(slot.dayOfWeek()),
+                        slot.startTime().format(TIME_FORMATTER),
+                        slot.endTime().format(TIME_FORMATTER)
+                ))
+                .collect(Collectors.joining("\n"));
     }
 
     private static String translateDay(java.time.DayOfWeek day) {
