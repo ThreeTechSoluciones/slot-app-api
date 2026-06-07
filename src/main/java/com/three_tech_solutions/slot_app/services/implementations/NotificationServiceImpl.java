@@ -33,6 +33,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void notifyReactivation(Student student, List<StudentSlotResponse> slots) {
+        String message = NotificationContentBuilder.buildReactivationMessage(student, student.getUser().getBusinessName(), slots);
+        send(student.getEmail(), message, NotificationType.REACTIVATION, student.getUser());
+    }
+
+    @Override
     public void notifyRestorePassword(String email, String username, String code) {
         String message = NotificationContentBuilder.buildRestorePasswordMessage(username, code);
         send(email, message, NotificationType.RESTORE_PASSWORD,null);

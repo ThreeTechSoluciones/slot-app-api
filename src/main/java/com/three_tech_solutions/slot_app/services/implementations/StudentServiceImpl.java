@@ -115,11 +115,16 @@ public class StudentServiceImpl implements StudentService {
                 activateStudentRequest.classPrice()
         );
 
-        return studentMapper.toStudentResponse(
-                studentRepository.save(
-                        getStudentAndSetNewPaymentInformationAndSlots(studentId, activateStudentRequest)
-                )
-        );
+        Student activatedStudent = studentRepository.save(getStudentAndSetNewPaymentInformationAndSlots(studentId, activateStudentRequest));
+
+        try {
+            List<StudentSlotResponse> slots = slotService.getSlotsByStudent(activatedStudent);
+            notificationService.notifyReactivation(activatedStudent, slots);
+        } catch (Exception e) {
+            log.error("Error notificando reactivación del estudiante {}", activatedStudent.getId(), e);
+        }
+
+        return studentMapper.toStudentResponse(activatedStudent);
     }
 
     private Student getStudentAndSetNewPaymentInformationAndSlots(UUID studentId, ActivateStudentRequest activateStudentRequest) {

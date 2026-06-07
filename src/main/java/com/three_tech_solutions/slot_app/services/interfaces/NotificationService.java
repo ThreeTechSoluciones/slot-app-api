@@ -14,6 +14,8 @@ public interface NotificationService {
 
     void notifyWelcome(Student student, List<StudentSlotResponse> slots);
 
+    void notifyReactivation(Student student, List<StudentSlotResponse> slots);
+
     void notifyRestorePassword(String email, String username, String code);
 
     void notifyNewMonthlyFee(Student student, MonthlyFee monthlyFee);

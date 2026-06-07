@@ -49,6 +49,31 @@ public class NotificationContentBuilder {
         );
     }
 
+    public static String buildReactivationMessage(Student student, String businessName, List<StudentSlotResponse> slots) {
+        Plan plan = student.getPaymentPlan().getPlan();
+        String slotsDescription = buildSlotsDescription(slots);
+
+        return String.format("""
+        Hola %s 👋
+        
+        ¡Nos alegra tenerte nuevamente en %s! 🎉
+
+        Tu reactivación fue realizada con éxito y ya podés volver a asistir a las clases 🚲💪
+
+        📅 Plan elegido: %s
+
+        🕒 Tus turnos:
+        %s
+
+        ¡Te esperamos nuevamente! 🙌
+        """,
+                student.getName(),
+                businessName,
+                plan.getName(),
+                slotsDescription
+        );
+    }
+
     public static String buildRestorePasswordMessage(String username, String code) {
         return """
             Hola %s 👋
@@ -185,6 +210,29 @@ public class NotificationContentBuilder {
                 businessName,
                 expirationDate
         );
+    }
+
+    private static String buildSlotsDescription(List<StudentSlotResponse> slots) {
+        return slots.stream()
+                .map(slot -> String.format(
+                        "- %s de %s a %s hs.",
+                        DateUtils.translateDay(slot.dayOfWeek()),
+                        slot.startTime().format(TIME_FORMATTER),
+                        slot.endTime().format(TIME_FORMATTER)
+                ))
+                .collect(Collectors.joining("\n"));
+    }
+
+    private static String translateDay(java.time.DayOfWeek day) {
+        return switch (day) {
+            case MONDAY -> "Lunes";
+            case TUESDAY -> "Martes";
+            case WEDNESDAY -> "Miércoles";
+            case THURSDAY -> "Jueves";
+            case FRIDAY -> "Viernes";
+            case SATURDAY -> "Sábado";
+            case SUNDAY -> "Domingo";
+        };
     }
 
 }
