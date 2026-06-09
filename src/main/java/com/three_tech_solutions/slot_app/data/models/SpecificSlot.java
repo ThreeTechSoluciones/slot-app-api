@@ -80,4 +80,13 @@ public class SpecificSlot {
         return this.slotDate.isBefore(today)
                 || (this.slotDate.isEqual(today) && this.endTime.isBefore(now));
     }
+
+    public boolean finish() {
+        if (this.status == SpecificSlotStatus.CREATED && hasFinished()) {
+            this.status = SpecificSlotStatus.FINISHED;
+            return true;
+        }
+
+        return false;
+    }
 }

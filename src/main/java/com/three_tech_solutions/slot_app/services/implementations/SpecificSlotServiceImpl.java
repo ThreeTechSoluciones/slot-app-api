@@ -14,10 +14,12 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,16 +82,21 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
 
     @Override
     public void finishPastSpecificSlots(List<SpecificSlot> specificSlots) {
-        List<SpecificSlot> specificSlotsToFinish = getSpecificSlotsToFinish(specificSlots);
+        List<SpecificSlot> finishedSlots = specificSlots.stream()
+                .filter(SpecificSlot::finish)
+                .toList();
 
-        if (specificSlotsToFinish.isEmpty()) {
-            return;
+        if (!finishedSlots.isEmpty()) {
+            specificSlotRepository.saveAll(finishedSlots);
         }
+    }
 
-        specificSlotsToFinish
-                .forEach(specificSlot -> specificSlot.setStatus(FINISHED));
+    @Async
+    @Override
+    public void finishUserPastSpecificSlots(User user) {
+        List<SpecificSlot> specificSlotsToFinish = specificSlotRepository.findFinishedSpecificSlotsByUser(user, CREATED, LocalDate.now(), LocalTime.now());
 
-        specificSlotRepository.saveAll(specificSlotsToFinish);
+        finishPastSpecificSlots(specificSlotsToFinish);
     }
 
     private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {
@@ -110,13 +117,5 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
                     specificSlotId
             );
         }
-    }
-
-    private List<SpecificSlot> getSpecificSlotsToFinish(List<SpecificSlot> specificSlots) {
-
-        return specificSlots.stream()
-                .filter(specificSlot -> specificSlot.getStatus() == CREATED)
-                .filter(SpecificSlot::hasFinished)
-                .toList();
     }
 }

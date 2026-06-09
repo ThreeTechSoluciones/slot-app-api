@@ -22,4 +22,6 @@ public interface SpecificSlotService {
     void deleteSpecificSlots(List<SpecificSlot> specificSlots);
 
     void finishPastSpecificSlots(List<SpecificSlot> specificSlots);
+
+    void finishUserPastSpecificSlots(User user);
 }

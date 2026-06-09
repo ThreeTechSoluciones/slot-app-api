@@ -21,7 +21,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public CalendarResponse getUserCalendar(User user, CalendarViewType viewType, LocalDate date) {
-        specificSlotService.finishPastSpecificSlots(user.getSpecificSlots());
+        specificSlotService.finishUserPastSpecificSlots(user);
 
         return calendarViewFactory
                 .getCalendarViewBuilder(viewType)
