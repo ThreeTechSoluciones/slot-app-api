@@ -42,7 +42,7 @@ public class Slot {
     public void removeStudent(Student student) {
         this.students.remove(student);
         this.specificSlots
-                .stream().filter(Slot::isFutureSpecificSlot)
+                .stream().filter(SpecificSlot::isFutureSpecificSlot)
                 .forEach(specificSlot ->
                         specificSlot
                             .getSpecificSlotDetails()
@@ -54,7 +54,7 @@ public class Slot {
         this.getStudents().add(student);
         this.getSpecificSlots()
                 .stream()
-                .filter(Slot::isFutureSpecificSlot)
+                .filter(SpecificSlot::isFutureSpecificSlot)
                 .forEach(specificSlot -> {
                     List<SpecificSlotDetail> slotDetails = specificSlot.getSpecificSlotDetails();
                     slotDetails.add(new SpecificSlotDetail(student));
@@ -63,22 +63,14 @@ public class Slot {
 
     public List<SpecificSlot> getFutureSpecificSlots() {
         return this.specificSlots.stream()
-                .filter(Slot::isFutureSpecificSlot)
+                .filter(SpecificSlot::isFutureSpecificSlot)
                 .toList();
     }
 
     public boolean hasAtLeastOneStudentRegisted() {
         return this.specificSlots.stream()
-                .filter(Slot::isFutureSpecificSlot)
+                .filter(SpecificSlot::isFutureSpecificSlot)
                 .anyMatch(SpecificSlot::hasStudentsThatGoToSlot);
-    }
-
-    private static boolean isFutureSpecificSlot(SpecificSlot specificSlot) {
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-
-        return specificSlot.getSlotDate().isAfter(today)
-                || (specificSlot.getSlotDate().isEqual(today) && specificSlot.getStartTime().isAfter(now));
     }
 
     public boolean isAtFullCapacity() {

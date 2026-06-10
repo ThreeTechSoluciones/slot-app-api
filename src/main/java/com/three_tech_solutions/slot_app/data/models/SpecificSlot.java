@@ -64,4 +64,29 @@ public class SpecificSlot {
     public boolean isAtFullCapacity() {
         return this.capacity == this.getSpecificSlotUsedCapacity();
     }
+
+    public boolean isFutureSpecificSlot() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        return this.slotDate.isAfter(today)
+                || (this.slotDate.isEqual(today) && this.startTime.isAfter(now));
+    }
+
+    public boolean hasFinished() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        return this.slotDate.isBefore(today)
+                || (this.slotDate.isEqual(today) && this.endTime.isBefore(now));
+    }
+
+    public boolean finish() {
+        if (this.status == SpecificSlotStatus.CREATED && hasFinished()) {
+            this.status = SpecificSlotStatus.FINISHED;
+            return true;
+        }
+
+        return false;
+    }
 }

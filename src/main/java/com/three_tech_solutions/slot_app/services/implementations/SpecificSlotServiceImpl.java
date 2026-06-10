@@ -14,15 +14,16 @@ import com.three_tech_solutions.slot_app.services.interfaces.StudentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus.CANCELED;
+import static com.three_tech_solutions.slot_app.data.enums.SpecificSlotStatus.*;
 
 @Slf4j
 @Service
@@ -77,6 +78,25 @@ public class SpecificSlotServiceImpl implements SpecificSlotService {
                 .stream()
                 .map(StudentMapper::buildStudentResponse)
                 .toList();
+    }
+
+    @Override
+    public void finishPastSpecificSlots(List<SpecificSlot> specificSlots) {
+        List<SpecificSlot> finishedSlots = specificSlots.stream()
+                .filter(SpecificSlot::finish)
+                .toList();
+
+        if (!finishedSlots.isEmpty()) {
+            specificSlotRepository.saveAll(finishedSlots);
+        }
+    }
+
+    @Async
+    @Override
+    public void finishUserPastSpecificSlots(User user) {
+        List<SpecificSlot> specificSlotsToFinish = specificSlotRepository.findFinishedSpecificSlotsByUser(user, CREATED, LocalDate.now(), LocalTime.now());
+
+        finishPastSpecificSlots(specificSlotsToFinish);
     }
 
     private static void validateIfSpecificSlotIsNotAlreadyCanceled(SpecificSlot specificSlot) {
